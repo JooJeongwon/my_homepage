@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google"; // 폰트
 import "./globals.css";
+// Force Rebuild
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import clsx from "clsx";
@@ -23,10 +24,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className="antialiased" suppressHydrationWarning>
+    <html lang="ko" className="antialiased" suppressHydrationWarning style={{ scrollbarGutter: 'stable' }}>
       {/* suppressHydrationWarning: 테마 적용 시 깜빡임 방지용 필수 속성 */}
 
-      <body className={clsx(inter.className, "bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100 min-h-screen flex flex-col")}>
+      <body className={clsx(inter.className, "min-h-screen flex flex-col bg-neutral-50 dark:bg-[#121212] text-neutral-900 dark:text-neutral-100")}>
 
         {/* ★ Provider로 전체 감싸기 */}
         <ThemeProvider

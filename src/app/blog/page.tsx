@@ -1,17 +1,17 @@
-import { getPostRepository } from '@/di/post.module'; // ★ DI 모듈에서 가져옴
+import { getGetAllPostsUseCase } from '@/di/post.module'; // ★ DI 모듈에서 가져옴
 import PostCard from '@/components/ui/PostCard';
 
 export default async function BlogPage() {
-    // 1. 저장소(Repository) 가져오기
-    const repository = getPostRepository();
+    // 1. Use Case 가져오기
+    const useCase = getGetAllPostsUseCase();
 
-    // 2. 메서드 호출 (이름을 getAllPosts로 수정)
-    const posts = await repository.getAllPosts();
+    // 2. Use Case 실행
+    const posts = await useCase.execute();
 
     return (
-        <div className="container mx-auto px-4 py-10">
+        <div className="max-w-4xl mx-auto px-6 py-12">
             <div className="mb-8">
-                <h1 className="text-3xl font-bold mb-2">All Posts 📝</h1>
+                <h1 className="text-3xl font-bold mb-2">All Posts</h1>
                 <p className="text-gray-600">총 {posts.length}개의 글이 작성되었습니다.</p>
             </div>
 

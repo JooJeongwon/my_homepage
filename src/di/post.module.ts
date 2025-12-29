@@ -1,5 +1,8 @@
 import { PostRepository } from '../domain/ports/post.repository';
 import { MdxPostRepository } from '../adapters/outbound/mdx/mdx.repository';
+import { GetAllPostsUseCase } from '@/application/use-cases/post/get-all-posts.use-case';
+import { GetRecentPostsUseCase } from '@/application/use-cases/post/get-recent-posts.use-case';
+import { GetPostDetailUseCase } from '@/application/use-cases/post/get-post-detail.use-case';
 // import { NotionPostRepository } from '../adapters/outbound/notion/notion.repository'; // 나중에 주석 해제
 
 // 싱글톤 인스턴스 저장
@@ -15,4 +18,18 @@ export function getPostRepository(): PostRepository {
     postRepositoryInstance = new MdxPostRepository();
 
     return postRepositoryInstance;
+}
+
+// --- Use Cases ---
+
+export function getGetAllPostsUseCase(): GetAllPostsUseCase {
+    return new GetAllPostsUseCase(getPostRepository());
+}
+
+export function getGetRecentPostsUseCase(): GetRecentPostsUseCase {
+    return new GetRecentPostsUseCase(getPostRepository());
+}
+
+export function getGetPostDetailUseCase(): GetPostDetailUseCase {
+    return new GetPostDetailUseCase(getPostRepository());
 }
