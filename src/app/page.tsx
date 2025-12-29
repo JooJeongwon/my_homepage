@@ -1,65 +1,41 @@
-import Image from "next/image";
+import { getPostRepository } from '@/di/post.module';
+import PostCard from '@/components/ui/PostCard';
 
-export default function Home() {
+export default async function Home() {
+  // 1. DI(의존성 주입)를 통해 데이터를 가져옵니다.
+  // 이 페이지는 데이터가 파일에서 오는지 노션에서 오는지 전혀 모릅니다. (관심사의 분리)
+  const repository = getPostRepository();
+  const posts = await repository.getAllPosts();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100">
+
+      {/* 헤더 섹션 (임시) */}
+      <header className="max-w-4xl mx-auto py-20 px-6">
+        <h1 className="text-4xl font-extrabold tracking-tight mb-4">
+          JW's Dev Log <span className="text-blue-500">.</span>
+        </h1>
+        <p className="text-xl text-slate-500">
+          백엔드 개발자 주정원의 트러블슈팅 & 학습 기록 저장소
+        </p>
+      </header>
+
+      {/* 포스트 리스트 섹션 */}
+      <section className="max-w-4xl mx-auto px-6 pb-20">
+        <div className="grid gap-6 md:grid-cols-2">
+          {posts.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+
+          {/* 글이 없을 경우 안내 메시지 */}
+          {posts.length === 0 && (
+            <div className="col-span-2 text-center py-20 text-slate-500">
+              아직 작성된 글이 없습니다.
+            </div>
+          )}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </section>
+
+    </main>
   );
 }
