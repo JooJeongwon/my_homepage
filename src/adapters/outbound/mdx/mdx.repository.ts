@@ -35,7 +35,7 @@ export class MdxPostRepository implements PostRepository {
                         description: data.description || '',
                         tags: data.tags || [],
                         thumbnail: data.thumbnail,
-                        content: content, // 목록 조회 시 내용도 일단 포함 (필요시 제외 가능)
+                        content: "", // 목록 조회 시 내용 제외하여 메모리 최적화
                     });
                 } catch (error) {
                     console.error(`Error parsing post ${file}:`, error);

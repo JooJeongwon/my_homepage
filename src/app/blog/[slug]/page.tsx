@@ -19,8 +19,8 @@ export default async function BlogPostPage({
 
     return (
         <article className="max-w-3xl mx-auto py-10 px-4">
-            <header className="mb-10 text-center">
-                <div className="text-left mb-6">
+            <header className="mb-10 text-left">
+                <div className="mb-6">
                      <Link href="/blog" className="text-sm text-neutral-700 dark:text-neutral-300 hover:text-blue-600 inline-block transition-colors">
                         ← Back to Blog
                     </Link>
@@ -29,9 +29,13 @@ export default async function BlogPostPage({
                 <div className="text-neutral-600 dark:text-neutral-400 mb-4">
                     {new Date(post.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </div>
-                <div className="flex justify-center gap-2">
+                <div className="flex justify-start gap-2 flex-wrap">
                     {post.tags.map((tag) => (
-                        <span key={tag} className="text-blue-600 dark:text-blue-550 font-medium">#{tag}</span>
+                        <span key={tag} className="px-2.5 py-0.5 rounded-md text-xs font-medium
+                            bg-neutral-100 text-neutral-700 border border-neutral-200
+                            dark:bg-neutral-800 dark:text-neutral-200 dark:border-neutral-700">
+                            {tag}
+                        </span>
                     ))}
                 </div>
             </header>

@@ -31,7 +31,7 @@ export class ProjectMdxRepository implements ProjectRepository {
                         tags: data.tags || [],
                         thumbnail: data.thumbnail,
                         links: data.links,
-                        content: content,
+                        content: "", // 목록 조회 시 내용 제외하여 메모리 최적화
                     });
                 } catch (error) {
                     console.error(`Error parsing project ${file}:`, error);

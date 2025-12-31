@@ -48,33 +48,38 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 ))}
             </div>
 
-            <div className="flex gap-4 mt-auto text-sm font-medium">
-                {project.links?.github && (
-                    <a
-                        href={project.links.github}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={handleLinkClick}
-                        className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 transition-colors z-10"
-                        title="View Source Code"
-                    >
-                        <Github className="w-4 h-4" />
-                        Code
-                    </a>
-                )}
-                {project.links?.demo && (
-                    <a
-                        href={project.links.demo}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={handleLinkClick}
-                        className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 transition-colors z-10"
-                        title="View Live Demo"
-                    >
-                        <Globe className="w-4 h-4" />
-                        Demo
-                    </a>
-                )}
+            <div className="flex items-center justify-between mt-auto">
+                <div className="flex gap-4 text-sm font-medium">
+                    {project.links?.github && (
+                        <a
+                            href={project.links.github}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={handleLinkClick}
+                            className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 transition-colors z-10"
+                            title="View Source Code"
+                        >
+                            <Github className="w-4 h-4" />
+                            Code
+                        </a>
+                    )}
+                    {project.links?.demo && (
+                        <a
+                            href={project.links.demo}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={handleLinkClick}
+                            className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 transition-colors z-10"
+                            title="View Live Demo"
+                        >
+                            <Globe className="w-4 h-4" />
+                            Demo
+                        </a>
+                    )}
+                </div>
+                <span className="text-neutral-500 dark:text-neutral-400 text-xs font-medium whitespace-nowrap">
+                    {project.date}
+                </span>
             </div>
         </article>
     );
