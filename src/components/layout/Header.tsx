@@ -14,10 +14,10 @@ export default function Header() {
 
     const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
         // const isActive = pathname === href || (href !== '/' && pathname?.startsWith(href));
-        
+
         return (
-            <Link 
-                href={href} 
+            <Link
+                href={href}
                 onClick={(e) => {
                     if (pathname === href) {
                         e.preventDefault(); // 기본 이동 막고
@@ -36,8 +36,8 @@ export default function Header() {
             <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
 
                 {/* 로고 영역 */}
-                <Link 
-                    href="/" 
+                <Link
+                    href="/"
                     onClick={(e) => {
                         if (pathname === '/') {
                             e.preventDefault();
@@ -46,7 +46,7 @@ export default function Header() {
                     }}
                     className="group text-xl font-bold tracking-tight hover:text-blue-600 dark:hover:text-blue-550 transition-colors"
                 >
-                    JW<span className="text-blue-600 dark:text-blue-550 transition-colors group-hover:text-neutral-900 dark:group-hover:text-white">.</span>dev
+                    jwjoo<span className="text-blue-600 dark:text-blue-550 transition-colors group-hover:text-neutral-900 dark:group-hover:text-white">.</span>
                 </Link>
 
                 {/* 네비게이션 메뉴 */}

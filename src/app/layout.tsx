@@ -11,7 +11,7 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "JW Dev Log",
+  title: "jwjoo Dev Log",
   description: "백엔드 개발자 주정원의 기술 블로그 및 포트폴리오",
   icons: {
     icon: "/favicon.ico",

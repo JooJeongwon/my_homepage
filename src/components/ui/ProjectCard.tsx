@@ -20,7 +20,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
     };
 
     return (
-        <article 
+        <article
             onClick={handleCardClick}
             className="flex flex-col h-full border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 
             bg-white dark:bg-neutral-900/50 cursor-pointer
@@ -37,7 +37,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 {project.description}
             </p>
 
-            <div className="flex flex-wrap gap-2 mb-6 mt-auto">
+            <div className="flex flex-wrap gap-2 mb-6">
                 {project.tags.map(tag => (
                     <span key={tag} className="px-2.5 py-0.5 rounded-md text-xs font-medium
                         bg-neutral-100 text-neutral-700 border border-neutral-200

@@ -21,7 +21,7 @@ export default async function BlogPostPage({
         <article className="max-w-3xl mx-auto py-10 px-4">
             <header className="mb-10 text-left">
                 <div className="mb-6">
-                     <Link href="/blog" className="text-sm text-neutral-700 dark:text-neutral-300 hover:text-blue-600 inline-block transition-colors">
+                    <Link href="/blog" className="text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 inline-block transition-colors">
                         ← Back to Blog
                     </Link>
                 </div>

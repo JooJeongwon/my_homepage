@@ -21,31 +21,31 @@ export default async function ProjectDetailPage({
     return (
         <article className="max-w-3xl mx-auto py-10 px-4">
             <header className="mb-10 border-b border-neutral-200 dark:border-neutral-800 pb-10">
-                <Link href="/projects" className="text-sm text-neutral-700 dark:text-neutral-300 hover:text-blue-600 mb-6 inline-block transition-colors">
+                <Link href="/projects" className="text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 mb-6 inline-block transition-colors">
                     ← Back to Projects
                 </Link>
                 <h1 className="text-4xl font-bold mb-4 text-neutral-900 dark:text-neutral-200">{project.title}</h1>
                 <p className="text-xl text-neutral-800 dark:text-neutral-200 mb-6 leading-relaxed">
                     {project.description}
                 </p>
-                
+
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 text-neutral-600 dark:text-neutral-400 text-sm mb-6">
                     <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         <span>{project.date}</span>
                     </div>
-                    
+
                     <div className="flex gap-4">
                         {project.links?.github && (
-                            <a href={project.links.github} target="_blank" rel="noreferrer" 
-                            className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-550 transition-colors">
+                            <a href={project.links.github} target="_blank" rel="noreferrer"
+                                className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-550 transition-colors">
                                 <Github className="w-4 h-4" />
                                 <span>Source Code</span>
                             </a>
                         )}
                         {project.links?.demo && (
-                            <a href={project.links.demo} target="_blank" rel="noreferrer" 
-                            className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-550 transition-colors">
+                            <a href={project.links.demo} target="_blank" rel="noreferrer"
+                                className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-550 transition-colors">
                                 <Globe className="w-4 h-4" />
                                 <span>Live Demo</span>
                             </a>

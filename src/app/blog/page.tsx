@@ -15,7 +15,7 @@ export default async function BlogPage() {
                 <p className="text-neutral-500 dark:text-neutral-400">총 {posts.length}개의 글이 작성되었습니다.</p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 sm:grid-cols-2">
                 {/* 여기서 post가 any로 뜨던 이유는 repository 인터페이스가 반환 타입을 
            제대로 못 잡아줘서 그렇습니다. 1단계 수정을 하면 해결됩니다. 
         */}
