@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import clsx from "clsx";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { ScrollToTop } from "@/components/ui/ScrollToTop";
 
 // 폰트 설정 (구글 폰트 Inter 사용)
 const inter = Inter({ subsets: ["latin"] });
@@ -13,9 +14,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "jwjoo Dev Log",
   description: "백엔드 개발자 주정원의 기술 블로그 및 포트폴리오",
-  icons: {
-    icon: "/favicon.ico",
-  },
+
 };
 
 export default function RootLayout({
@@ -41,6 +40,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <ScrollToTop />
         </ThemeProvider>
 
       </body>
