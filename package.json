@@ -12,6 +12,7 @@
   "dependencies": {
     "@notionhq/client": "^5.6.0",
     "clsx": "^2.1.1",
+    "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
@@ -21,6 +22,7 @@
     "react-dom": "19.2.3",
     "react-icons": "^5.5.0",
     "rehype-highlight": "^7.0.2",
+    "rehype-slug": "^6.0.0",
     "tailwind-merge": "^3.4.0",
     "zod": "^4.2.1"
   },
