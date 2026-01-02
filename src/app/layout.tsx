@@ -26,7 +26,7 @@ export default function RootLayout({
     <html lang="ko" className="antialiased" suppressHydrationWarning style={{ scrollbarGutter: 'stable' }}>
       {/* suppressHydrationWarning: 테마 적용 시 깜빡임 방지용 필수 속성 */}
 
-      <body className={clsx(inter.className, "min-h-screen flex flex-col bg-neutral-50 dark:bg-[#121212] text-neutral-900 dark:text-neutral-100")}>
+      <body suppressHydrationWarning={true} className={clsx(inter.className, "min-h-screen flex flex-col bg-neutral-50 dark:bg-[#121212] text-neutral-900 dark:text-neutral-100")}>
 
         {/* ★ Provider로 전체 감싸기 */}
         <ThemeProvider

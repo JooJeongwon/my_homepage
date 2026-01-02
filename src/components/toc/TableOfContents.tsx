@@ -53,20 +53,22 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
             className="fixed right-8 top-40 z-50 flex flex-col items-end group"
             aria-label="Table of contents"
         >
-            {/* [간격 설정]
-        gap-0.5 (2px) : 박스 사이 간격 최소화
-        group-hover:gap-1.5 : 텍스트가 나오면 간격 살짝 벌림
-      */}
             <ul className="flex flex-col w-max transition-all duration-300 ease-in-out items-end group-hover:items-stretch gap-0.5 group-hover:gap-1.5">
                 {headings.map((heading) => {
                     const isActive = activeId === heading.id;
                     const relLevel = heading.level - minLevel;
 
+                    // [수정 1] 텍스트 들여쓰기 2배로 증가
+                    // H1: 0, H2: pl-4 (16px), H3: pl-8 (32px)
                     const indentClass =
-                        relLevel === 0 ? "pl-0" : relLevel === 1 ? "pl-2" : "pl-4";
+                        relLevel === 0 ? "pl-0" : relLevel === 1 ? "pl-4" : "pl-8";
 
-                    let dashWidth = "w-6";
-                    if (relLevel === 1) dashWidth = "w-4";
+                    // [수정 2] 대시 너비 조정 (전체적으로 작아짐)
+                    // H1: w-4 (16px)
+                    // H2: w-3 (12px)
+                    // H3: w-2 (8px)
+                    let dashWidth = "w-4";
+                    if (relLevel === 1) dashWidth = "w-3";
                     if (relLevel >= 2) dashWidth = "w-2";
 
                     return (
@@ -74,9 +76,6 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                             <a
                                 href={`#${heading.id}`}
                                 onClick={(e) => handleClick(e, heading.id)}
-                                // [핵심 수정] 높이(height)를 가변적으로 변경
-                                // h-3 (12px): 대시 상태일 때 높이를 반토막 내서 촘촘하게 만듦
-                                // group-hover:h-6 (24px): 텍스트 상태일 때는 글자가 보이게 높이 복구
                                 className="flex items-center w-full justify-end group-hover:justify-start transition-[height] duration-300 h-3 group-hover:h-6"
                             >
                                 {/* Dash View */}
