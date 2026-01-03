@@ -70,7 +70,6 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                     className={cn(
                         "relative z-10 flex flex-col transition-all duration-300 ease-in-out",
                         "items-end gap-0.5 w-max",
-                        // w-56 (224px) 유지
                         "group-hover:items-stretch group-hover:gap-1 group-hover:w-56",
                         "group-hover:p-4",
                         "group-hover:max-h-[60vh] group-hover:overflow-y-auto"
@@ -121,15 +120,14 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                                     >
                                         <span
                                             className={cn(
-                                                // [수정 포인트] w-48 -> w-44 (176px)
-                                                // 컨테이너가 224px(w-56)이고 패딩이 32px(p-4)이므로 내용 공간은 192px입니다.
-                                                // 여기서 스크롤바 여유분(약 16px)을 위해 w-44(176px)로 줄여야 안전합니다.
-                                                // break-words: 긴 단어 강제 줄바꿈 추가
                                                 "block w-44 whitespace-normal line-clamp-2 break-words",
+                                                // [수정] font-bold 제거 및 font-medium으로 통일
+                                                // 이제 활성/비활성 모두 글자 두께가 같으므로 줄바꿈이 변하지 않습니다.
+                                                "font-medium",
                                                 indentClass,
                                                 isActive
-                                                    ? "text-neutral-900 dark:text-neutral-100 font-bold"
-                                                    : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300"
+                                                    ? "text-neutral-900 dark:text-neutral-100" // 색상만 진하게
+                                                    : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300" // 색상만 흐리게
                                             )}
                                         >
                                             {heading.text}
