@@ -1,7 +1,8 @@
 import { getGetRecentPostsUseCase } from '@/di/post.module';
 import { getGetAllProjectsUseCase } from '@/di/project.module';
 import PostCard from '@/components/ui/PostCard';
-import { ProjectGrid } from '@/components/projects/ProjectGrid';
+import { ProjectCard } from '@/components/ui/ProjectCard';
+import { AlignedGrid } from '@/components/ui/AlignedGrid';
 import Hero from '@/components/home/Hero';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
@@ -35,7 +36,11 @@ export default async function Home() {
           </Link>
         </div>
 
-        <ProjectGrid projects={featuredProjects} />
+        <AlignedGrid>
+          {featuredProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </AlignedGrid>
       </section>
 
       {/* 포스트 리스트 섹션 */}
@@ -50,7 +55,7 @@ export default async function Home() {
           </Link>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
+        <AlignedGrid>
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
@@ -60,7 +65,7 @@ export default async function Home() {
               아직 작성된 글이 없습니다.
             </div>
           )}
-        </div>
+        </AlignedGrid>
       </section>
     </div>
   );
