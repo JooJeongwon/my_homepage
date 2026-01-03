@@ -53,61 +53,94 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
             className="fixed right-8 top-40 z-50 flex flex-col items-end group"
             aria-label="Table of contents"
         >
-            <ul className="flex flex-col w-max transition-all duration-300 ease-in-out items-end group-hover:items-stretch gap-0.5 group-hover:gap-1.5">
-                {headings.map((heading) => {
-                    const isActive = activeId === heading.id;
-                    const relLevel = heading.level - minLevel;
+            <div className="relative flex flex-col items-end">
+                {/* 배경 레이어 */}
+                <div
+                    className={cn(
+                        "absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-300 ease-in-out",
+                        "opacity-0 group-hover:opacity-100",
+                        "bg-neutral-50 dark:bg-[#121212]",
+                        "border border-neutral-200 dark:border-neutral-800",
+                        "shadow-xl"
+                    )}
+                />
 
-                    // [수정 1] 텍스트 들여쓰기 2배로 증가
-                    // H1: 0, H2: pl-4 (16px), H3: pl-8 (32px)
-                    const indentClass =
-                        relLevel === 0 ? "pl-0" : relLevel === 1 ? "pl-4" : "pl-8";
+                {/* 컨텐츠 레이어 */}
+                <ul
+                    className={cn(
+                        "relative z-10 flex flex-col transition-all duration-300 ease-in-out",
+                        "items-end gap-0.5 w-max",
+                        // w-56 (224px) 유지
+                        "group-hover:items-stretch group-hover:gap-1 group-hover:w-56",
+                        "group-hover:p-4",
+                        "group-hover:max-h-[60vh] group-hover:overflow-y-auto"
+                    )}
+                >
+                    {headings.map((heading) => {
+                        const isActive = activeId === heading.id;
+                        const relLevel = heading.level - minLevel;
 
-                    // [수정 2] 대시 너비 조정 (전체적으로 작아짐)
-                    // H1: w-4 (16px)
-                    // H2: w-3 (12px)
-                    // H3: w-2 (8px)
-                    let dashWidth = "w-4";
-                    if (relLevel === 1) dashWidth = "w-3";
-                    if (relLevel >= 2) dashWidth = "w-2";
+                        const indentClass =
+                            relLevel === 0 ? "pl-0" : relLevel === 1 ? "pl-4" : "pl-8";
 
-                    return (
-                        <li key={heading.id} className="w-full">
-                            <a
-                                href={`#${heading.id}`}
-                                onClick={(e) => handleClick(e, heading.id)}
-                                className="flex items-center w-full justify-end group-hover:justify-start transition-[height] duration-300 h-3 group-hover:h-6"
-                            >
-                                {/* Dash View */}
-                                <span
+                        let dashWidth = "w-4";
+                        if (relLevel === 1) dashWidth = "w-3";
+                        if (relLevel >= 2) dashWidth = "w-2";
+
+                        return (
+                            <li key={heading.id} className="w-full">
+                                <a
+                                    href={`#${heading.id}`}
+                                    onClick={(e) => handleClick(e, heading.id)}
                                     className={cn(
-                                        "block rounded-full transition-all duration-300",
-                                        "h-0.5",
-                                        dashWidth,
-                                        "group-hover:hidden",
-                                        isActive
-                                            ? "bg-neutral-800 dark:bg-neutral-200"
-                                            : "bg-neutral-300 dark:bg-neutral-600"
-                                    )}
-                                />
-
-                                {/* Text View */}
-                                <span
-                                    className={cn(
-                                        "hidden group-hover:block text-left whitespace-nowrap text-sm transition-colors duration-200",
-                                        indentClass,
-                                        isActive
-                                            ? "text-neutral-900 dark:text-neutral-100 font-bold"
-                                            : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300"
+                                        "flex items-center w-full justify-end group-hover:justify-start overflow-hidden",
+                                        "transition-[height] duration-300",
+                                        "h-3 group-hover:h-auto group-hover:py-1"
                                     )}
                                 >
-                                    {heading.text}
-                                </span>
-                            </a>
-                        </li>
-                    );
-                })}
-            </ul>
+                                    {/* 대시 View */}
+                                    <span
+                                        className={cn(
+                                            "block rounded-full shrink-0 transition-all duration-300",
+                                            "h-0.5",
+                                            dashWidth,
+                                            "group-hover:w-0 group-hover:opacity-0",
+                                            isActive
+                                                ? "bg-neutral-800 dark:bg-neutral-200"
+                                                : "bg-neutral-300 dark:bg-neutral-600"
+                                        )}
+                                    />
+
+                                    {/* 텍스트 View */}
+                                    <span
+                                        className={cn(
+                                            "block text-left text-sm transition-all duration-300",
+                                            "w-0 opacity-0 p-0",
+                                            "group-hover:w-full group-hover:opacity-100"
+                                        )}
+                                    >
+                                        <span
+                                            className={cn(
+                                                // [수정 포인트] w-48 -> w-44 (176px)
+                                                // 컨테이너가 224px(w-56)이고 패딩이 32px(p-4)이므로 내용 공간은 192px입니다.
+                                                // 여기서 스크롤바 여유분(약 16px)을 위해 w-44(176px)로 줄여야 안전합니다.
+                                                // break-words: 긴 단어 강제 줄바꿈 추가
+                                                "block w-44 whitespace-normal line-clamp-2 break-words",
+                                                indentClass,
+                                                isActive
+                                                    ? "text-neutral-900 dark:text-neutral-100 font-bold"
+                                                    : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300"
+                                            )}
+                                        >
+                                            {heading.text}
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
         </nav>
     );
 }
