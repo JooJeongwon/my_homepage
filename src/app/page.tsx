@@ -1,7 +1,7 @@
 import { getGetRecentPostsUseCase } from '@/di/post.module';
 import { getGetAllProjectsUseCase } from '@/di/project.module';
 import PostCard from '@/components/ui/PostCard';
-import { ProjectCard } from '@/components/ui/ProjectCard'; // Import ProjectCard
+import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import Hero from '@/components/home/Hero';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
@@ -35,11 +35,7 @@ export default async function Home() {
           </Link>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
-          {featuredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+        <ProjectGrid projects={featuredProjects} />
       </section>
 
       {/* 포스트 리스트 섹션 */}

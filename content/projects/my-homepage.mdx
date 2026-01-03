@@ -1,0 +1,76 @@
+---
+title: "Clean Architecture 기반의 기술 블로그"
+date: "2026.01"
+description: "Next.js 16 App Router 환경에 Hexagonal Architecture(Ports and Adapters)를 도입하여, 비즈니스 로직과 UI/데이터 소스를 완벽하게 분리한 확장 가능한 웹 플랫폼"
+tags: ["Next.js", "Clean Architecture", "TypeScript"]
+links:
+  github: "https://github.com/joojeongwon/my_homepage"
+---
+
+## 프로젝트 배경 및 목표
+
+프론트엔드 애플리케이션이 고도화됨에 따라 UI 프레임워크와 비즈니스 로직의 강한 결합(Tight Coupling)이 유지보수를 어렵게 만드는 문제를 해결하고자 했습니다. 단순히 화면을 구현하는 것을 넘어, **'기술 스택이 변경되어도 살아남는 도메인 로직'**을 설계하는 것을 목표로 했습니다.
+
+- **의존성 역전(DIP):** 구체적인 기술(Next.js, Notion API, MDX 등)이 변경되더라도 핵심 도메인 로직은 영향을 받지 않는 아키텍처를 설계했습니다.
+- **테스트 용이성:** UI 렌더링 없이 순수 TypeScript 객체만으로 비즈니스 로직(Use Case)을 테스트할 수 있는 환경을 구축했습니다.
+- **유연한 확장성:** 현재는 로컬 파일 시스템을 사용하지만, 추후 CMS나 Notion API로 데이터 소스를 변경할 때 코드 수정을 최소화하고자 했습니다.
+
+## 시스템 아키텍처 및 기술 스택
+
+### Infrastructure & DevOps
+
+- **Framework:** Next.js 16.1 (App Router, Server Components)
+- **Language:** TypeScript 5.0 (Strict Typing)
+- **Styling:** Tailwind CSS v4 (Alpha), CSS Variables 기반 설정
+- **Testing:** Vitest (Unit Test for Use Cases)
+
+### Core Architecture (Clean Architecture)
+
+이 프로젝트는 **Ports and Adapters (Hexagonal)** 패턴을 채택하여 계층을 명확히 분리했습니다.
+
+- **Domain Layer (`src/domain`):**
+    - 외부 라이브러리에 전혀 의존하지 않는 순수 영역입니다.
+    - `Post`, `Project`와 같은 핵심 엔티티와 `PostRepository` 인터페이스(Port)를 정의했습니다.
+- **Application Layer (`src/application`):**
+    - 사용자의 요구사항을 캡슐화한 Use Case(`GetAllPostsUseCase`, `GetProjectDetailUseCase` 등)를 구현했습니다.
+    - 리포지토리 인터페이스를 통해 데이터를 요청하며, 구체적인 구현체(DB, File System)에 대해서는 알지 못합니다.
+- **Adapters Layer (`src/adapters`):**
+    - **Outbound:** `MdxPostRepository`와 같이 실제 파일 시스템(`fs`)에 접근하여 데이터를 가져오는 구현체가 위치합니다.
+    - **Inbound:** Next.js의 Page 컴포넌트(`src/app`)가 컨트롤러 역할을 수행합니다.
+- **Dependency Injection (`src/di`):**
+    - 컴포넌트가 직접 구현체를 생성하지 않고, DI 컨테이너(Module)를 통해 의존성을 주입받도록 하여 결합도를 낮췄습니다.
+
+## 핵심 기술적 도전 및 해결 과정
+
+### 프론트엔드에서의 의존성 역전 원칙(DIP) 적용
+
+- **Challenge:** 보통의 Next.js 프로젝트는 컴포넌트 내부에서 `fs`나 API를 직접 호출하여, 데이터 소스 변경 시 컴포넌트 코드까지 수정해야 하는 강한 결합 문제가 있었습니다.
+- **Solution:** `PostRepository` 인터페이스를 정의하고, 런타임에 DI 팩토리 함수(`src/di/post.module.ts`)가 구현체를 주입하도록 설계했습니다.
+- **Implementation:**
+    
+    ```tsx
+    // src/di/post.module.ts
+    export function getPostRepository(): PostRepository {
+        // 환경 변수에 따라 MdxRepository 혹은 NotionRepository 교체 가능
+        return new MdxPostRepository();
+    }
+    ```
+    
+
+이를 통해 UI 컴포넌트는 데이터가 어디서 오는지 알 필요가 없는 느슨한 결합(Loose Coupling)을 달성했습니다.
+
+### Next.js Server Components(RSC)와 아키텍처의 통합
+
+- **Challenge:** 클린 아키텍처의 Use Case를 React 컴포넌트와 연결할 때, 클라이언트 컴포넌트(`"use client"`)에서 `fs`모듈을 포함한 Repository가 호출되면 번들링 에러가 발생했습니다.
+- **Solution:** 아키텍처의 진입점(Entry Point)을 **Server Component**(`page.tsx`)로 제한했습니다.
+- **Effect:** 서버 사이드에서 Use Case를 실행하고, 결과값인 Plain Object(POJO)만 클라이언트 컴포넌트(`PostCard`등)로 직렬화하여 전달함으로써 보안과 성능을 모두 확보했습니다.
+
+### Tailwind CSS v4 도입 및 빌드 최적화
+
+- **Challenge:** 설정 파일(`tailwind.config.js`)이 제거되고 CSS 변수 기반으로 동작하는 v4 버전의 새로운 설정 방식에 적응해야 했습니다. 또한, MDX 콘텐츠 스타일링을 위한 `@tailwindcss/typography` 플러그인 호환성 문제가 있었습니다.
+- **Solution:** `postcss.config.mjs` 기반의 플러그인 설정과 CSS 네이티브 변수(`-font-sans` 등)를 활용하여 런타임 오버헤드를 줄이고 빌드 속도를 개선했습니다.
+
+## 프로젝트 성과 및 배운 점
+
+- **유지보수성 향상:** 새로운 기능을 추가할 때, `Domain` -> `Application` -> `Adapter` 순서로 코드를 작성하면 되어 사이드 이펙트에 대한 걱정 없이 개발할 수 있었습니다.
+- **확장성 확보:** 현재의 MDX 파일 기반 블로그를 추후 Notion API 연동 방식으로 변경하더라도, `NotionPostRepository` 클래스 하나만 추가하면 전체 시스템을 마이그레이션할 수 있는 기반을 마련했습니다.
