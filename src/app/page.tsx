@@ -21,7 +21,7 @@ export default async function Home() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* 히어로 섹션 */}
+      {/* 히어로 섹션 (유지) */}
       <Hero />
 
       {/* Featured Projects 섹션 */}
@@ -36,7 +36,11 @@ export default async function Home() {
           </Link>
         </div>
 
-        <AlignedGrid>
+        {/* ★ 수정된 부분: AlignedGrid에 명시적으로 정렬 기준 전달 
+            제목(h2)과 설명(p)의 높이를 순서대로 맞춰 
+            태그 박스 위치까지 정확하게 정렬합니다.
+        */}
+        <AlignedGrid alignSelectors={['h2', 'p']}>
           {featuredProjects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
@@ -55,7 +59,8 @@ export default async function Home() {
           </Link>
         </div>
 
-        <AlignedGrid>
+        {/* ★ 수정된 부분: 여기도 동일하게 정렬 기준 적용 */}
+        <AlignedGrid alignSelectors={['h2', 'p']}>
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
