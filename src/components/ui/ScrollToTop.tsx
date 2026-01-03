@@ -35,7 +35,7 @@ export function ScrollToTop() {
             type="button"
             onClick={scrollToTop}
             className={clsx(
-                "fixed bottom-8 right-8 p-3 rounded-full shadow-lg border transition-all duration-300 z-50",
+                "fixed bottom-8 right-8 p-2.5 hidden sm:flex rounded-full shadow-lg border transition-all duration-300 z-50",
                 "bg-neutral-100 dark:bg-neutral-900",
                 "border-neutral-200 dark:border-neutral-700",
                 "text-neutral-600 dark:text-neutral-400",

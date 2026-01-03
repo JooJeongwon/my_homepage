@@ -50,7 +50,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
 
     return (
         <nav
-            className="fixed right-8 top-40 z-50 flex flex-col items-end group"
+            className="fixed right-8 top-40 z-50 hidden sm:flex flex-col items-end group"
             aria-label="Table of contents"
         >
             <div className="relative flex flex-col items-end">

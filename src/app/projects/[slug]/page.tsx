@@ -27,7 +27,7 @@ export default async function ProjectDetailPage({
         <div className="relative w-full max-w-6xl mx-auto px-4 py-10">
             <TableOfContents headings={headings} />
 
-            <article className="max-w-3xl mx-auto w-full min-w-0">
+            <article className="max-w-3xl min-w-0 w-full sm:w-[75%] sm:ml-[10%] lg:w-full lg:mx-auto">
                 <header className="mb-10 text-left border-b border-neutral-200 dark:border-neutral-800 pb-10">
                     <Link href="/projects" className="text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 mb-6 inline-block transition-colors">
                         ← Back to Projects

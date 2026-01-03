@@ -27,7 +27,7 @@ export default async function BlogPostPage({
             {/* TOC is fixed positioned, so placement in DOM matters less, but keeping it here */}
             <TableOfContents headings={headings} />
 
-            <article className="max-w-3xl mx-auto w-full min-w-0">
+            <article className="max-w-3xl min-w-0 w-full sm:w-[75%] sm:ml-[10%] lg:w-full lg:mx-auto">
                 <header className="mb-10 text-left">
                     <div className="mb-6">
                         <Link href="/blog" className="text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 inline-block transition-colors">
