@@ -29,10 +29,10 @@ export default async function ProjectDetailPage({
 
             <article className="max-w-3xl min-w-0 w-full sm:w-[75%] sm:ml-[10%] lg:w-full lg:mx-auto">
                 <header className="mb-10 text-left border-b border-neutral-200 dark:border-neutral-800 pb-10">
-                    <Link href="/projects" className="text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 mb-6 inline-block transition-colors">
+                    <Link href="/projects" className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 mb-6 inline-block transition-colors">
                         ← Back to Projects
                     </Link>
-                    <h1 className="text-4xl font-bold mb-4 text-neutral-900 dark:text-neutral-200">{project.title}</h1>
+                    <h1 className="text-4xl font-bold mb-4 text-neutral-800 dark:text-neutral-200">{project.title}</h1>
                     <p className="text-xl text-neutral-800 dark:text-neutral-200 mb-6 leading-relaxed">
                         {project.description}
                     </p>
@@ -46,14 +46,14 @@ export default async function ProjectDetailPage({
                         <div className="flex gap-4">
                             {project.links?.github && (
                                 <a href={project.links.github} target="_blank" rel="noreferrer"
-                                    className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-550 transition-colors">
+                                    className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                                     <Github className="w-4 h-4" />
                                     <span>Source Code</span>
                                 </a>
                             )}
                             {project.links?.demo && (
                                 <a href={project.links.demo} target="_blank" rel="noreferrer"
-                                    className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-550 transition-colors">
+                                    className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                                     <Globe className="w-4 h-4" />
                                     <span>Live Demo</span>
                                 </a>
@@ -73,7 +73,7 @@ export default async function ProjectDetailPage({
                 </header>
 
                 <div className="prose dark:prose-invert max-w-none 
-                    prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-6 prose-headings:text-neutral-900 dark:prose-headings:text-neutral-200
+                    prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-6 prose-headings:text-neutral-800 dark:prose-headings:text-neutral-200
                     prose-p:text-neutral-800 dark:prose-p:text-neutral-200 prose-p:leading-relaxed
                     prose-a:text-blue-600 dark:prose-a:text-blue-550 prose-a:no-underline hover:prose-a:underline
                     prose-li:text-neutral-800 dark:prose-li:text-neutral-200

@@ -15,7 +15,7 @@ export default function PostCard({ post }: Props) {
 
                 {/* 1. 제목 영역 */}
                 <div className="js-align-title flex justify-between items-start mb-4">
-                    <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-200 group-hover:text-blue-600 dark:group-hover:text-blue-550 transition-colors">
+                    <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-blue-600 dark:group-hover:text-blue-550 transition-colors">
                         {post.title}
                     </h2>
                 </div>
@@ -39,7 +39,7 @@ export default function PostCard({ post }: Props) {
 
                 {/* 4. 날짜 영역 (바닥 고정) */}
                 <div className="flex items-center justify-end mt-auto">
-                    <time dateTime={post.date} className="text-neutral-500 dark:text-neutral-400 text-xs font-medium whitespace-nowrap">
+                    <time dateTime={post.date} className="text-neutral-600 dark:text-neutral-400 text-xs font-medium whitespace-nowrap">
                         {new Date(post.date).toLocaleDateString('ko-KR')}
                     </time>
                 </div>

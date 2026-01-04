@@ -39,8 +39,8 @@ export function ScrollToTop() {
                 "bg-neutral-100 dark:bg-neutral-900",
                 "border-neutral-200 dark:border-neutral-700",
                 "text-neutral-600 dark:text-neutral-400",
-                "hover:text-blue-600 dark:hover:text-blue-550", // Hover blue text color
-                "hover:border-blue-600 dark:hover:border-blue-550",
+                "hover:text-neutral-900 dark:hover:text-neutral-100", // Hover mono text color
+                "hover:border-neutral-300 dark:hover:border-neutral-600",
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
             )}
             aria-label="Scroll to top"

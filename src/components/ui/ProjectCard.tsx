@@ -31,7 +31,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <div className="js-align-title flex justify-between items-start mb-4">
                 {/* [핵심 2] 고정 높이(h-14) 삭제. 
                     이제 page.tsx의 AlignedGrid가 이 h2를 잡아서 동적으로 높이를 맞춰줄 것임. */}
-                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-200 group-hover:text-blue-600 dark:group-hover:text-blue-550 transition-colors line-clamp-2">
+                <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-blue-600 dark:group-hover:text-blue-550 transition-colors line-clamp-2">
                     {project.title}
                 </h2>
             </div>
@@ -65,7 +65,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                                 target="_blank"
                                 rel="noreferrer"
                                 onClick={handleLinkClick}
-                                className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 transition-colors z-10"
+                                className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors z-10"
                                 title="View Source Code"
                             >
                                 <Github className="w-4 h-4" />
@@ -78,7 +78,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                                 target="_blank"
                                 rel="noreferrer"
                                 onClick={handleLinkClick}
-                                className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 transition-colors z-10"
+                                className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors z-10"
                                 title="View Live Demo"
                             >
                                 <Globe className="w-4 h-4" />
@@ -86,7 +86,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                             </a>
                         )}
                     </div>
-                    <span className="text-neutral-500 dark:text-neutral-400 text-xs font-medium whitespace-nowrap">
+                    <span className="text-neutral-600 dark:text-neutral-400 text-xs font-medium whitespace-nowrap">
                         {project.date}
                     </span>
                 </div>

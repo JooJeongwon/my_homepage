@@ -30,7 +30,7 @@ export default async function Home() {
           <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             Featured Projects
           </h2>
-          <Link href="/projects" className="group flex items-center gap-1 text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 transition-colors">
+          <Link href="/projects" className="group flex items-center gap-1 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
             View All
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
@@ -53,7 +53,7 @@ export default async function Home() {
           <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             Recent Posts
           </h2>
-          <Link href="/blog" className="group flex items-center gap-1 text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 transition-colors">
+          <Link href="/blog" className="group flex items-center gap-1 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
             Read More
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>

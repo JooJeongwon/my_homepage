@@ -30,11 +30,11 @@ export default async function BlogPostPage({
             <article className="max-w-3xl min-w-0 w-full sm:w-[75%] sm:ml-[10%] lg:w-full lg:mx-auto">
                 <header className="mb-10 text-left">
                     <div className="mb-6">
-                        <Link href="/blog" className="text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-550 inline-block transition-colors">
+                        <Link href="/blog" className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 inline-block transition-colors">
                             ← Back to Blog
                         </Link>
                     </div>
-                    <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+                    <h1 className="text-4xl font-bold mb-4 text-neutral-800 dark:text-neutral-200">{post.title}</h1>
                     <div className="text-neutral-600 dark:text-neutral-400 mb-4">
                         {new Date(post.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </div>
@@ -50,10 +50,10 @@ export default async function BlogPostPage({
                 </header>
 
                 <div className="prose dark:prose-invert max-w-none 
-                    prose-headings:text-neutral-900 dark:prose-headings:text-neutral-200
+                    prose-headings:text-neutral-800 dark:prose-headings:text-neutral-200
                     prose-p:text-neutral-800 dark:prose-p:text-neutral-200
                     prose-li:text-neutral-800 dark:prose-li:text-neutral-200
-                    prose-a:text-blue-600 dark:prose-a:text-blue-550 prose-a:no-underline hover:prose-a:underline
+                    prose-a:text-neutral-600 dark:prose-a:text-neutral-400 prose-a:no-underline hover:prose-a:text-neutral-900 dark:hover:prose-a:text-neutral-100 prose-a:transition-colors
                     
                     /* 코드 블록(pre) 스타일링 - Project Card와 통일 */
                     prose-pre:bg-white dark:prose-pre:bg-neutral-900/50

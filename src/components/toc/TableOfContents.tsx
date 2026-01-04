@@ -127,7 +127,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                                                 indentClass,
                                                 isActive
                                                     ? "text-neutral-900 dark:text-neutral-100" // 색상만 진하게
-                                                    : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300" // 색상만 흐리게
+                                                    : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100" // 색상만 흐리게 -> 호버시 진하게
                                             )}
                                         >
                                             {heading.text}
