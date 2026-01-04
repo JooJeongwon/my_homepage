@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Post } from '@/domain/models/post.model';
+import { Clock } from 'lucide-react';
 
 interface Props {
     post: Post;
@@ -15,13 +16,13 @@ export default function PostCard({ post }: Props) {
 
                 {/* 1. 제목 영역 */}
                 <div className="js-align-title flex justify-between items-start mb-4">
-                    <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-blue-600 dark:group-hover:text-blue-550 transition-colors">
+                    <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-blue-600 dark:group-hover:text-blue-550 transition-colors line-clamp-2">
                         {post.title}
                     </h2>
                 </div>
 
                 {/* 2. 설명 영역 (AlignedGrid가 높이를 맞춰줍니다) */}
-                <p className="js-align-desc text-neutral-700 dark:text-neutral-300 line-clamp-2 text-sm leading-relaxed mb-6 min-h-[60px]">
+                <p className="js-align-desc text-neutral-700 dark:text-neutral-300 line-clamp-3 text-sm leading-relaxed mb-6 break-words">
                     {post.description}
                 </p>
 
@@ -37,8 +38,12 @@ export default function PostCard({ post }: Props) {
                     ))}
                 </div>
 
-                {/* 4. 날짜 영역 (바닥 고정) */}
-                <div className="flex items-center justify-end mt-auto">
+                {/* 4. 하단 정보 영역 (읽는 시간, 날짜) */}
+                <div className="flex items-center justify-between mt-auto">
+                    <span className="flex items-center gap-1 text-xs text-neutral-600 dark:text-neutral-400 font-medium">
+                        <Clock className="w-3.5 h-3.5" />
+                        {post.readingTime} min read
+                    </span>
                     <time dateTime={post.date} className="text-neutral-600 dark:text-neutral-400 text-xs font-medium whitespace-nowrap">
                         {new Date(post.date).toLocaleDateString('ko-KR')}
                     </time>

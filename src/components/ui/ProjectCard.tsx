@@ -38,7 +38,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
             {/* [핵심 3] 고정 높이 삭제. 
                AlignedGrid가 p 태그 높이를 맞출 수 있게 풀어줌. */}
-            <p className="js-align-desc text-neutral-700 dark:text-neutral-300 text-sm mb-6 leading-relaxed line-clamp-3">
+            <p className="js-align-desc text-neutral-700 dark:text-neutral-300 text-sm mb-6 leading-relaxed line-clamp-3 break-words">
                 {project.description}
             </p>
 

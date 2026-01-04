@@ -4,6 +4,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import rehypeHighlight from 'rehype-highlight'; // ★ 플러그인 추가
 import rehypeSlug from 'rehype-slug';
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { extractHeadings } from '@/lib/toc';
 import { TableOfContents } from '@/components/toc/TableOfContents';
 export async function generateStaticParams() {
@@ -38,8 +39,9 @@ export default async function BlogPostPage({
             <article className="max-w-3xl min-w-0 w-full sm:w-[75%] sm:ml-[10%] lg:w-full lg:mx-auto">
                 <header className="mb-10 text-left">
                     <div className="mb-6">
-                        <Link href="/blog" className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 inline-block transition-colors">
-                            ← Back to Blog
+                        <Link href="/blog" className="group inline-flex items-center gap-1 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
+                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                            Back to Blog
                         </Link>
                     </div>
                     <h1 className="text-4xl font-bold mb-4 text-neutral-800 dark:text-neutral-200">{post.title}</h1>

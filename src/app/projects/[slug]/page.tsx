@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
-import { Github, Globe, Calendar } from 'lucide-react';
+import { Github, Globe, Calendar, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { extractHeadings } from '@/lib/toc';
 import { TableOfContents } from '@/components/toc/TableOfContents';
@@ -37,8 +37,9 @@ export default async function ProjectDetailPage({
 
             <article className="max-w-3xl min-w-0 w-full sm:w-[75%] sm:ml-[10%] lg:w-full lg:mx-auto">
                 <header className="mb-10 text-left border-b border-neutral-200 dark:border-neutral-800 pb-10">
-                    <Link href="/projects" className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 mb-6 inline-block transition-colors">
-                        ← Back to Projects
+                    <Link href="/projects" className="group inline-flex items-center gap-1 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 mb-6 transition-colors">
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        Back to Projects
                     </Link>
                     <h1 className="text-4xl font-bold mb-4 text-neutral-800 dark:text-neutral-200">{project.title}</h1>
                     <p className="text-xl text-neutral-800 dark:text-neutral-200 mb-6 leading-relaxed">

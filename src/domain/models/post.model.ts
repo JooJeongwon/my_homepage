@@ -10,7 +10,8 @@ export const PostSchema = z.object({
     description: z.string(),     // 요약글 (카드에 보여줄 내용)
     tags: z.array(z.string()),   // 태그 목록
     thumbnail: z.string().optional(), // 썸네일 (없을 수도 있음)
-    content: z.string().optional()    // 본문 내용 (목록 조회할 땐 없을 수도 있음)
+    content: z.string().optional(),    // 본문 내용 (목록 조회할 땐 없을 수도 있음)
+    readingTime: z.number().optional() // 읽는 시간 (분 단위) - optional로 해서 계산 실패시에도 안전하게
 });
 
 // 2. TypeScript 타입 추출 (Compile-time Check)

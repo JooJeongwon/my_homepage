@@ -77,7 +77,7 @@ export default function TechIcon({ tag, className }: Props) {
         bg-neutral-100 dark:bg-neutral-800 
         text-neutral-600 dark:text-neutral-400
         hover:bg-blue-100 dark:hover:bg-blue-900/30 
-        hover:text-blue-600 dark:hover:text-blue-400 
+        hover:text-blue-600 dark:hover:text-blue-550 
         transition-colors duration-200 ${className}`}
             title={tag}
         >
