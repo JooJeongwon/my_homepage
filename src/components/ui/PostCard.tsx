@@ -11,17 +11,17 @@ export default function PostCard({ post }: Props) {
             <article className="h-full flex flex-col border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 
                 bg-white dark:bg-neutral-900/50
                 hover:shadow-xl dark:hover:bg-neutral-900
-                hover:-translate-y-1 transition-all duration-300 ease-out">
+                hover:-translate-y-1 transition duration-300 ease-out">
 
                 {/* 1. 제목 영역 */}
-                <div className="flex justify-between items-start mb-4">
+                <div className="js-align-title flex justify-between items-start mb-4">
                     <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-200 group-hover:text-blue-600 dark:group-hover:text-blue-550 transition-colors">
                         {post.title}
                     </h2>
                 </div>
 
                 {/* 2. 설명 영역 (AlignedGrid가 높이를 맞춰줍니다) */}
-                <p className="text-neutral-700 dark:text-neutral-300 line-clamp-2 text-sm leading-relaxed mb-6 min-h-[60px]">
+                <p className="js-align-desc text-neutral-700 dark:text-neutral-300 line-clamp-2 text-sm leading-relaxed mb-6 min-h-[60px]">
                     {post.description}
                 </p>
 
