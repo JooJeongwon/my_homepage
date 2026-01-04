@@ -5,31 +5,34 @@ import { usePathname } from 'next/navigation';
 import { Github } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
+
+const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+    const pathname = usePathname();
+
+    return (
+        <Link
+            href={href}
+            onClick={(e) => {
+                if (pathname === href) {
+                    e.preventDefault(); // 기본 이동 막고
+                    handleScrollToTop(); // 스크롤만 위로
+                }
+            }}
+            className="text-neutral-800 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-blue-550 transition-colors"
+        >
+            {children}
+        </Link>
+    );
+};
+
 export default function Header() {
     const pathname = usePathname();
 
-    const handleScrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
 
-    const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
-        // const isActive = pathname === href || (href !== '/' && pathname?.startsWith(href));
-
-        return (
-            <Link
-                href={href}
-                onClick={(e) => {
-                    if (pathname === href) {
-                        e.preventDefault(); // 기본 이동 막고
-                        handleScrollToTop(); // 스크롤만 위로
-                    }
-                }}
-                className="text-neutral-800 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-blue-550 transition-colors"
-            >
-                {children}
-            </Link>
-        );
-    };
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm">

@@ -20,7 +20,7 @@ export class MdxPostRepository implements PostRepository {
             .map((file) => {
                 const filePath = path.join(POSTS_PATH, file);
                 const fileContent = fs.readFileSync(filePath, 'utf-8');
-                const { data, content } = matter(fileContent);
+                const { data } = matter(fileContent);
 
                 const slug = file.replace(/\.mdx?$/, '');
 

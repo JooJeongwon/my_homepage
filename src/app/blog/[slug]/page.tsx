@@ -1,4 +1,4 @@
-import { getGetPostDetailUseCase } from '@/di/post.module';
+import { getGetPostDetailUseCase, getGetAllPostsUseCase } from '@/di/post.module';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import rehypeHighlight from 'rehype-highlight'; // ★ 플러그인 추가
@@ -6,6 +6,14 @@ import rehypeSlug from 'rehype-slug';
 import Link from 'next/link';
 import { extractHeadings } from '@/lib/toc';
 import { TableOfContents } from '@/components/toc/TableOfContents';
+export async function generateStaticParams() {
+    const useCase = getGetAllPostsUseCase();
+    const posts = await useCase.execute();
+
+    return posts.map((post) => ({
+        slug: post.slug,
+    }));
+}
 
 export default async function BlogPostPage({
     params

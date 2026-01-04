@@ -18,7 +18,7 @@ export class ProjectMdxRepository implements ProjectRepository {
             .map((file) => {
                 const filePath = path.join(PROJECTS_PATH, file);
                 const fileContent = fs.readFileSync(filePath, 'utf-8');
-                const { data, content } = matter(fileContent);
+                const { data } = matter(fileContent);
                 const slug = file.replace(/\.mdx?$/, '');
 
                 try {
@@ -46,7 +46,7 @@ export class ProjectMdxRepository implements ProjectRepository {
     }
 
     async getProjectBySlug(slug: string): Promise<Project | null> {
-         const filePath = path.join(PROJECTS_PATH, `${slug}.mdx`);
+        const filePath = path.join(PROJECTS_PATH, `${slug}.mdx`);
 
         if (!fs.existsSync(filePath)) return null;
 

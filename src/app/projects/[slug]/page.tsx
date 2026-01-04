@@ -1,4 +1,4 @@
-import { getGetProjectDetailUseCase } from '@/di/project.module';
+import { getGetProjectDetailUseCase, getGetAllProjectsUseCase } from '@/di/project.module';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import rehypeHighlight from 'rehype-highlight';
@@ -7,6 +7,14 @@ import { Github, Globe, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { extractHeadings } from '@/lib/toc';
 import { TableOfContents } from '@/components/toc/TableOfContents';
+export async function generateStaticParams() {
+    const useCase = getGetAllProjectsUseCase();
+    const projects = await useCase.execute();
+
+    return projects.map((project) => ({
+        slug: project.slug,
+    }));
+}
 
 export default async function ProjectDetailPage({
     params

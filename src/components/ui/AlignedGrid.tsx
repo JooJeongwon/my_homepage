@@ -24,8 +24,7 @@ export function AlignedGrid({
 }: AlignedGridProps) {
     const gridRef = useRef<HTMLDivElement>(null);
 
-    // 하위 호환성 및 단일 선택자 지원 처리
-    const targetSelectors = alignSelector ? [alignSelector] : alignSelectors;
+    // const targetSelectors = alignSelector ? [alignSelector] : alignSelectors;
 
     const isSyncing = useRef(false);
 
@@ -35,6 +34,9 @@ export function AlignedGrid({
 
         const syncHeights = () => {
             if (isSyncing.current) return;
+
+            // 하위 호환성 및 단일 선택자 지원 처리
+            const targetSelectors = alignSelector ? [alignSelector] : alignSelectors;
 
             // Lock to prevent observer loop from self-modifications
             isSyncing.current = true;
@@ -118,7 +120,7 @@ export function AlignedGrid({
         return () => {
             observer.disconnect();
         };
-    }, [children, targetSelectors]);
+    }, [children, alignSelector, alignSelectors]);
 
     return (
         <div ref={gridRef} className="grid gap-6 sm:grid-cols-2">

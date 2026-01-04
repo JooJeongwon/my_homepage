@@ -2,7 +2,7 @@ import {
     SiReact, SiNextdotjs, SiTypescript, SiJavascript,
     SiPython, SiSpring, SiSpringboot,
     SiTailwindcss, SiNodedotjs, SiPostgresql, SiMysql,
-    SiDocker, SiAmazon, SiGit, SiGithub,
+    SiDocker, SiGit, SiGithub,
     SiHuggingface, SiOpenai, SiPytorch, SiTensorflow
 } from 'react-icons/si';
 import { FaJava, FaAws } from 'react-icons/fa6';
