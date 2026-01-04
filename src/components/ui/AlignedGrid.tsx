@@ -1,129 +1,41 @@
-'use client';
-
-import { useEffect, useRef } from 'react';
+import React from 'react';
 
 interface AlignedGridProps {
     children: React.ReactNode;
     /**
-     * 높이를 맞출 요소들의 선택자 배열입니다.
-     * 순서대로 높이를 맞춥니다. (예: 제목 먼저 맞추고 -> 설명 맞춤)
-     * 기본값: ['h2', 'p'] (카드 제목, 카드 설명)
+     * @deprecated 더 이상 사용하지 않음. CSS subgrid로 대체됨.
      */
     alignSelectors?: string[];
     /**
-     * @deprecated Use `alignSelectors` instead.
+     * @deprecated 더 이상 사용하지 않음.
      */
     alignSelector?: string;
 }
 
-// ★ 중요: export default가 아니라 export function 입니다.
-export function AlignedGrid({
-    children,
-    alignSelector,
-    alignSelectors = ['h2', 'p']
-}: AlignedGridProps) {
-    const gridRef = useRef<HTMLDivElement>(null);
-
-    // const targetSelectors = alignSelector ? [alignSelector] : alignSelectors;
-
-    const isSyncing = useRef(false);
-
-    useEffect(() => {
-        const grid = gridRef.current;
-        if (!grid) return;
-
-        const syncHeights = () => {
-            if (isSyncing.current) return;
-
-            // 하위 호환성 및 단일 선택자 지원 처리
-            const targetSelectors = alignSelector ? [alignSelector] : alignSelectors;
-
-            // Lock to prevent observer loop from self-modifications
-            isSyncing.current = true;
-
-            // 2. 브라우저 렌더링 시점에 맞춰 계산
-            requestAnimationFrame(() => {
-                const gridItems = Array.from(grid.children) as HTMLElement[];
-                if (gridItems.length === 0) {
-                    isSyncing.current = false;
-                    return;
-                }
-
-                // [최적화] 깜빡임 방지: 높이 초기화를 측정 직전에 수행 (이전 프레임에 보여지지 않음)
-                targetSelectors.forEach(selector => {
-                    const elements = Array.from(grid.querySelectorAll(selector)) as HTMLElement[];
-                    elements.forEach(el => el.style.removeProperty('min-height'));
-                });
-
-                const firstItemTop = gridItems[0].offsetTop;
-                const gridColumns = gridItems.filter(item => Math.abs(item.offsetTop - firstItemTop) < 10).length;
-
-                if (gridColumns <= 1) {
-                    isSyncing.current = false;
-                    return;
-                }
-
-                const rows: HTMLElement[][] = [];
-                for (let i = 0; i < gridItems.length; i += gridColumns) {
-                    rows.push(gridItems.slice(i, i + gridColumns));
-                }
-
-                rows.forEach(rowItems => {
-                    if (rowItems.length <= 1) return;
-
-                    targetSelectors.forEach(selector => {
-                        const targetsInRow = rowItems
-                            .map(item => item.querySelector(selector) as HTMLElement)
-                            .filter(Boolean);
-
-                        if (targetsInRow.length === 0) return;
-
-                        const maxHeight = Math.max(...targetsInRow.map(t => t.offsetHeight));
-
-                        targetsInRow.forEach(t => {
-                            t.style.minHeight = `${maxHeight}px`;
-                        });
-                    });
-                });
-
-                // Unlock after a short delay to allow layout to settle
-                setTimeout(() => {
-                    isSyncing.current = false;
-                }, 100);
-            });
-        };
-
-        const observer = new ResizeObserver(() => {
-            if (!isSyncing.current) {
-                requestAnimationFrame(syncHeights);
-            }
-        });
-
-        // Observe grid and ALL children for any layout shifts
-        observer.observe(grid);
-        Array.from(grid.children).forEach(child => observer.observe(child));
-
-        // Initial sync
-        syncHeights();
-
-        // Resilience checks
-        [50, 150, 300, 500, 1000].forEach(delay => setTimeout(() => {
-            if (!isSyncing.current) syncHeights();
-        }, delay));
-
-        if (document.fonts) {
-            document.fonts.ready.then(() => {
-                if (!isSyncing.current) syncHeights();
-            });
-        }
-
-        return () => {
-            observer.disconnect();
-        };
-    }, [children, alignSelector, alignSelectors]);
+/**
+ * AlignedGrid - CSS Subgrid 기반 카드 그리드
+ * 
+ * 각 카드는 4개의 행(제목, 설명, 태그, 푸터)을 차지하며,
+ * subgrid를 통해 같은 행의 카드들이 동일한 행 높이를 공유합니다.
+ * JavaScript 없이 SSR 시점에 높이가 동기화되므로 레이아웃 시프트가 없습니다.
+ * 
+ * 행 간격: 카드 내부 행 간격(gap-y-4)과 카드 간 간격(4행마다 추가 마진)을 구분
+ */
+export function AlignedGrid({ children }: AlignedGridProps) {
+    // Children 수에 따라 행 수 계산 (2열 그리드, 각 카드당 4행)
+    const childCount = React.Children.count(children);
+    const rowCount = Math.ceil(childCount / 2) * 4;
 
     return (
-        <div ref={gridRef} className="grid gap-6 sm:grid-cols-2">
+        <div
+            className="grid gap-x-6 sm:grid-cols-2"
+            style={{
+                // 카드당 4개 행: title(auto), desc(auto), tags(auto), footer(auto)
+                // gap-y는 카드 내부에서 처리 (subgrid gap 상속 없음)
+                gridTemplateRows: `repeat(${rowCount}, auto)`,
+                rowGap: 0,
+            }}
+        >
             {children}
         </div>
     );

@@ -8,38 +8,48 @@ interface Props {
 
 export default function PostCard({ post }: Props) {
     return (
-        <Link href={`/blog/${post.slug}`} className="block group h-full">
-            <article className="h-full flex flex-col border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 
-                bg-white dark:bg-neutral-900/50
-                hover:shadow-xl dark:hover:bg-neutral-900
-                hover:-translate-y-1 transition duration-300 ease-out">
-
-                {/* 1. 제목 영역 */}
-                <div className="js-align-title flex justify-between items-start mb-4">
+        // Link도 subgrid를 상속받아야 함 - row-span-4 + grid-rows-subgrid 적용
+        <Link
+            href={`/blog/${post.slug}`}
+            className="block group grid row-span-4 mb-6"
+            style={{ gridTemplateRows: 'subgrid' }}
+        >
+            <article
+                className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 
+                    bg-white dark:bg-neutral-900/50
+                    hover:shadow-xl dark:hover:bg-neutral-900
+                    hover:-translate-y-1 transition duration-300 ease-out
+                    grid row-span-4 col-span-1"
+                style={{ gridTemplateRows: 'subgrid' }}
+            >
+                {/* Row 1: 제목 - 원래 mb-4였으므로 pb-4 추가 */}
+                <div className="flex justify-between items-start pb-4">
                     <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-blue-600 dark:group-hover:text-blue-550 transition-colors line-clamp-2">
                         {post.title}
                     </h2>
                 </div>
 
-                {/* 2. 설명 영역 (AlignedGrid가 높이를 맞춰줍니다) */}
-                <p className="js-align-desc text-neutral-700 dark:text-neutral-300 line-clamp-3 text-sm leading-relaxed mb-6 break-words">
-                    {post.description}
-                </p>
+                {/* Row 2: 설명 - div로 감싸서 p가 subgrid 직접 자식이 아니게 함 (display: -webkit-box 작동 가능) */}
+                <div className="pb-6">
+                    <p className="text-neutral-700 dark:text-neutral-300 text-sm leading-relaxed line-clamp-3 break-words">
+                        {post.description}
+                    </p>
+                </div>
 
-                {/* 3. 태그 영역 (위로 올림: ProjectCard와 위치를 맞추기 위해 필수) */}
-                <div className="flex flex-wrap gap-2 mb-6">
+                {/* Row 3: 태그 - 원래 mb-6였으므로 pb-6 추가 */}
+                <div className="flex flex-wrap gap-2 content-start pb-6">
                     {post.tags.map(tag => (
-                        <span key={tag} className="px-2.5 py-0.5 rounded-md text-xs font-medium
-                        bg-neutral-100 text-neutral-700 border border-neutral-200
-                        dark:bg-neutral-800 dark:text-neutral-200 dark:border-neutral-700
-                        group-hover:border-neutral-300 dark:group-hover:border-neutral-600 transition-colors">
+                        <span key={tag} className="px-2.5 py-0.5 rounded-md text-xs font-medium h-fit
+                            bg-neutral-100 text-neutral-700 border border-neutral-200
+                            dark:bg-neutral-800 dark:text-neutral-200 dark:border-neutral-700
+                            group-hover:border-neutral-300 dark:group-hover:border-neutral-600 transition-colors">
                             {tag}
                         </span>
                     ))}
                 </div>
 
-                {/* 4. 하단 정보 영역 (읽는 시간, 날짜) */}
-                <div className="flex items-center justify-between mt-auto">
+                {/* Row 4: 하단 정보 영역 (읽는 시간, 날짜) - self-end로 바닥 정렬 */}
+                <div className="flex items-center justify-between self-end">
                     <span className="flex items-center gap-1 text-xs text-neutral-600 dark:text-neutral-400 font-medium">
                         <Clock className="w-3.5 h-3.5" />
                         {post.readingTime} min read
