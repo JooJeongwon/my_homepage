@@ -47,7 +47,7 @@ export default function Header() {
                             handleScrollToTop();
                         }
                     }}
-                    className="group text-xl font-bold tracking-tight hover:text-blue-600 dark:hover:text-blue-550 transition-colors"
+                    className="group pl-1 text-xl font-bold tracking-tight hover:text-blue-600 dark:hover:text-blue-550 transition-colors"
                 >
                     jwjoo<span className="text-blue-600 dark:text-blue-550 transition-colors group-hover:text-neutral-900 dark:group-hover:text-white">.</span>
                 </Link>
