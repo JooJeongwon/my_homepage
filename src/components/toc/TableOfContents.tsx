@@ -16,6 +16,15 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
     const navRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
+        // 초기 로드시 터치 디바이스 감지 (Race Condition 방지)
+        const checkTouch = () => {
+            if (window.matchMedia("(pointer: coarse)").matches) {
+                setIsTouch(true);
+                isTouchRef.current = true;
+            }
+        };
+        checkTouch();
+
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
