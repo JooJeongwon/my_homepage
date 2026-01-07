@@ -12,6 +12,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
     const [activeId, setActiveId] = useState<string>("");
     const [expanded, setExpanded] = useState(false);
     const [isTouch, setIsTouch] = useState(false);
+    const isTouchRef = useRef(false);
     const navRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
@@ -54,8 +55,8 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
         e.preventDefault();
 
-        // 터치 디바이스일 때: 펼쳐져 있지 않으면 펼치기만 함
-        if (isTouch && !expanded) {
+        // 터치 디바이스일 때: 펼쳐져 있지 않으면 펼치기만 함 (Ref로 즉시 확인)
+        if (isTouchRef.current && !expanded) {
             setExpanded(true);
             return;
         }
@@ -69,7 +70,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
             setActiveId(id);
 
             // 터치 디바이스일 때: 이동 후 자동으로 닫기
-            if (isTouch) {
+            if (isTouchRef.current) {
                 setExpanded(false);
             }
         }
@@ -85,7 +86,10 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
             ref={navRef}
             className="fixed right-8 top-40 z-50 hidden sm:flex flex-col items-end group"
             aria-label="Table of contents"
-            onTouchStart={() => setIsTouch(true)}
+            onTouchStart={() => {
+                setIsTouch(true);
+                isTouchRef.current = true;
+            }}
         >
             <div className="relative flex flex-col items-end">
                 {/* 배경 레이어 */}
@@ -137,7 +141,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                                         !isTouch && "h-3 group-hover:h-auto group-hover:py-1",
                                         expanded && "justify-start",
                                         expanded && "h-auto py-1",
-                                        !expanded && !isTouch && "h-3" // 기본 상태 높이 명시
+                                        !expanded && "h-3" // 기본 상태 높이 명시 (터치시에도 적용되도록 수정)
                                     )}
                                 >
                                     {/* 대시 View */}
