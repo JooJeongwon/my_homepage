@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Heading } from "@/lib/toc";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +10,9 @@ interface TableOfContentsProps {
 
 export function TableOfContents({ headings }: TableOfContentsProps) {
     const [activeId, setActiveId] = useState<string>("");
+    const [expanded, setExpanded] = useState(false);
+    const [isTouch, setIsTouch] = useState(false);
+    const navRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -31,8 +34,32 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
         return () => observer.disconnect();
     }, [headings]);
 
+    // 외부 클릭 감지하여 닫기 (터치 디바이스용)
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (navRef.current && !navRef.current.contains(event.target as Node)) {
+                if (expanded) {
+                    setExpanded(false);
+                }
+            }
+        }
+
+        // 터치 환경에서도 mousedown/touchstart 등 이벤트는 발생하므로 mousedown으로 통합 처리
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [expanded]);
+
     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
         e.preventDefault();
+
+        // 터치 디바이스일 때: 펼쳐져 있지 않으면 펼치기만 함
+        if (isTouch && !expanded) {
+            setExpanded(true);
+            return;
+        }
+
         const element = document.getElementById(id);
         if (element) {
             const yOffset = -100;
@@ -40,6 +67,11 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
             window.scrollTo({ behavior: "smooth", top: y });
             history.pushState(null, "", `#${id}`);
             setActiveId(id);
+
+            // 터치 디바이스일 때: 이동 후 자동으로 닫기
+            if (isTouch) {
+                setExpanded(false);
+            }
         }
     };
 
@@ -50,15 +82,19 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
 
     return (
         <nav
+            ref={navRef}
             className="fixed right-8 top-40 z-50 hidden sm:flex flex-col items-end group"
             aria-label="Table of contents"
+            onTouchStart={() => setIsTouch(true)}
         >
             <div className="relative flex flex-col items-end">
                 {/* 배경 레이어 */}
                 <div
                     className={cn(
                         "absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-300 ease-in-out",
-                        "opacity-0 group-hover:opacity-100",
+                        "opacity-0",
+                        !isTouch && "group-hover:opacity-100",
+                        expanded && "opacity-100",
                         "bg-neutral-50 dark:bg-[#121212]",
                         "border border-neutral-200 dark:border-neutral-800",
                         "shadow-xl"
@@ -70,9 +106,12 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                     className={cn(
                         "relative z-10 flex flex-col transition-all duration-300 ease-in-out",
                         "items-end gap-0.5 w-max",
-                        "group-hover:items-stretch group-hover:gap-1 group-hover:w-56",
-                        "group-hover:p-4",
-                        "group-hover:max-h-[60vh] group-hover:overflow-y-auto"
+                        !isTouch && "group-hover:items-stretch group-hover:gap-1 group-hover:w-56",
+                        !isTouch && "group-hover:p-4",
+                        !isTouch && "group-hover:max-h-[60vh] group-hover:overflow-y-auto group-hover:overscroll-y-contain",
+                        expanded && "items-stretch gap-1 w-56",
+                        expanded && "p-4",
+                        expanded && "max-h-[60vh] overflow-y-auto overscroll-y-contain"
                     )}
                 >
                     {headings.map((heading) => {
@@ -92,9 +131,13 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                                     href={`#${heading.id}`}
                                     onClick={(e) => handleClick(e, heading.id)}
                                     className={cn(
-                                        "flex items-center w-full justify-end group-hover:justify-start overflow-hidden",
+                                        "flex items-center w-full justify-end overflow-hidden",
                                         "transition-[height] duration-300",
-                                        "h-3 group-hover:h-auto group-hover:py-1"
+                                        !isTouch && "group-hover:justify-start",
+                                        !isTouch && "h-3 group-hover:h-auto group-hover:py-1",
+                                        expanded && "justify-start",
+                                        expanded && "h-auto py-1",
+                                        !expanded && !isTouch && "h-3" // 기본 상태 높이 명시
                                     )}
                                 >
                                     {/* 대시 View */}
@@ -103,7 +146,8 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                                             "block rounded-full shrink-0 transition-all duration-300",
                                             "h-0.5",
                                             dashWidth,
-                                            "group-hover:w-0 group-hover:opacity-0",
+                                            !isTouch && "group-hover:w-0 group-hover:opacity-0",
+                                            expanded && "w-0 opacity-0",
                                             isActive
                                                 ? "bg-neutral-800 dark:bg-neutral-200"
                                                 : "bg-neutral-300 dark:bg-neutral-600"
@@ -115,14 +159,13 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                                         className={cn(
                                             "block text-left text-sm transition-all duration-300",
                                             "w-0 opacity-0 p-0",
-                                            "group-hover:w-full group-hover:opacity-100"
+                                            !isTouch && "group-hover:w-full group-hover:opacity-100",
+                                            expanded && "w-full opacity-100"
                                         )}
                                     >
                                         <span
                                             className={cn(
                                                 "block w-44 whitespace-normal line-clamp-2 break-words",
-                                                // [수정] font-bold 제거 및 font-medium으로 통일
-                                                // 이제 활성/비활성 모두 글자 두께가 같으므로 줄바꿈이 변하지 않습니다.
                                                 "font-medium",
                                                 indentClass,
                                                 isActive

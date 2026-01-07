@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Github } from 'lucide-react';
+import { Github, Menu, X } from 'lucide-react';
+import React from 'react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 
@@ -31,8 +32,12 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 
 export default function Header() {
     const pathname = usePathname();
+    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
-
+    // 페이지 이동 시 메뉴 닫기
+    React.useEffect(() => {
+        setIsMenuOpen(false);
+    }, [pathname]);
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm">
@@ -52,8 +57,8 @@ export default function Header() {
                     jwjoo<span className="text-blue-600 dark:text-blue-550 transition-colors group-hover:text-neutral-900 dark:group-hover:text-white">.</span>
                 </Link>
 
-                {/* 네비게이션 메뉴 */}
-                <nav className="flex items-center gap-6 text-sm font-medium">
+                {/* 데스크탑 네비게이션 메뉴 */}
+                <nav className="hidden sm:flex items-center gap-6 text-sm font-medium">
                     <NavLink href="/">Home</NavLink>
                     <NavLink href="/blog">Blog</NavLink>
                     <NavLink href="/projects">Projects</NavLink>
@@ -74,7 +79,44 @@ export default function Header() {
                         <ThemeToggle />
                     </div>
                 </nav>
+
+                {/* 모바일 메뉴 버튼 */}
+                <button
+                    className="sm:hidden p-2 -mr-2 text-neutral-800 dark:text-neutral-200"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    aria-label="Toggle menu"
+                >
+                    {isMenuOpen ? (
+                        <X className="w-6 h-6" />
+                    ) : (
+                        <Menu className="w-6 h-6" />
+                    )}
+                </button>
             </div>
+
+            {/* 모바일 메뉴 드롭다운 */}
+            {isMenuOpen && (
+                <div className="sm:hidden border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-6 py-4 animate-in slide-in-from-top-2 fade-in-20">
+                    <nav className="flex flex-col space-y-4">
+                        <NavLink href="/">Home</NavLink>
+                        <NavLink href="/blog">Blog</NavLink>
+                        <NavLink href="/projects">Projects</NavLink>
+
+                        <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                            <a
+                                href="https://github.com/JooJeongwon"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center gap-2 text-sm font-medium text-neutral-800 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-blue-550"
+                            >
+                                <Github className="w-5 h-5" />
+                                <span>GitHub</span>
+                            </a>
+                            <ThemeToggle />
+                        </div>
+                    </nav>
+                </div>
+            )}
         </header>
     );
 }
