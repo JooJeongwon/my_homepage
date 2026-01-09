@@ -13,6 +13,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
     const [expanded, setExpanded] = useState(false);
     const [isTouch, setIsTouch] = useState(false);
     const isTouchRef = useRef(false);
+    const lastTouchTimeRef = useRef(0);
     const navRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
@@ -65,6 +66,9 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
     // 태블릿 등에서 마우스를 움직이면 즉시 데스크탑 모드(Hover 가능)로 전환
     useEffect(() => {
         const handleMouseMove = () => {
+            // 마지막 터치 후 500ms 이내의 mousemove는 터치에 의한 에뮬레이션일 가능성이 높으므로 무시
+            if (Date.now() - lastTouchTimeRef.current < 500) return;
+
             if (isTouchRef.current) {
                 isTouchRef.current = false;
                 setIsTouch(false);
@@ -114,6 +118,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
             onTouchStart={() => {
                 setIsTouch(true);
                 isTouchRef.current = true;
+                lastTouchTimeRef.current = Date.now();
             }}
         >
             <div className="relative flex flex-col items-end">
