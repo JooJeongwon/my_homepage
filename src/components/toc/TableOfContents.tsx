@@ -13,7 +13,6 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
     const [expanded, setExpanded] = useState(false);
     const [isTouch, setIsTouch] = useState(false);
     const isTouchRef = useRef(false);
-    const lastTouchTimeRef = useRef(0);
     const navRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
@@ -62,22 +61,35 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
         };
     }, [expanded]);
 
-    // 마우스 사용 감지 (하이브리드 지원)
-    // 태블릿 등에서 마우스를 움직이면 즉시 데스크탑 모드(Hover 가능)로 전환
+    // 입력 장치 감지 (Pointer Events API 사용 - 하이브리드 지원 및 에뮬레이션 방지)
     useEffect(() => {
-        const handleMouseMove = () => {
-            // 마지막 터치 후 500ms 이내의 mousemove는 터치에 의한 에뮬레이션일 가능성이 높으므로 무시
-            if (Date.now() - lastTouchTimeRef.current < 500) return;
+        // Pointer Events를 사용하면 pointerType('mouse' | 'touch' | 'pen')을 명확히 알 수 있음
+        // 이를 통해 에뮬레이션된 마우스 이벤트나 Race Condition을 근본적으로 해결 가능
 
-            if (isTouchRef.current) {
-                isTouchRef.current = false;
-                setIsTouch(false);
+        const handlePointer = (e: PointerEvent) => {
+            // 마우스 입력인 경우 -> 데스크탑 모드 (Hover 가능)
+            if (e.pointerType === "mouse") {
+                if (isTouchRef.current) {
+                    isTouchRef.current = false;
+                    setIsTouch(false);
+                }
+            }
+            // 터치 입력인 경우 -> 터치 모드 (Click to Open)
+            else if (e.pointerType === "touch" || e.pointerType === "pen") {
+                if (!isTouchRef.current) {
+                    isTouchRef.current = true;
+                    setIsTouch(true);
+                }
             }
         };
 
-        document.addEventListener("mousemove", handleMouseMove);
+        // 전역에서 입력 감지
+        window.addEventListener("pointerdown", handlePointer);
+        window.addEventListener("pointermove", handlePointer);
+
         return () => {
-            document.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("pointerdown", handlePointer);
+            window.removeEventListener("pointermove", handlePointer);
         };
     }, []);
 
@@ -115,11 +127,6 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
             ref={navRef}
             className="fixed right-8 top-40 z-50 hidden sm:flex flex-col items-end group"
             aria-label="Table of contents"
-            onTouchStart={() => {
-                setIsTouch(true);
-                isTouchRef.current = true;
-                lastTouchTimeRef.current = Date.now();
-            }}
         >
             <div className="relative flex flex-col items-end">
                 {/* 배경 레이어 */}
