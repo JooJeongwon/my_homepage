@@ -61,6 +61,22 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
         };
     }, [expanded]);
 
+    // 마우스 사용 감지 (하이브리드 지원)
+    // 태블릿 등에서 마우스를 움직이면 즉시 데스크탑 모드(Hover 가능)로 전환
+    useEffect(() => {
+        const handleMouseMove = () => {
+            if (isTouchRef.current) {
+                isTouchRef.current = false;
+                setIsTouch(false);
+            }
+        };
+
+        document.addEventListener("mousemove", handleMouseMove);
+        return () => {
+            document.removeEventListener("mousemove", handleMouseMove);
+        };
+    }, []);
+
     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
         e.preventDefault();
 
