@@ -125,104 +125,173 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
     return (
         <nav
             ref={navRef}
-            className="fixed right-8 top-40 z-50 hidden sm:flex flex-col items-end group"
+            className={cn(
+                "fixed right-8 top-40 z-50 flex flex-col items-end",
+                !isTouch && "group" // Desktop: Enable global hover group
+            )}
             aria-label="Table of contents"
         >
-            <div className="relative flex flex-col items-end">
-                {/* 배경 레이어 */}
-                <div
-                    className={cn(
-                        "absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-300 ease-in-out",
-                        "opacity-0",
-                        !isTouch && "group-hover:opacity-100",
-                        expanded && "opacity-100",
-                        "bg-neutral-50 dark:bg-[#121212]",
-                        "border border-neutral-200 dark:border-neutral-800",
-                        "shadow-xl"
-                    )}
-                />
+            {/* 
+              =============================================================================
+              [DESKTOP RENDERING] - Dual Layer: Dash Trigger + Pop-over Card
+              =============================================================================
+            */}
+            {!isTouch && (
+                <div className="relative">
+                    {/* Layer 1: Dash Trigger (Always Visible, defines hover area shape) */}
+                    <ul className="flex flex-col items-end gap-0.5 relative z-10 p-2 -m-2"> {/* Negative margin to expand hover area slightly? No, stick to tight. */}
+                        {headings.map((heading) => {
+                            const isActive = activeId === heading.id;
+                            const relLevel = heading.level - minLevel;
+                            let dashWidth = "w-4";
+                            if (relLevel === 1) dashWidth = "w-3";
+                            if (relLevel >= 2) dashWidth = "w-2";
 
-                {/* 컨텐츠 레이어 */}
-                <ul
-                    className={cn(
-                        "relative z-10 flex flex-col transition-all duration-300 ease-in-out",
-                        "items-end gap-0.5 w-max",
-                        !isTouch && "group-hover:items-stretch group-hover:gap-1 group-hover:w-56",
-                        !isTouch && "group-hover:p-4",
-                        !isTouch && "group-hover:max-h-[60vh] group-hover:overflow-y-auto group-hover:overscroll-y-contain",
-                        expanded && "items-stretch gap-1 w-56",
-                        expanded && "p-4",
-                        expanded && "max-h-[60vh] overflow-y-auto overscroll-y-contain"
-                    )}
-                >
-                    {headings.map((heading) => {
-                        const isActive = activeId === heading.id;
-                        const relLevel = heading.level - minLevel;
-
-                        const indentClass =
-                            relLevel === 0 ? "pl-0" : relLevel === 1 ? "pl-4" : "pl-8";
-
-                        let dashWidth = "w-4";
-                        if (relLevel === 1) dashWidth = "w-3";
-                        if (relLevel >= 2) dashWidth = "w-2";
-
-                        return (
-                            <li key={heading.id} className="w-full">
-                                <a
-                                    href={`#${heading.id}`}
-                                    onClick={(e) => handleClick(e, heading.id)}
-                                    className={cn(
-                                        "flex items-center w-full justify-end overflow-hidden",
-                                        "transition-[height] duration-300",
-                                        !isTouch && "group-hover:justify-start",
-                                        !isTouch && "h-3 group-hover:h-auto group-hover:py-1",
-                                        expanded && "justify-start",
-                                        expanded && "h-auto py-1",
-                                        !expanded && "h-3" // 기본 상태 높이 명시 (터치시에도 적용되도록 수정)
-                                    )}
-                                >
-                                    {/* 대시 View */}
+                            return (
+                                <li key={`dash-${heading.id}`} className="h-3 w-6 flex justify-end items-center">
                                     <span
                                         className={cn(
-                                            "block rounded-full shrink-0 transition-all duration-300",
+                                            "block rounded-full transition-opacity duration-300",
                                             "h-0.5",
                                             dashWidth,
-                                            !isTouch && "group-hover:w-0 group-hover:opacity-0",
-                                            expanded && "w-0 opacity-0",
+                                            "group-hover:opacity-0", // Hide dashes on hover (replaced by card)
                                             isActive
                                                 ? "bg-neutral-800 dark:bg-neutral-200"
                                                 : "bg-neutral-300 dark:bg-neutral-600"
                                         )}
                                     />
+                                </li>
+                            );
+                        })}
+                    </ul>
 
-                                    {/* 텍스트 View */}
-                                    <span
-                                        className={cn(
-                                            "block text-left text-sm transition-all duration-300",
-                                            "w-0 opacity-0 p-0",
-                                            !isTouch && "group-hover:w-full group-hover:opacity-100",
-                                            expanded && "w-full opacity-100"
-                                        )}
-                                    >
-                                        <span
+                    {/* Layer 2: Pop-over Card (The "Whole Box") */}
+                    <div
+                        className={cn(
+                            "absolute right-0 top-0 w-56 p-4 rounded-lg",
+                            "bg-neutral-50 dark:bg-[#121212]",
+                            "border border-neutral-200 dark:border-neutral-800 shadow-xl",
+                            "flex flex-col gap-1",
+                            "origin-top-right transition-all duration-300 ease-in-out",
+                            "opacity-0 scale-95 pointer-events-none", // Hidden default
+                            "group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto", // Visible hover
+                            "max-h-[60vh] overflow-y-auto overscroll-y-contain", // Scroll behavior (Match MDX)
+                            "z-20"
+                        )}
+                    >
+                        <ul className="flex flex-col gap-1">
+                            {headings.map((heading) => {
+                                const isActive = activeId === heading.id;
+                                const relLevel = heading.level - minLevel;
+                                const indentClass = relLevel === 0 ? "pl-0" : relLevel === 1 ? "pl-4" : "pl-8";
+
+                                return (
+                                    <li key={`text-${heading.id}`} className="flex items-center">
+                                        <a
+                                            href={`#${heading.id}`}
+                                            onClick={(e) => handleClick(e, heading.id)}
                                             className={cn(
-                                                "block w-44 whitespace-normal line-clamp-2 break-words",
-                                                "font-medium",
+                                                "block text-sm font-medium text-left transition-colors duration-200",
+                                                "w-44 py-1", // Enforce w-44 and py-1 (Match MDX)
                                                 indentClass,
                                                 isActive
-                                                    ? "text-neutral-900 dark:text-neutral-100" // 색상만 진하게
-                                                    : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100" // 색상만 흐리게 -> 호버시 진하게
+                                                    ? "text-neutral-900 dark:text-neutral-100"
+                                                    : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
                                             )}
                                         >
-                                            {heading.text}
+                                            <span className="w-full whitespace-normal break-words line-clamp-2">
+                                                {heading.text}
+                                            </span>
+                                        </a>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+                </div>
+            )}
+
+            {/* 
+              =============================================================================
+              [MOBILE / TOUCH RENDERING] - Unified Single Layer (Existing Logic)
+              =============================================================================
+            */}
+            {isTouch && (
+                <div className="relative flex flex-col items-end">
+                    {/* Background Layer */}
+                    <div
+                        className={cn(
+                            "absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-300 ease-in-out", // Only opacity transition for mobile bg
+                            "opacity-0",
+                            expanded && "opacity-100",
+                            "bg-neutral-50 dark:bg-[#121212]",
+                            "border border-neutral-200 dark:border-neutral-800",
+                            "shadow-xl"
+                        )}
+                    />
+
+                    <ul
+                        className={cn(
+                            "relative z-10 flex flex-col transition-all duration-300 ease-in-out",
+                            "items-end gap-0.5 w-max",
+                            expanded && "items-stretch gap-1 w-56 p-4",
+                            expanded && "max-h-[60vh] overflow-y-auto overscroll-y-contain"
+                        )}
+                    >
+                        {headings.map((heading) => {
+                            const isActive = activeId === heading.id;
+                            const relLevel = heading.level - minLevel;
+                            const indentClass = relLevel === 0 ? "pl-0" : relLevel === 1 ? "pl-4" : "pl-8"; // Mobile indents
+                            let dashWidth = "w-4";
+                            if (relLevel === 1) dashWidth = "w-3";
+                            if (relLevel >= 2) dashWidth = "w-2";
+
+                            return (
+                                <li key={heading.id} className="w-full">
+                                    <a
+                                        href={`#${heading.id}`}
+                                        onClick={(e) => handleClick(e, heading.id)}
+                                        className={cn(
+                                            "flex items-center w-full justify-end overflow-hidden transition-[height] duration-300",
+                                            expanded ? "justify-start h-auto py-1" : "h-6" // Mobile: thicker touch target when collapsed
+                                        )}
+                                    >
+                                        {/* Dash */}
+                                        <span
+                                            className={cn(
+                                                "block rounded-full shrink-0 transition-all duration-300",
+                                                "h-0.5",
+                                                dashWidth,
+                                                expanded && "w-0 opacity-0",
+                                                isActive ? "bg-neutral-800 dark:bg-neutral-200" : "bg-neutral-300 dark:bg-neutral-600"
+                                            )}
+                                        />
+
+                                        {/* Text */}
+                                        <span
+                                            className={cn(
+                                                "block text-left text-sm transition-all duration-300",
+                                                "w-0 opacity-0",
+                                                expanded && "w-full opacity-100"
+                                            )}
+                                        >
+                                            <span
+                                                className={cn(
+                                                    "block w-full whitespace-normal line-clamp-2 break-words font-medium",
+                                                    indentClass,
+                                                    isActive ? "text-neutral-900 dark:text-neutral-100" : "text-neutral-500 dark:text-neutral-400"
+                                                )}
+                                            >
+                                                {heading.text}
+                                            </span>
                                         </span>
-                                    </span>
-                                </a>
-                            </li>
-                        );
-                    })}
-                </ul>
-            </div>
+                                    </a>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
+            )}
         </nav>
     );
 }
