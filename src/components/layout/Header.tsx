@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Github, Menu, X } from 'lucide-react';
+import { Github, Menu, X, Mail } from 'lucide-react';
 import React from 'react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
@@ -75,6 +75,14 @@ export default function Header() {
                             <Github className="w-5 h-5" />
                         </a>
 
+                        {/* 메일 아이콘 */}
+                        <a
+                            href="mailto:jwjoo0512@gmail.com"
+                            className="p-2 rounded-full text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-blue-600 dark:hover:text-blue-550 transition-colors"
+                        >
+                            <Mail className="w-5 h-5" />
+                        </a>
+
                         {/* 다크모드 토글 버튼 */}
                         <ThemeToggle />
                     </div>
@@ -103,15 +111,24 @@ export default function Header() {
                         <NavLink href="/projects">Projects</NavLink>
 
                         <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-neutral-800">
-                            <a
-                                href="https://github.com/JooJeongwon"
-                                target="_blank"
-                                rel="noreferrer"
-                                className="flex items-center gap-2 text-sm font-medium text-neutral-800 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-blue-550"
-                            >
-                                <Github className="w-5 h-5" />
-                                <span>GitHub</span>
-                            </a>
+                            <div className="flex items-center gap-4">
+                                <a
+                                    href="https://github.com/JooJeongwon"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="flex items-center gap-2 text-sm font-medium text-neutral-800 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-blue-550"
+                                >
+                                    <Github className="w-5 h-5" />
+                                    <span>GitHub</span>
+                                </a>
+                                <a
+                                    href="mailto:jwjoo0512@gmail.com"
+                                    className="flex items-center gap-2 text-sm font-medium text-neutral-800 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-blue-550"
+                                >
+                                    <Mail className="w-5 h-5" />
+                                    <span>Mail</span>
+                                </a>
+                            </div>
                             <ThemeToggle />
                         </div>
                     </nav>
