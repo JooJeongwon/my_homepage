@@ -216,80 +216,90 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
               [MOBILE / TOUCH RENDERING] - Unified Single Layer (Existing Logic)
               =============================================================================
             */}
+            {/* 
+              =============================================================================
+              [MOBILE / TOUCH RENDERING] - Dual Layer (Same as Desktop, but Triggered by Click/Expanded)
+              =============================================================================
+            */}
             {isTouch && (
-                <div className="relative flex flex-col items-end">
-                    {/* Background Layer */}
-                    <div
-                        className={cn(
-                            "absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-300 ease-in-out", // Only opacity transition for mobile bg
-                            "opacity-0",
-                            expanded && "opacity-100",
-                            "bg-neutral-50 dark:bg-[#121212]",
-                            "border border-neutral-200 dark:border-neutral-800",
-                            "shadow-xl"
-                        )}
-                    />
-
-                    <ul
-                        className={cn(
-                            "relative z-10 flex flex-col transition-all duration-300 ease-in-out",
-                            "items-end gap-0.5 w-max",
-                            expanded && "items-stretch gap-1 w-56 p-4",
-                            expanded && "max-h-[60vh] overflow-y-auto overscroll-y-contain"
-                        )}
-                    >
+                <div className="relative">
+                    {/* Layer 1: Dash Trigger (Always Visible, defines touch area shape) */}
+                    <ul className="flex flex-col items-end gap-0.5 relative z-10 p-2 -m-2">
                         {headings.map((heading) => {
                             const isActive = activeId === heading.id;
                             const relLevel = heading.level - minLevel;
-                            const indentClass = relLevel === 0 ? "pl-0" : relLevel === 1 ? "pl-4" : "pl-8"; // Mobile indents
                             let dashWidth = "w-4";
                             if (relLevel === 1) dashWidth = "w-3";
                             if (relLevel >= 2) dashWidth = "w-2";
 
                             return (
-                                <li key={heading.id} className="w-full">
+                                <li key={`dash-${heading.id}`} className="h-3 w-6 flex justify-end items-center">
+                                    {/* Mobile: Dash needs to be clickable to expand */}
                                     <a
                                         href={`#${heading.id}`}
                                         onClick={(e) => handleClick(e, heading.id)}
-                                        className={cn(
-                                            "flex items-center w-full justify-end overflow-hidden transition-[height] duration-300",
-                                            expanded ? "justify-start h-auto py-1" : "h-6" // Mobile: thicker touch target when collapsed
-                                        )}
+                                        className="flex items-center justify-end w-full h-full"
                                     >
-                                        {/* Dash */}
                                         <span
                                             className={cn(
-                                                "block rounded-full shrink-0 transition-all duration-300",
+                                                "block rounded-full transition-opacity duration-300",
                                                 "h-0.5",
                                                 dashWidth,
-                                                expanded && "w-0 opacity-0",
-                                                isActive ? "bg-neutral-800 dark:bg-neutral-200" : "bg-neutral-300 dark:bg-neutral-600"
+                                                expanded && "opacity-0", // Hide dashes when expanded (replaced by card)
+                                                isActive
+                                                    ? "bg-neutral-800 dark:bg-neutral-200"
+                                                    : "bg-neutral-300 dark:bg-neutral-600"
                                             )}
                                         />
-
-                                        {/* Text */}
-                                        <span
-                                            className={cn(
-                                                "block text-left text-sm transition-all duration-300",
-                                                "w-0 opacity-0",
-                                                expanded && "w-full opacity-100"
-                                            )}
-                                        >
-                                            <span
-                                                className={cn(
-                                                    "block w-full whitespace-normal line-clamp-2 break-words font-medium",
-                                                    indentClass,
-                                                    isActive ? "text-neutral-900 dark:text-neutral-100" : "text-neutral-500 dark:text-neutral-400"
-                                                )}
-                                            >
-                                                {heading.text}
-                                            </span>
-                                        </span>
                                     </a>
                                 </li>
                             );
                         })}
                     </ul>
+
+                    {/* Layer 2: Pop-over Card (The "Whole Box") */}
+                    <div
+                        className={cn(
+                            "absolute right-0 top-0 w-56 p-4 rounded-lg",
+                            "bg-neutral-50 dark:bg-[#121212]",
+                            "border border-neutral-200 dark:border-neutral-800 shadow-xl",
+                            "flex flex-col gap-1",
+                            "origin-top-right transition-all duration-300 ease-in-out",
+                            "opacity-0 scale-95 pointer-events-none", // Hidden default
+                            expanded && "opacity-100 scale-100 pointer-events-auto", // Visible when expanded
+                            "max-h-[60vh] overflow-y-auto overscroll-y-contain",
+                            "z-20"
+                        )}
+                    >
+                        <ul className="flex flex-col gap-1">
+                            {headings.map((heading) => {
+                                const isActive = activeId === heading.id;
+                                const relLevel = heading.level - minLevel;
+                                const indentClass = relLevel === 0 ? "pl-0" : relLevel === 1 ? "pl-4" : "pl-8";
+
+                                return (
+                                    <li key={`text-${heading.id}`} className="flex items-center">
+                                        <a
+                                            href={`#${heading.id}`}
+                                            onClick={(e) => handleClick(e, heading.id)}
+                                            className={cn(
+                                                "block text-sm font-medium text-left transition-colors duration-200",
+                                                "w-44 py-1",
+                                                indentClass,
+                                                isActive
+                                                    ? "text-neutral-900 dark:text-neutral-100"
+                                                    : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
+                                            )}
+                                        >
+                                            <span className="w-full whitespace-normal break-words line-clamp-2">
+                                                {heading.text}
+                                            </span>
+                                        </a>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
                 </div>
             )}
         </nav>
