@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { extractHeadings } from '@/lib/toc';
 import { TableOfContents } from '@/components/toc/TableOfContents';
+import { CodeBlock } from '@/components/ui/CodeBlock';
 export async function generateStaticParams() {
     const useCase = getGetAllPostsUseCase();
     const posts = await useCase.execute();
@@ -88,6 +89,9 @@ export default async function BlogPostPage({
                                 // ★ 여기에 하이라이팅 플러그인을 연결합니다.
                                 rehypePlugins: [rehypeHighlight, rehypeSlug],
                             },
+                        }}
+                        components={{
+                            pre: CodeBlock,
                         }}
                     />
                 </div>

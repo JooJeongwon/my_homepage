@@ -7,6 +7,7 @@ import { Github, Globe, Calendar, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { extractHeadings } from '@/lib/toc';
 import { TableOfContents } from '@/components/toc/TableOfContents';
+import { CodeBlock } from '@/components/ui/CodeBlock';
 export async function generateStaticParams() {
     const useCase = getGetAllProjectsUseCase();
     const projects = await useCase.execute();
@@ -103,6 +104,9 @@ export default async function ProjectDetailPage({
                             mdxOptions: {
                                 rehypePlugins: [rehypeHighlight, rehypeSlug],
                             },
+                        }}
+                        components={{
+                            pre: CodeBlock,
                         }}
                     />
                 </div>
