@@ -20,7 +20,7 @@ export class MdxPostRepository implements PostRepository {
             .map((file) => {
                 const filePath = path.join(POSTS_PATH, file);
                 const fileContent = fs.readFileSync(filePath, 'utf-8');
-                const { data } = matter(fileContent);
+                const { data, content } = matter(fileContent);
 
                 const slug = file.replace(/\.mdx?$/, '');
 
@@ -29,7 +29,7 @@ export class MdxPostRepository implements PostRepository {
                 try {
                     // 읽는 시간 계산 (띄어쓰기 기준 단어 수 / 200)
                     // 본문이 없을 경우 0이 되지 않도록 최소 1분 보장
-                    const wordCount = (data.description + (fs.readFileSync(filePath, 'utf-8').split('---')[2] || '')).split(/\s+/).length;
+                    const wordCount = (data.description + (content || '')).split(/\s+/).length;
                     const readingTime = Math.ceil(wordCount / 200);
 
                     return PostSchema.parse({
@@ -44,6 +44,9 @@ export class MdxPostRepository implements PostRepository {
                         readingTime: readingTime || 1,
                     });
                 } catch (error) {
+                    if (process.env.NODE_ENV === 'development') {
+                        throw new Error(`Failed to parse post: ${file}. Error: ${error}`);
+                    }
                     console.error(`Error parsing post ${file}:`, error);
                     return null;
                 }

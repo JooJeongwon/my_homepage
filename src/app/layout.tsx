@@ -13,8 +13,20 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "jwjoo Dev Log",
-  description: "백엔드 개발자 주정원의 기술 블로그 및 포트폴리오",
-
+  description: "DEV : Creativity & Inspiration",
+  openGraph: {
+    title: "jwjoo Dev Log",
+    description: "DEV : Creativity & Inspiration",
+    url: "https://jwjoo.com",
+    siteName: "jwjoo Dev Log",
+    locale: "ko_KR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "jwjoo Dev Log",
+    description: "DEV : Creativity & Inspiration",
+  },
 };
 
 export default function RootLayout({
