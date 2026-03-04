@@ -28,7 +28,7 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
             <pre
                 ref={preRef}
                 className={cn(
-                    "relative overflow-x-auto py-4 px-4 rounded-2xl border shadow-sm",
+                    "relative overflow-x-auto py-4 px-4 rounded-2xl border",
                     // Light mode
                     "bg-white border-neutral-200 text-neutral-800",
                     // Dark mode

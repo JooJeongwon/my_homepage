@@ -69,7 +69,7 @@ export default async function BlogPostPage({
                     /* 코드 블록(pre) 스타일링 - Project Card와 통일 */
                     prose-pre:bg-white dark:prose-pre:bg-neutral-900/50
                     prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-800
-                    prose-pre:rounded-2xl prose-pre:shadow-sm
+                    prose-pre:rounded-2xl
                     prose-pre:text-neutral-800 dark:prose-pre:text-neutral-200
                     
                     /* 인라인 코드(code) 스타일링 */

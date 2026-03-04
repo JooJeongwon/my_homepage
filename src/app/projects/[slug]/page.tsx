@@ -88,7 +88,7 @@ export default async function ProjectDetailPage({
                     prose-a:text-blue-600 dark:prose-a:text-blue-550 prose-a:no-underline hover:prose-a:underline
                     prose-li:text-neutral-800 dark:prose-li:text-neutral-200
                     
-                    prose-pre:bg-neutral-900 dark:prose-pre:bg-neutral-900/50
+                    prose-pre:bg-white dark:prose-pre:bg-neutral-900/50
                     prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-800
                     prose-pre:rounded-2xl
                     
