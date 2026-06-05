@@ -17,7 +17,7 @@ export function ThemeToggle() {
     return (
         <button
             onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-            className="w-9 h-9 flex items-center justify-center relative rounded-full hover:bg-orange-100 dark:hover:bg-blue-550/10 group"
+            className="w-9 h-9 flex items-center justify-center relative rounded-full hover:bg-orange-100 dark:hover:bg-blue-550/10 group cursor-pointer"
             aria-label="Toggle theme"
         >
             {/* 마운트 전에는 아이콘을 렌더링하지 않음 - 버튼 크기는 className으로 고정 */}
