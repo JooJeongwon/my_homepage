@@ -62,7 +62,7 @@ export default function SearchablePostList({ posts }: SearchablePostListProps) {
             {/* 필터링 결과 렌더링 */}
             {filteredPosts.length > 0 ? (
                 <div className={isPending ? 'opacity-70 transition-opacity' : ''}>
-                    <AlignedGrid alignSelectors={['.js-align-title', '.js-align-desc']}>
+                    <AlignedGrid>
                         {filteredPosts.map((post) => (
                             <PostCard key={post.slug} post={post} />
                         ))}

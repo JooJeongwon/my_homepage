@@ -2,6 +2,7 @@ import { ProjectRepository } from '@/domain/ports/project.repository';
 import { ProjectMdxRepository } from '@/adapters/outbound/mdx/project-mdx.repository';
 import { GetAllProjectsUseCase } from '@/application/use-cases/project/get-all-projects.use-case';
 import { GetProjectDetailUseCase } from '@/application/use-cases/project/get-project-detail.use-case';
+import { GetFeaturedProjectsUseCase } from '@/application/use-cases/project/get-featured-projects.use-case';
 
 let projectRepositoryInstance: ProjectRepository | null = null;
 
@@ -20,3 +21,8 @@ export function getGetAllProjectsUseCase(): GetAllProjectsUseCase {
 export function getGetProjectDetailUseCase(): GetProjectDetailUseCase {
     return new GetProjectDetailUseCase(getProjectRepository());
 }
+
+export function getGetFeaturedProjectsUseCase(): GetFeaturedProjectsUseCase {
+    return new GetFeaturedProjectsUseCase(getProjectRepository());
+}
+

@@ -62,7 +62,7 @@ export default function SearchableProjectList({ projects }: SearchableProjectLis
             {/* 필터링 결과 렌더링 */}
             {filteredProjects.length > 0 ? (
                 <div className={isPending ? 'opacity-70 transition-opacity' : ''}>
-                    <AlignedGrid alignSelectors={['.js-align-title', '.js-align-desc']}>
+                    <AlignedGrid>
                         {filteredProjects.map((project) => (
                             <ProjectCard key={project.id} project={project} />
                         ))}

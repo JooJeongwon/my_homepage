@@ -2,14 +2,6 @@ import React from 'react';
 
 interface AlignedGridProps {
     children: React.ReactNode;
-    /**
-     * @deprecated 더 이상 사용하지 않음. CSS subgrid로 대체됨.
-     */
-    alignSelectors?: string[];
-    /**
-     * @deprecated 더 이상 사용하지 않음.
-     */
-    alignSelector?: string;
 }
 
 /**

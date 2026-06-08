@@ -1,24 +1,12 @@
-import { getGetRecentPostsUseCase } from '@/di/post.module';
-import { getGetAllProjectsUseCase } from '@/di/project.module';
-import PostCard from '@/components/ui/PostCard';
-import { ProjectCard } from '@/components/ui/ProjectCard';
-import { AlignedGrid } from '@/components/ui/AlignedGrid';
 import Hero from '@/components/home/Hero';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { Suspense } from 'react';
+import FeaturedProjects from '@/components/home/FeaturedProjects';
+import RecentPosts from '@/components/home/RecentPosts';
+import { ProjectListSkeleton, PostListSkeleton } from '@/components/home/Skeletons';
 
-export default async function Home() {
-  const getRecentPosts = getGetRecentPostsUseCase();
-  const getAllProjects = getGetAllProjectsUseCase();
-
-  const [posts, projects] = await Promise.all([
-    getRecentPosts.execute(4),
-    getAllProjects.execute()
-  ]);
-
-  // Show only 2 featured projects
-  const featuredProjects = projects.slice(0, 2);
-
+export default function Home() {
   return (
     <div className="max-w-4xl mx-auto">
       {/* 히어로 섹션 (유지) */}
@@ -36,15 +24,9 @@ export default async function Home() {
           </Link>
         </div>
 
-        {/* ★ 수정된 부분: AlignedGrid에 명시적으로 정렬 기준 전달 
-            제목(.js-align-title)과 설명(.js-align-desc)의 높이를 순서대로 맞춰 
-            태그 박스 위치까지 정확하게 정렬합니다.
-        */}
-        <AlignedGrid alignSelectors={['.js-align-title', '.js-align-desc']}>
-          {featuredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </AlignedGrid>
+        <Suspense fallback={<ProjectListSkeleton />}>
+          <FeaturedProjects />
+        </Suspense>
       </section>
 
       {/* 포스트 리스트 섹션 */}
@@ -59,18 +41,9 @@ export default async function Home() {
           </Link>
         </div>
 
-        {/* ★ 수정된 부분: 여기도 동일하게 정렬 기준 적용 */}
-        <AlignedGrid alignSelectors={['.js-align-title', '.js-align-desc']}>
-          {posts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-
-          {posts.length === 0 && (
-            <div className="col-span-2 text-center py-20 text-neutral-500">
-              아직 작성된 글이 없습니다.
-            </div>
-          )}
-        </AlignedGrid>
+        <Suspense fallback={<PostListSkeleton />}>
+          <RecentPosts />
+        </Suspense>
       </section>
     </div>
   );
