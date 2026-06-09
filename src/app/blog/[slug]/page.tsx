@@ -37,7 +37,7 @@ export default async function BlogPostPage({
             {/* TOC is fixed positioned, so placement in DOM matters less, but keeping it here */}
             <TableOfContents headings={headings} />
 
-            <article className="max-w-3xl min-w-0 w-full sm:w-[75%] sm:ml-[10%] lg:w-full lg:mx-auto">
+            <article className="max-w-3xl min-w-0 w-full sm:w-[75%] sm:ml-[10%] lg:w-[70%] lg:ml-[8%] xl:w-full xl:mx-auto">
                 <header className="mb-10 text-left">
                     <div className="mb-6">
                         <Link href="/blog" className="group inline-flex items-center gap-1 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
@@ -60,7 +60,7 @@ export default async function BlogPostPage({
                     </div>
                 </header>
 
-                <div className="prose dark:prose-invert max-w-none 
+                <div className="prose dark:prose-invert max-w-none break-words 
                     prose-headings:text-neutral-800 dark:prose-headings:text-neutral-200
                     prose-p:text-neutral-800 dark:prose-p:text-neutral-200
                     prose-li:text-neutral-800 dark:prose-li:text-neutral-200

@@ -36,7 +36,7 @@ export default async function ProjectDetailPage({
         <div className="relative w-full max-w-6xl mx-auto px-4 py-10">
             <TableOfContents headings={headings} />
 
-            <article className="max-w-3xl min-w-0 w-full sm:w-[75%] sm:ml-[10%] lg:w-full lg:mx-auto">
+            <article className="max-w-3xl min-w-0 w-full sm:w-[75%] sm:ml-[10%] lg:w-[70%] lg:ml-[8%] xl:w-full xl:mx-auto">
                 <header className="mb-10 text-left border-b border-neutral-200 dark:border-neutral-800 pb-10">
                     <Link href="/projects" className="group inline-flex items-center gap-1 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 mb-6 transition-colors">
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -82,7 +82,7 @@ export default async function ProjectDetailPage({
                     </div>
                 </header>
 
-                <div className="prose dark:prose-invert max-w-none 
+                <div className="prose dark:prose-invert max-w-none break-words 
                     prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-6 prose-headings:text-neutral-800 dark:prose-headings:text-neutral-200
                     prose-p:text-neutral-800 dark:prose-p:text-neutral-200 prose-p:leading-relaxed
                     prose-a:text-blue-600 dark:prose-a:text-blue-550 prose-a:no-underline hover:prose-a:underline

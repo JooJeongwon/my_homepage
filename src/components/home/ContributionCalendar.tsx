@@ -178,6 +178,7 @@ export default function ContributionCalendar() {
     const cellGap = 2;
     const weekWidth = cellWidth + cellGap; // 모바일: 12px, 데스크톱: 14px
     const labelSpacer = isMobile ? 24 : 28; // 모바일: 요일 라벨 16px + gap 8px
+    const totalGridWidth = displayWeeks.length * weekWidth - cellGap;
 
     const monthLabels = getMonthLabels(displayWeeks);
 
@@ -224,7 +225,7 @@ export default function ContributionCalendar() {
 
             <div className="relative">
                 {/* 모바일 뷰포트에서 기여도 달력이 찌그러지지 않고 가로 스크롤 가능하게 scroll containment 설정 */}
-                <div className="overflow-x-auto pb-2 scrollbar-none md:overflow-x-visible" onScroll={() => setHoveredCell(null)}>
+                <div className="overflow-x-auto pb-2 scrollbar-none" onScroll={() => setHoveredCell(null)}>
                     <div 
                         style={{ minWidth: isMobile ? '334px' : '770px' }}
                         className="flex flex-col"
@@ -233,7 +234,10 @@ export default function ContributionCalendar() {
                         <div className="h-5 flex text-[10px] text-neutral-500 dark:text-neutral-400 relative mb-1">
                             {/* 왼쪽 요일 텍스트 영역을 비워두기 위한 spacer */}
                             <div style={{ width: `${labelSpacer}px` }} className="shrink-0" />
-                            <div className="flex-1 flex gap-[2px] relative">
+                            <div 
+                                style={{ width: `${totalGridWidth}px` }} 
+                                className="flex gap-[2px] relative shrink-0"
+                            >
                                 {monthLabels.map((item) => (
                                     <div
                                         key={`${item.label}-${item.index}`}
@@ -263,9 +267,16 @@ export default function ContributionCalendar() {
                             </div>
 
                             {/* 잔디 메인 그리드 */}
-                            <div className="flex-1 flex gap-[2px]">
+                            <div 
+                                style={{ width: `${totalGridWidth}px` }} 
+                                className="flex gap-[2px] shrink-0"
+                            >
                                 {displayWeeks.map((week, wIdx) => (
-                                    <div key={wIdx} className="flex flex-col gap-[2px]">
+                                    <div 
+                                        key={wIdx} 
+                                        style={{ width: `${cellWidth}px` }}
+                                        className="flex flex-col gap-[2px] shrink-0"
+                                    >
                                         {week.contributionDays.map((day, dIdx) => (
                                             <div key={dIdx}>
                                                 {/* 개별 잔디 셀 - hover 시 매끄러운 줌 및 바람에 흔들리는 효과 지원 */}

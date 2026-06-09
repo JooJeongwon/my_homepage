@@ -98,6 +98,7 @@ export function ContributionCalendarSkeleton({ isMobile = false }: { isMobile?: 
   const weekWidth = cellSize + cellGap;
   const labelSpacer = isMobile ? 24 : 28;
   const minWidth = isMobile ? '334px' : '770px';
+  const totalGridWidth = weeksCount * weekWidth - cellGap;
 
   return (
     <div className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 bg-white dark:bg-neutral-900/50 space-y-4 mb-12 animate-pulse">
@@ -108,13 +109,16 @@ export function ContributionCalendarSkeleton({ isMobile = false }: { isMobile?: 
       
       {/* 캘린더 잔디 격자 형태 모방 (가로 스크롤 영역 포함) */}
       <div className="relative">
-        <div className="overflow-x-auto pb-2 scrollbar-none md:overflow-x-visible">
+        <div className="overflow-x-auto pb-2 scrollbar-none">
           <div style={{ minWidth }} className="flex flex-col">
             
             {/* 월 이름 라벨 영역 모방 */}
             <div className="h-5 flex text-[10px] text-neutral-300 dark:text-neutral-700 relative mb-1">
               <div style={{ width: `${labelSpacer}px` }} className="shrink-0" />
-              <div className="flex-1 flex gap-[2px] relative">
+              <div 
+                style={{ width: `${totalGridWidth}px` }} 
+                className="flex gap-[2px] relative shrink-0"
+              >
                 {Array.from({ length: isMobile ? 6 : 12 }).map((_, i) => {
                   const step = isMobile ? 4 : 4.3;
                   const idx = Math.floor(i * step);
@@ -147,9 +151,16 @@ export function ContributionCalendarSkeleton({ isMobile = false }: { isMobile?: 
               </div>
 
               {/* 잔디 메인 그리드 */}
-              <div className="flex-1 flex gap-[2px]">
+              <div 
+                style={{ width: `${totalGridWidth}px` }} 
+                className="flex gap-[2px] shrink-0"
+              >
                 {Array.from({ length: weeksCount }).map((_, w) => (
-                  <div key={w} className="flex flex-col gap-[2px]">
+                  <div 
+                    key={w} 
+                    style={{ width: `${cellSize}px` }}
+                    className="flex flex-col gap-[2px] shrink-0"
+                  >
                     {Array.from({ length: 7 }).map((_, d) => (
                       <div
                         key={d}
