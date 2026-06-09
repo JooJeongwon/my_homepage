@@ -1,0 +1,29 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@theme",
+      "description": "Define custom theme variables in Tailwind CSS v4. Used to customize design tokens like colors, spacing, fonts, and more."
+    },
+    {
+      "name": "@utility",
+      "description": "Define custom utility classes in Tailwind CSS v4."
+    },
+    {
+      "name": "@variant",
+      "description": "Define custom variants in Tailwind CSS v4. Useful for creating utility combinations or custom state selectors."
+    },
+    {
+      "name": "@plugin",
+      "description": "Register official or third-party Tailwind CSS plugins directly in your CSS file."
+    },
+    {
+      "name": "@apply",
+      "description": "Inline Tailwind utility classes into your custom CSS rules."
+    },
+    {
+      "name": "@layer",
+      "description": "Define custom styles under specific cascade layers in Tailwind CSS."
+    }
+  ]
+}

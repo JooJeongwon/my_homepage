@@ -90,3 +90,98 @@ export function PostListSkeleton() {
     </AlignedGrid>
   );
 }
+
+export function ContributionCalendarSkeleton({ isMobile = false }: { isMobile?: boolean }) {
+  const weeksCount = isMobile ? 26 : 53;
+  const cellSize = isMobile ? 10 : 12;
+  const cellGap = 2;
+  const weekWidth = cellSize + cellGap;
+  const labelSpacer = isMobile ? 24 : 28;
+  const minWidth = isMobile ? '334px' : '770px';
+
+  return (
+    <div className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 bg-white dark:bg-neutral-900/50 space-y-4 mb-12 animate-pulse">
+      <div className="flex justify-between items-center">
+        <div className="h-6 w-48 bg-neutral-200 dark:bg-neutral-800 rounded" />
+        <div className="h-4 w-24 bg-neutral-200 dark:bg-neutral-800 rounded" />
+      </div>
+      
+      {/* 캘린더 잔디 격자 형태 모방 (가로 스크롤 영역 포함) */}
+      <div className="relative">
+        <div className="overflow-x-auto pb-2 scrollbar-none md:overflow-x-visible">
+          <div style={{ minWidth }} className="flex flex-col">
+            
+            {/* 월 이름 라벨 영역 모방 */}
+            <div className="h-5 flex text-[10px] text-neutral-300 dark:text-neutral-700 relative mb-1">
+              <div style={{ width: `${labelSpacer}px` }} className="shrink-0" />
+              <div className="flex-1 flex gap-[2px] relative">
+                {Array.from({ length: isMobile ? 6 : 12 }).map((_, i) => {
+                  const step = isMobile ? 4 : 4.3;
+                  const idx = Math.floor(i * step);
+                  if (idx >= weeksCount) return null;
+                  return (
+                    <div
+                      key={i}
+                      className="absolute h-3 w-6 bg-neutral-200 dark:bg-neutral-800 rounded"
+                      style={{ left: `${idx * weekWidth}px` }}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 요일명 + 잔디 그리드 모방 */}
+            <div className="flex gap-2 items-start">
+              {/* 요일명 라벨 */}
+              <div 
+                style={{ width: isMobile ? '16px' : '20px', gap: `${cellGap}px` }}
+                className="flex flex-col text-[10px] text-neutral-300 dark:text-neutral-700/60 shrink-0 pt-[1px] select-none font-medium"
+              >
+                <span style={{ height: `${cellSize}px` }} />
+                <span style={{ height: `${cellSize}px`, lineHeight: `${cellSize}px` }}>Mon</span>
+                <span style={{ height: `${cellSize}px` }} />
+                <span style={{ height: `${cellSize}px`, lineHeight: `${cellSize}px` }}>Wed</span>
+                <span style={{ height: `${cellSize}px` }} />
+                <span style={{ height: `${cellSize}px`, lineHeight: `${cellSize}px` }}>Fri</span>
+                <span style={{ height: `${cellSize}px` }} />
+              </div>
+
+              {/* 잔디 메인 그리드 */}
+              <div className="flex-1 flex gap-[2px]">
+                {Array.from({ length: weeksCount }).map((_, w) => (
+                  <div key={w} className="flex flex-col gap-[2px]">
+                    {Array.from({ length: 7 }).map((_, d) => (
+                      <div
+                        key={d}
+                        style={{ width: `${cellSize}px`, height: `${cellSize}px` }}
+                        className="bg-neutral-200 dark:bg-neutral-800/60 rounded-[2px]"
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 justify-between items-start sm:items-center text-[11px] pt-3 border-t border-neutral-100 dark:border-neutral-800/40">
+        <div className="h-4 w-48 bg-neutral-200 dark:bg-neutral-800 rounded" />
+        <div className="flex items-center gap-1.5">
+          <div className="h-3 w-8 bg-neutral-200 dark:bg-neutral-800 rounded" />
+          <div className="flex gap-[2px]">
+            {Array.from({ length: 5 }).map((_, idx) => (
+              <div 
+                key={idx} 
+                style={{ width: `${cellSize}px`, height: `${cellSize}px` }}
+                className="bg-neutral-200 dark:bg-neutral-800/80 rounded-[2px]" 
+              />
+            ))}
+          </div>
+          <div className="h-3 w-8 bg-neutral-200 dark:bg-neutral-800 rounded" />
+        </div>
+      </div>
+    </div>
+  );
+}

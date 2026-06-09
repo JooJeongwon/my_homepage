@@ -7,6 +7,16 @@
 @theme {
   --color-blue-550: #3072F0;
   --color-neutral-150: #ededed;
+  
+  --animate-sway: sway 0.8s ease-in-out;
+
+  @keyframes sway {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(-16deg); }
+    40% { transform: rotate(12deg); }
+    60% { transform: rotate(-7deg); }
+    80% { transform: rotate(3deg); }
+  }
 }
 
 @layer base {
@@ -53,4 +63,61 @@
   .dark .hljs-strong { font-weight: bold; }
   .dark .hljs-addition { color: #aff5b4; background-color: #033a16; }
   .dark .hljs-deletion { color: #ffdcd7; background-color: #67060c; }
+}
+
+/* Poke Ball Grid Utilities & Native CSS Keyframes */
+@keyframes open-pokeball {
+  0% { background-image: url('/pokeball1.png'); transform: translateY(0); }
+  33% { background-image: url('/pokeball2.png'); transform: translateY(-1px); }
+  66% { background-image: url('/pokeball3.png'); transform: translateY(-2px); }
+  100% { background-image: url('/pokeball3.png'); transform: translateY(0); }
+}
+
+@keyframes open-greatball {
+  0% { background-image: url('/greatball1.png'); transform: translateY(0); }
+  33% { background-image: url('/greatball2.png'); transform: translateY(-1px); }
+  66% { background-image: url('/greatball3.png'); transform: translateY(-2px); }
+  100% { background-image: url('/greatball3.png'); transform: translateY(0); }
+}
+
+@keyframes open-ultraball {
+  0% { background-image: url('/ultraball1.png'); transform: translateY(0); }
+  33% { background-image: url('/ultraball2.png'); transform: translateY(-1px); }
+  66% { background-image: url('/ultraball3.png'); transform: translateY(-2px); }
+  100% { background-image: url('/ultraball3.png'); transform: translateY(0); }
+}
+
+@keyframes open-masterball {
+  0% { background-image: url('/masterball1.png'); transform: translateY(0); }
+  33% { background-image: url('/masterball2.png'); transform: translateY(-1px); }
+  66% { background-image: url('/masterball3.png'); transform: translateY(-2px); }
+  100% { background-image: url('/masterball3.png'); transform: translateY(0); }
+}
+
+.cell-pokeball {
+  background-image: url('/pokeball1.png');
+}
+.cell-pokeball:hover {
+  animation: open-pokeball 0.25s steps(1) forwards;
+}
+
+.cell-greatball {
+  background-image: url('/greatball1.png');
+}
+.cell-greatball:hover {
+  animation: open-greatball 0.25s steps(1) forwards;
+}
+
+.cell-ultraball {
+  background-image: url('/ultraball1.png');
+}
+.cell-ultraball:hover {
+  animation: open-ultraball 0.25s steps(1) forwards;
+}
+
+.cell-masterball {
+  background-image: url('/masterball1.png');
+}
+.cell-masterball:hover {
+  animation: open-masterball 0.25s steps(1) forwards;
 }

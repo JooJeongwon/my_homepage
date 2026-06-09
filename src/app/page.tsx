@@ -5,12 +5,18 @@ import { Suspense } from 'react';
 import FeaturedProjects from '@/components/home/FeaturedProjects';
 import RecentPosts from '@/components/home/RecentPosts';
 import { ProjectListSkeleton, PostListSkeleton } from '@/components/home/Skeletons';
+import ContributionCalendar from '@/components/home/ContributionCalendar';
 
 export default function Home() {
   return (
     <div className="max-w-4xl mx-auto">
       {/* 히어로 섹션 (유지) */}
       <Hero />
+
+      {/* 기여도 잔디 섹션 */}
+      <section className="px-6">
+        <ContributionCalendar />
+      </section>
 
       {/* Featured Projects 섹션 */}
       <section className="px-6 pb-20">

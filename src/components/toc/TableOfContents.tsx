@@ -126,7 +126,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
         <nav
             ref={navRef}
             className={cn(
-                "hidden md:flex fixed right-8 top-40 z-50 flex-col items-end",
+                "hidden sm:flex fixed right-8 top-40 z-50 flex-col items-end",
                 !isTouch && "group" // Desktop: Enable global hover group
             )}
             aria-label="Table of contents"
