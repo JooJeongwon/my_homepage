@@ -97,27 +97,44 @@
 .cell-pokeball {
   background-image: url('/pokeball1.png');
 }
-.cell-pokeball:hover {
+.group:hover .cell-pokeball {
   animation: open-pokeball 0.25s steps(1) forwards;
 }
 
 .cell-greatball {
   background-image: url('/greatball1.png');
 }
-.cell-greatball:hover {
+.group:hover .cell-greatball {
   animation: open-greatball 0.25s steps(1) forwards;
 }
 
 .cell-ultraball {
   background-image: url('/ultraball1.png');
 }
-.cell-ultraball:hover {
+.group:hover .cell-ultraball {
   animation: open-ultraball 0.25s steps(1) forwards;
 }
 
 .cell-masterball {
   background-image: url('/masterball1.png');
 }
-.cell-masterball:hover {
+.group:hover .cell-masterball {
   animation: open-masterball 0.25s steps(1) forwards;
+}
+
+/* 캘린더 셀 호버 감지 안정성을 위한 히트박스 확장 (미세 흔들림 및 경계면 Flicker 방지) */
+.group::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  z-index: 10;
+  background: transparent;
+  pointer-events: none;
+}
+
+.group:hover::after {
+  pointer-events: auto;
 }

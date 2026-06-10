@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { getGetContributionsUseCase } from '@/di/contribution.module';
 import { ContributionCalendar as ContributionCalendarType } from '@/domain/models/contribution.model';
 import { ContributionCalendarSkeleton } from './Skeletons';
@@ -20,6 +20,36 @@ const formatDate = (dateStr: string) => {
     }
 };
 
+const getMonthLabels = (weeks: ContributionCalendarType['weeks']) => {
+    const labels: { index: number; label: string }[] = [];
+    let prevMonth = -1;
+
+    weeks.forEach((week, i) => {
+        if (week.contributionDays.length > 0) {
+            const [year, month, day] = week.contributionDays[0].date.split('-').map(Number);
+            const firstDay = new Date(year, month - 1, day);
+            const currentMonth = firstDay.getMonth();
+            if (currentMonth !== prevMonth) {
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                labels.push({ index: i, label: monthNames[currentMonth] });
+                prevMonth = currentMonth;
+            }
+        }
+    });
+
+    // 라벨 간격이 너무 촘촘하게 겹치는 것을 막기 위해 최소 3주 이상의 간격이 유지되도록 정제
+    const filteredLabels: { index: number; label: string }[] = [];
+    let lastIndex = -99;
+    labels.forEach((item) => {
+        if (item.index - lastIndex >= 3) {
+            filteredLabels.push(item);
+            lastIndex = item.index;
+        }
+    });
+
+    return filteredLabels;
+};
+
 export default function ContributionCalendar() {
     const [data, setData] = useState<ContributionCalendarType | null>(null);
     const [hoveredCell, setHoveredCell] = useState<{
@@ -31,7 +61,7 @@ export default function ContributionCalendar() {
     } | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const handleCellMouseEnter = (
+    const handleCellMouseEnter = useCallback((
         e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>, 
         date: string, 
         count: number
@@ -68,11 +98,11 @@ export default function ContributionCalendar() {
             y,
             arrowOffset
         });
-    };
+    }, []);
 
-    const handleCellMouseLeave = () => {
+    const handleCellMouseLeave = useCallback(() => {
         setHoveredCell(null);
-    };
+    }, []);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isMobile, setIsMobile] = useState(false);
@@ -120,77 +150,8 @@ export default function ContributionCalendar() {
         fetchData();
     }, []);
 
-    if (isLoading) {
-        return <ContributionCalendarSkeleton isMobile={isMobile} />;
-    }
-
-    if (error || !data) {
-        return (
-            <div className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 bg-white dark:bg-neutral-900/50 mb-12 flex flex-col items-center justify-center py-10 text-center">
-                <p className="text-neutral-500 dark:text-neutral-400 text-sm mb-4">
-                    {error || '기여도 데이터를 불러오지 못했습니다.'}
-                </p>
-                <button
-                    onClick={fetchData}
-                    className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 transition-colors cursor-pointer"
-                >
-                    <RefreshCw className="w-3.5 h-3.5" />
-                    다시 시도
-                </button>
-            </div>
-        );
-    }
-
-    // 53주 또는 26주 데이터로부터 월 라벨 출력 위치 계산
-    const getMonthLabels = (weeks: typeof data.weeks) => {
-        const labels: { index: number; label: string }[] = [];
-        let prevMonth = -1;
-
-        weeks.forEach((week, i) => {
-            if (week.contributionDays.length > 0) {
-                const [year, month, day] = week.contributionDays[0].date.split('-').map(Number);
-                const firstDay = new Date(year, month - 1, day);
-                const currentMonth = firstDay.getMonth();
-                if (currentMonth !== prevMonth) {
-                    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                    labels.push({ index: i, label: monthNames[currentMonth] });
-                    prevMonth = currentMonth;
-                }
-            }
-        });
-
-        // 라벨 간격이 너무 촘촘하게 겹치는 것을 막기 위해 최소 3주 이상의 간격이 유지되도록 정제
-        const filteredLabels: { index: number; label: string }[] = [];
-        let lastIndex = -99;
-        labels.forEach((item) => {
-            if (item.index - lastIndex >= 3) {
-                filteredLabels.push(item);
-                lastIndex = item.index;
-            }
-        });
-
-        return filteredLabels;
-    };
-
-    // 모바일 뷰에 맞춰 슬라이싱 및 셀 크기 변수 정의
-    const displayWeeks = isMobile ? data.weeks.slice(-26) : data.weeks;
-    const cellWidth = isMobile ? 10 : 12;
-    const cellGap = 2;
-    const weekWidth = cellWidth + cellGap; // 모바일: 12px, 데스크톱: 14px
-    const labelSpacer = isMobile ? 24 : 28; // 모바일: 요일 라벨 16px + gap 8px
-    const totalGridWidth = displayWeeks.length * weekWidth - cellGap;
-
-    const monthLabels = getMonthLabels(displayWeeks);
-
-    const durationText = isMobile ? '지난 6개월' : '지난 1년';
-    const displayContributions = isMobile 
-        ? displayWeeks.reduce((acc, week) => 
-            acc + week.contributionDays.reduce((wAcc, day) => wAcc + day.count, 0)
-          , 0)
-        : data.totalContributions;
-
     // 기여 수준(level 0~4)에 맞춘 스타일 및 클래스 반환
-    const getCellProps = (level: number) => {
+    const getCellProps = useCallback((level: number) => {
         switch (level) {
             case 1:
                 return { className: 'cell-pokeball bg-cover bg-no-repeat bg-center' };
@@ -203,29 +164,49 @@ export default function ContributionCalendar() {
             default:
                 return { className: 'bg-transparent' };
         }
-    };
+    }, []);
 
-    return (
-        <div ref={containerRef} className="relative mb-12">
-            <div className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 bg-white dark:bg-neutral-900/50 space-y-4">
-            <div className="flex justify-between items-center">
-                <h3 className="text-md font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                    <Github className="w-5 h-5 text-neutral-800 dark:text-neutral-200" />
-                    GitHub Contributions
-                </h3>
-                <a
-                    href="https://github.com/JooJeongwon"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
-                >
-                    @JooJeongwon
-                </a>
-            </div>
+    // 모바일 뷰에 맞춰 슬라이싱 및 셀 크기 변수 정의
+    const cellWidth = isMobile ? 10 : 12;
+    const cellGap = 2;
+    const weekWidth = cellWidth + cellGap; // 모바일: 12px, 데스크톱: 14px
+    const labelSpacer = isMobile ? 24 : 28; // 모바일: 요일 라벨 16px + gap 8px
 
+    // data가 있을 때만 계산되는 변수들 처리
+    const displayWeeks = useMemo(() => {
+        if (!data) return [];
+        return isMobile ? data.weeks.slice(-26) : data.weeks;
+    }, [data, isMobile]);
+
+    const totalGridWidth = useMemo(() => {
+        if (displayWeeks.length === 0) return 0;
+        return displayWeeks.length * weekWidth - cellGap;
+    }, [displayWeeks, weekWidth, cellGap]);
+
+    const monthLabels = useMemo(() => {
+        if (displayWeeks.length === 0) return [];
+        return getMonthLabels(displayWeeks);
+    }, [displayWeeks]);
+
+    const durationText = isMobile ? '지난 6개월' : '지난 1년';
+    
+    const displayContributions = useMemo(() => {
+        if (!data) return 0;
+        return isMobile 
+            ? displayWeeks.reduce((acc, week) => 
+                acc + week.contributionDays.reduce((wAcc, day) => wAcc + day.count, 0)
+              , 0)
+            : data.totalContributions;
+    }, [data, isMobile, displayWeeks]);
+
+    // 캘린더 그리드 렌더링 메모이제이션 (hoveredCell 상태 변경에 의한 리렌더링 방지)
+    const calendarGrid = useMemo(() => {
+        if (!data || displayWeeks.length === 0) return null;
+
+        return (
             <div className="relative">
                 {/* 모바일 뷰포트에서 기여도 달력이 찌그러지지 않고 가로 스크롤 가능하게 scroll containment 설정 */}
-                <div className="overflow-x-auto pb-2 scrollbar-none" onScroll={() => setHoveredCell(null)}>
+                <div className="overflow-x-auto pb-2 scrollbar-none" onScroll={handleCellMouseLeave}>
                     <div 
                         style={{ minWidth: isMobile ? '334px' : '770px' }}
                         className="flex flex-col"
@@ -277,27 +258,28 @@ export default function ContributionCalendar() {
                                         style={{ width: `${cellWidth}px` }}
                                         className="flex flex-col gap-[2px] shrink-0"
                                     >
-                                        {week.contributionDays.map((day, dIdx) => (
-                                            <div key={dIdx}>
-                                                {/* 개별 잔디 셀 - hover 시 매끄러운 줌 및 바람에 흔들리는 효과 지원 */}
-                                                {(() => {
-                                                    const cellProps = getCellProps(day.level);
-                                                    return (
-                                                        <div
-                                                            style={{
-                                                                width: `${cellWidth}px`,
-                                                                height: `${cellWidth}px`,
-                                                            }}
-                                                            data-cell="true"
-                                                            className={`rounded-[2px] transition-all duration-150 hover:scale-130 hover:z-20 origin-bottom cursor-pointer select-none ${cellProps.className}`}
-                                                            onMouseEnter={(e) => handleCellMouseEnter(e, day.date, day.count)}
-                                                            onMouseLeave={handleCellMouseLeave}
-                                                            onTouchStart={(e) => handleCellMouseEnter(e, day.date, day.count)}
-                                                        />
-                                                    );
-                                                })()}
-                                            </div>
-                                        ))}
+                                        {week.contributionDays.map((day, dIdx) => {
+                                            const cellProps = getCellProps(day.level);
+                                            return (
+                                                <div
+                                                    key={dIdx}
+                                                    style={{
+                                                        width: `${cellWidth}px`,
+                                                        height: `${cellWidth}px`,
+                                                    }}
+                                                    data-cell="true"
+                                                    className="relative group select-none"
+                                                    onMouseEnter={(e) => handleCellMouseEnter(e, day.date, day.count)}
+                                                    onMouseLeave={handleCellMouseLeave}
+                                                    onTouchStart={(e) => handleCellMouseEnter(e, day.date, day.count)}
+                                                >
+                                                    {/* 개별 잔디 셀 - hover 시 매끄러운 줌 및 바람에 흔들리는 효과 지원 */}
+                                                    <div
+                                                        className={`w-full h-full rounded-[2px] transition-all duration-150 group-hover:scale-130 group-hover:z-20 origin-bottom cursor-default ${cellProps.className}`}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 ))}
                             </div>
@@ -305,6 +287,62 @@ export default function ContributionCalendar() {
                     </div>
                 </div>
             </div>
+        );
+    }, [
+        data,
+        displayWeeks, 
+        isMobile, 
+        cellWidth, 
+        cellGap, 
+        weekWidth, 
+        labelSpacer, 
+        totalGridWidth, 
+        monthLabels, 
+        getCellProps,
+        handleCellMouseEnter, 
+        handleCellMouseLeave
+    ]);
+
+    if (isLoading) {
+        return <ContributionCalendarSkeleton isMobile={isMobile} />;
+    }
+
+    if (error || !data) {
+        return (
+            <div className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 bg-white dark:bg-neutral-900/50 mb-12 flex flex-col items-center justify-center py-10 text-center">
+                <p className="text-neutral-500 dark:text-neutral-400 text-sm mb-4">
+                    {error || '기여도 데이터를 불러오지 못했습니다.'}
+                </p>
+                <button
+                    onClick={fetchData}
+                    className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 transition-colors cursor-pointer"
+                >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    다시 시도
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div ref={containerRef} className="relative mb-12">
+            <div className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 bg-white dark:bg-neutral-900/50 space-y-4">
+            <div className="flex justify-between items-center">
+                <h3 className="text-md font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                    <Github className="w-5 h-5 text-neutral-800 dark:text-neutral-200" />
+                    GitHub Contributions
+                </h3>
+                <a
+                    href="https://github.com/JooJeongwon"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+                >
+                    @JooJeongwon
+                </a>
+            </div>
+
+            {calendarGrid}
 
             {/* 통계 및 컬러 범례 */}
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 justify-between items-start sm:items-center text-[11px] pt-3 border-t border-neutral-100 dark:border-neutral-800/40 text-neutral-500 dark:text-neutral-400">
@@ -320,20 +358,36 @@ export default function ContributionCalendar() {
                         />
                         <div 
                             style={{ width: `${cellWidth}px`, height: `${cellWidth}px` }}
-                            className="rounded-[2px] transition-all duration-150 hover:scale-130 hover:z-20 origin-bottom bg-cover bg-no-repeat bg-center cell-pokeball" 
-                        />
+                            className="relative group"
+                        >
+                            <div 
+                                className="w-full h-full rounded-[2px] transition-all duration-150 group-hover:scale-130 group-hover:z-20 origin-bottom bg-cover bg-no-repeat bg-center cell-pokeball cursor-default" 
+                            />
+                        </div>
                         <div 
                             style={{ width: `${cellWidth}px`, height: `${cellWidth}px` }}
-                            className="rounded-[2px] transition-all duration-150 hover:scale-130 hover:z-20 origin-bottom bg-cover bg-no-repeat bg-center cell-greatball" 
-                        />
+                            className="relative group"
+                        >
+                            <div 
+                                className="w-full h-full rounded-[2px] transition-all duration-150 group-hover:scale-130 group-hover:z-20 origin-bottom bg-cover bg-no-repeat bg-center cell-greatball cursor-default" 
+                            />
+                        </div>
                         <div 
                             style={{ width: `${cellWidth}px`, height: `${cellWidth}px` }}
-                            className="rounded-[2px] transition-all duration-150 hover:scale-130 hover:z-20 origin-bottom bg-cover bg-no-repeat bg-center cell-ultraball" 
-                        />
+                            className="relative group"
+                        >
+                            <div 
+                                className="w-full h-full rounded-[2px] transition-all duration-150 group-hover:scale-130 group-hover:z-20 origin-bottom bg-cover bg-no-repeat bg-center cell-ultraball cursor-default" 
+                            />
+                        </div>
                         <div 
                             style={{ width: `${cellWidth}px`, height: `${cellWidth}px` }}
-                            className="rounded-[2px] transition-all duration-150 hover:scale-130 hover:z-20 origin-bottom bg-cover bg-no-repeat bg-center cell-masterball" 
-                        />
+                            className="relative group"
+                        >
+                            <div 
+                                className="w-full h-full rounded-[2px] transition-all duration-150 group-hover:scale-130 group-hover:z-20 origin-bottom bg-cover bg-no-repeat bg-center cell-masterball cursor-default" 
+                            />
+                        </div>
                     </div>
                     <span>More</span>
                 </div>
