@@ -206,9 +206,9 @@ export default function ContributionCalendar() {
         return (
             <div className="relative">
                 {/* 모바일 뷰포트에서 기여도 달력이 찌그러지지 않고 가로 스크롤 가능하게 scroll containment 설정 */}
-                <div className="overflow-x-auto pb-2 scrollbar-none" onScroll={handleCellMouseLeave}>
+                <div className="w-full overflow-x-auto pb-2 scrollbar-none" onScroll={handleCellMouseLeave}>
                     <div 
-                        style={{ minWidth: isMobile ? '334px' : '770px' }}
+                        style={{ minWidth: isMobile ? '334px' : '768px' }}
                         className="flex flex-col"
                     >
                         {/* 월 이름 라벨 영역 */}
@@ -326,7 +326,7 @@ export default function ContributionCalendar() {
 
     return (
         <div ref={containerRef} className="relative mb-12">
-            <div className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 bg-white dark:bg-neutral-900/50 space-y-4">
+            <div className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 bg-white dark:bg-neutral-900/50 space-y-4 w-full max-w-full overflow-hidden">
             <div className="flex justify-between items-center">
                 <h3 className="text-md font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                     <Github className="w-5 h-5 text-neutral-800 dark:text-neutral-200" />

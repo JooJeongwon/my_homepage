@@ -97,11 +97,11 @@ export function ContributionCalendarSkeleton({ isMobile = false }: { isMobile?: 
   const cellGap = 2;
   const weekWidth = cellSize + cellGap;
   const labelSpacer = isMobile ? 24 : 28;
-  const minWidth = isMobile ? '334px' : '770px';
+  const minWidth = isMobile ? '334px' : '768px';
   const totalGridWidth = weeksCount * weekWidth - cellGap;
 
   return (
-    <div className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 bg-white dark:bg-neutral-900/50 space-y-4 mb-12 animate-pulse">
+    <div className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 bg-white dark:bg-neutral-900/50 space-y-4 mb-12 animate-pulse w-full max-w-full overflow-hidden">
       <div className="flex justify-between items-center">
         <div className="h-6 w-48 bg-neutral-200 dark:bg-neutral-800 rounded" />
         <div className="h-4 w-24 bg-neutral-200 dark:bg-neutral-800 rounded" />
@@ -109,7 +109,7 @@ export function ContributionCalendarSkeleton({ isMobile = false }: { isMobile?: 
       
       {/* 캘린더 잔디 격자 형태 모방 (가로 스크롤 영역 포함) */}
       <div className="relative">
-        <div className="overflow-x-auto pb-2 scrollbar-none">
+        <div className="w-full overflow-x-auto pb-2 scrollbar-none">
           <div style={{ minWidth }} className="flex flex-col">
             
             {/* 월 이름 라벨 영역 모방 */}

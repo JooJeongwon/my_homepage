@@ -9,9 +9,9 @@ export class ContributionMockRepository implements ContributionRepository {
         const weeks: ContributionWeek[] = [];
         const today = new Date();
         
-        // 53주 전 일요일부터 시작하도록 시작 날짜 계산
+        // 52주 전 일요일부터 시작하도록 시작 날짜 계산 (총 53주를 생성하기 위함)
         const startDate = new Date(today);
-        startDate.setDate(today.getDate() - 53 * 7);
+        startDate.setDate(today.getDate() - 52 * 7);
         const dayOfWeek = startDate.getDay(); // 0 (일요일) ~ 6 (토요일)
         // 시작일을 직전 일요일로 보정
         startDate.setDate(startDate.getDate() - dayOfWeek);
@@ -19,7 +19,7 @@ export class ContributionMockRepository implements ContributionRepository {
         let totalContributions = 0;
         const currentDate = new Date(startDate);
 
-        for (let w = 0; w < 54; w++) {
+        for (let w = 0; w < 53; w++) {
             const contributionDays: ContributionDay[] = [];
             for (let d = 0; d < 7; d++) {
                 const year = currentDate.getFullYear();
