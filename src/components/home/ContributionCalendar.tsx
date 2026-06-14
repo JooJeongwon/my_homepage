@@ -349,6 +349,9 @@ export default function ContributionCalendar() {
                 <div>
                     {durationText} 동안 <span className="font-semibold text-neutral-900 dark:text-neutral-200">{displayContributions}회</span>의 기여를 남겼습니다.
                 </div>
+                <div className="text-[9px] text-neutral-400/80 dark:text-neutral-500/80 select-none sm:mx-auto py-1 sm:py-0">
+                    © Pokémon. © Nintendo/Creatures/GAME FREAK.
+                </div>
                 <div className="flex items-center gap-1.5 select-none">
                     <span>Less</span>
                     <div className="flex gap-[2px]">
