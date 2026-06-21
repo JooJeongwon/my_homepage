@@ -268,7 +268,7 @@ export default function ContributionCalendar() {
                                                         height: `${cellWidth}px`,
                                                     }}
                                                     data-cell="true"
-                                                    className="relative group select-none"
+                                                    className="relative group calendar-cell-group select-none"
                                                     onMouseEnter={(e) => handleCellMouseEnter(e, day.date, day.count)}
                                                     onMouseLeave={handleCellMouseLeave}
                                                     onTouchStart={(e) => handleCellMouseEnter(e, day.date, day.count)}
@@ -361,7 +361,7 @@ export default function ContributionCalendar() {
                         />
                         <div 
                             style={{ width: `${cellWidth}px`, height: `${cellWidth}px` }}
-                            className="relative group"
+                            className="relative group calendar-cell-group"
                         >
                             <div 
                                 className="w-full h-full rounded-[2px] transition-all duration-150 group-hover:scale-130 group-hover:z-20 origin-bottom bg-cover bg-no-repeat bg-center cell-pokeball cursor-default" 
@@ -369,7 +369,7 @@ export default function ContributionCalendar() {
                         </div>
                         <div 
                             style={{ width: `${cellWidth}px`, height: `${cellWidth}px` }}
-                            className="relative group"
+                            className="relative group calendar-cell-group"
                         >
                             <div 
                                 className="w-full h-full rounded-[2px] transition-all duration-150 group-hover:scale-130 group-hover:z-20 origin-bottom bg-cover bg-no-repeat bg-center cell-greatball cursor-default" 
@@ -377,7 +377,7 @@ export default function ContributionCalendar() {
                         </div>
                         <div 
                             style={{ width: `${cellWidth}px`, height: `${cellWidth}px` }}
-                            className="relative group"
+                            className="relative group calendar-cell-group"
                         >
                             <div 
                                 className="w-full h-full rounded-[2px] transition-all duration-150 group-hover:scale-130 group-hover:z-20 origin-bottom bg-cover bg-no-repeat bg-center cell-ultraball cursor-default" 
@@ -385,7 +385,7 @@ export default function ContributionCalendar() {
                         </div>
                         <div 
                             style={{ width: `${cellWidth}px`, height: `${cellWidth}px` }}
-                            className="relative group"
+                            className="relative group calendar-cell-group"
                         >
                             <div 
                                 className="w-full h-full rounded-[2px] transition-all duration-150 group-hover:scale-130 group-hover:z-20 origin-bottom bg-cover bg-no-repeat bg-center cell-masterball cursor-default" 

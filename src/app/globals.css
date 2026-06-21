@@ -123,7 +123,7 @@
 }
 
 /* 캘린더 셀 호버 감지 안정성을 위한 히트박스 확장 (미세 흔들림 및 경계면 Flicker 방지) */
-.group::after {
+.calendar-cell-group::after {
   content: '';
   position: absolute;
   top: -2px;
@@ -135,6 +135,6 @@
   pointer-events: none;
 }
 
-.group:hover::after {
+.calendar-cell-group:hover::after {
   pointer-events: auto;
 }
