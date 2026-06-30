@@ -2,7 +2,7 @@
 
 import React, { useState, useDeferredValue } from 'react';
 import { Project } from '@/domain/models/project.model';
-import { FilterProjectsUseCase } from '@/application/use-cases/project/filter-projects.use-case';
+import { getFilterProjectsUseCase } from '@/di/project.client.module';
 import SearchInput from './SearchInput';
 import { AlignedGrid } from './AlignedGrid';
 import { ProjectCard } from './ProjectCard';
@@ -12,7 +12,7 @@ interface SearchableProjectListProps {
     projects: Project[];
 }
 
-const filterUseCase = new FilterProjectsUseCase();
+const filterUseCase = getFilterProjectsUseCase();
 
 export default function SearchableProjectList({ projects }: SearchableProjectListProps) {
     const [query, setQuery] = useState('');

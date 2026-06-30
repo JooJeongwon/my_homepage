@@ -2,7 +2,7 @@
 
 import React, { useState, useDeferredValue } from 'react';
 import { Post } from '@/domain/models/post.model';
-import { FilterPostsUseCase } from '@/application/use-cases/post/filter-posts.use-case';
+import { getFilterPostsUseCase } from '@/di/post.client.module';
 import SearchInput from './SearchInput';
 import { AlignedGrid } from './AlignedGrid';
 import PostCard from './PostCard';
@@ -12,7 +12,7 @@ interface SearchablePostListProps {
     posts: Post[];
 }
 
-const filterUseCase = new FilterPostsUseCase();
+const filterUseCase = getFilterPostsUseCase();
 
 export default function SearchablePostList({ posts }: SearchablePostListProps) {
     const [query, setQuery] = useState('');
