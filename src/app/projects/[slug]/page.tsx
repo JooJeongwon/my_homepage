@@ -1,5 +1,6 @@
 import { getGetProjectDetailUseCase, getGetAllProjectsUseCase } from '@/di/project.module';
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
@@ -8,6 +9,34 @@ import Link from 'next/link';
 import { extractHeadings } from '@/lib/toc';
 import { TableOfContents } from '@/components/toc/TableOfContents';
 import { CodeBlock } from '@/components/ui/CodeBlock';
+
+export async function generateMetadata({
+    params
+}: {
+    params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+    const { slug } = await params;
+    const useCase = getGetProjectDetailUseCase();
+    const project = await useCase.execute(slug);
+
+    if (!project) {
+        return {};
+    }
+
+    const description = project.description || project.content?.slice(0, 160);
+
+    return {
+        title: `${project.title} | jwjoo Projects`,
+        description,
+        openGraph: {
+            title: `${project.title} | jwjoo Projects`,
+            description,
+            type: 'website',
+            images: project.thumbnail ? [project.thumbnail] : undefined,
+        },
+    };
+}
+
 export async function generateStaticParams() {
     const useCase = getGetAllProjectsUseCase();
     const projects = await useCase.execute();

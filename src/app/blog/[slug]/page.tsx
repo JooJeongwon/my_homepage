@@ -1,5 +1,6 @@
 import { getGetPostDetailUseCase, getGetAllPostsUseCase } from '@/di/post.module';
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import rehypeHighlight from 'rehype-highlight'; // ★ 플러그인 추가
 import rehypeSlug from 'rehype-slug';
@@ -8,6 +9,35 @@ import { ArrowLeft } from 'lucide-react';
 import { extractHeadings } from '@/lib/toc';
 import { TableOfContents } from '@/components/toc/TableOfContents';
 import { CodeBlock } from '@/components/ui/CodeBlock';
+
+export async function generateMetadata({
+    params
+}: {
+    params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+    const { slug } = await params;
+    const useCase = getGetPostDetailUseCase();
+    const post = await useCase.execute(slug);
+
+    if (!post) {
+        return {};
+    }
+
+    const description = post.description || post.content?.slice(0, 160);
+
+    return {
+        title: `${post.title} | jwjoo Dev Log`,
+        description,
+        openGraph: {
+            title: `${post.title} | jwjoo Dev Log`,
+            description,
+            type: 'article',
+            publishedTime: post.date,
+            images: post.thumbnail ? [post.thumbnail] : undefined,
+        },
+    };
+}
+
 export async function generateStaticParams() {
     const useCase = getGetAllPostsUseCase();
     const posts = await useCase.execute();
