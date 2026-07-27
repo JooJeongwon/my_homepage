@@ -54,6 +54,10 @@ export class GithubGraphqlRepository implements ContributionRepository {
     constructor(private readonly token: string) {}
 
     async getContributions(username: string): Promise<ContributionCalendar> {
+        if (!this.token) {
+            throw new Error('GitHub Token이 설정되지 않았습니다.');
+        }
+
         const response = await fetch('https://api.github.com/graphql', {
             method: 'POST',
             headers: {
@@ -77,20 +81,20 @@ export class GithubGraphqlRepository implements ContributionRepository {
         // Zod를 활용한 API 응답 스펙 검증
         const parsed = GithubGraphQLResponseSchema.safeParse(json);
         if (!parsed.success) {
-            console.error('GitHub API 응답 파싱 실패:', parsed.error.format());
+            console.error('[GithubGraphqlRepository] 응답 파싱 실패:', parsed.error.format());
             throw new Error('GitHub 데이터 처리에 실패했습니다. (스키마 검증 에러)');
         }
 
         const resultData = parsed.data;
 
         if (resultData.errors && resultData.errors.length > 0) {
-            console.error('GitHub GraphQL 에러 발생:', resultData.errors);
+            console.error('[GithubGraphqlRepository] GraphQL 에러 발생:', resultData.errors);
             throw new Error('GitHub API 쿼리 오류가 발생했습니다.');
         }
 
         const calendar = resultData.data?.user?.contributionsCollection?.contributionCalendar;
         if (!calendar) {
-            console.error('GitHub calendar 데이터를 찾을 수 없음:', resultData);
+            console.error('[GithubGraphqlRepository] calendar 데이터를 찾을 수 없음:', resultData);
             throw new Error('사용자 기여 정보를 찾을 수 없습니다.');
         }
 
@@ -119,3 +123,5 @@ export class GithubGraphqlRepository implements ContributionRepository {
         };
     }
 }
+
+

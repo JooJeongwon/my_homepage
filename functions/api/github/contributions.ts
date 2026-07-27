@@ -39,7 +39,12 @@ async function revalidateCache(
     try {
         console.log(`[SWR] 백그라운드 캐시 재검증 시작 (User: ${username})`);
         const getContributionsUseCase = getGithubContributionsUseCase(token);
-        const formattedData = await getContributionsUseCase.execute(username);
+        const result = await getContributionsUseCase.executeResult(username);
+        if (result.isFailure) {
+            throw result.error;
+        }
+        const formattedData = result.value;
+
 
         const responseHeaders: Record<string, string> = {
             ...securityHeaders,
@@ -183,9 +188,17 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
 
     try {
-        // UseCase 및 Repository Port & Adapter를 활용하여 기여도 데이터 조회
+        // UseCase 및 Repository Port & Adapter를 활용하여 기여도 데이터 조회 (Result Pattern 적용)
         const getContributionsUseCase = getGithubContributionsUseCase(token);
-        const formattedData = await getContributionsUseCase.execute(username);
+        const result = await getContributionsUseCase.executeResult(username);
+
+
+        if (result.isFailure) {
+            throw result.error;
+        }
+
+        const formattedData = result.value;
+
 
         // 4. 응답 구성 및 Edge/Browser 캐시 헤더 주입
         const responseHeaders: Record<string, string> = {
