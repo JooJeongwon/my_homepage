@@ -80,18 +80,12 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
     });
 
 
-    it('RESTful 자원 URI 경로와 정상적인 Origin으로 유효한 username 요청 시 기여 정보와 HATEOAS 링크를 정상 반환한다', async () => {
+    it('RESTful 자원 URI 경로와 정상적인 Origin으로 유효한 username 요청 시 기여 정보를 정상 반환한다', async () => {
         const response = await onRequest(mockContext);
         expect(response.status).toBe(200);
 
-        const json = await response.json() as {
-            data?: { totalContributions?: number };
-            _links?: { self?: { href?: string }; github_profile?: { href?: string } };
-        };
-
-        expect(json.data).toHaveProperty('totalContributions', 100);
-        expect(json._links?.self?.href).toBe('/api/github/users/JooJeongwon/contributions');
-        expect(json._links?.github_profile?.href).toBe('https://github.com/JooJeongwon');
+        const data = await response.json() as { totalContributions?: number };
+        expect(data).toHaveProperty('totalContributions', 100);
         
         // 보안 응답 헤더 탑재 여부 검증
         expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
@@ -189,14 +183,8 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
         
         // 캐시된 응답 모킹
         const mockCacheResponse = new Response(JSON.stringify({
-            data: {
-                totalContributions: 100,
-                weeks: []
-            },
-            _links: {
-                self: { href: '/api/github/users/JooJeongwon/contributions' },
-                github_profile: { href: 'https://github.com/JooJeongwon' }
-            }
+            totalContributions: 100,
+            weeks: []
         }), {
             status: 200,
             headers: {
@@ -217,8 +205,8 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
         expect(response.status).toBe(200);
         expect(response.headers.get('X-Cache-Status')).toBe('STALE');
 
-        const json = await response.json() as { data?: { totalContributions?: number } };
-        expect(json.data).toHaveProperty('totalContributions', 100);
+        const data = await response.json() as { totalContributions?: number };
+        expect(data).toHaveProperty('totalContributions', 100);
 
         // revalidateCache 태스크가 waitUntil로 예약되었는지 검증
         expect(mockContext.waitUntil).toHaveBeenCalled();
@@ -236,14 +224,8 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
 
         // 캐시된 응답 모킹 (1시간 10분이 지난 만료된 캐시로 설정하여 실제 API 호출을 유도)
         const mockCacheResponse = new Response(JSON.stringify({
-            data: {
-                totalContributions: 80,
-                weeks: []
-            },
-            _links: {
-                self: { href: '/api/github/users/JooJeongwon/contributions' },
-                github_profile: { href: 'https://github.com/JooJeongwon' }
-            }
+            totalContributions: 80,
+            weeks: []
         }), {
             status: 200,
             headers: {
@@ -265,8 +247,8 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
         expect(response.headers.get('X-Cache-Status')).toBe('FALLBACK');
         expect(response.headers.get('X-Cache-Fallback')).toBe('true');
 
-        const json = await response.json() as { data?: { totalContributions?: number } };
-        expect(json.data).toHaveProperty('totalContributions', 80);
+        const data = await response.json() as { totalContributions?: number };
+        expect(data).toHaveProperty('totalContributions', 80);
 
         errorSpy.mockRestore();
         warnSpy.mockRestore();
