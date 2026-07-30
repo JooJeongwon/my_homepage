@@ -21,7 +21,16 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
     return (
         <article
+            tabIndex={0}
+            role="link"
+            aria-label={`${project.title} 프로젝트 상세보기`}
             onClick={handleCardClick}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleCardClick();
+                }
+            }}
             className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 
             bg-white dark:bg-neutral-900/50 cursor-pointer
             hover:shadow-xl dark:hover:bg-neutral-900

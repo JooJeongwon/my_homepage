@@ -27,6 +27,7 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
         <div className="relative group">
             <pre
                 ref={preRef}
+                tabIndex={0}
                 className={cn(
                     "relative overflow-x-auto py-4 px-4 rounded-2xl border",
                     // Light mode

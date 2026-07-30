@@ -24,6 +24,46 @@
     @apply bg-white text-neutral-800 dark:bg-neutral-950 dark:text-neutral-200;
   }
 
+  /* ★ 전역 키보드(Tab) 포커스 스타일 - 브라우저 파란 외곽선 및 검색창 내부 사각형 이중 박스 완전 제거 */
+  *:focus,
+  *:focus-visible,
+  *:focus-within {
+    outline: none !important;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  [tabindex="0"]:focus-visible,
+  [role="link"]:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 1px solid #171717 !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .dark a:focus-visible,
+  .dark button:focus-visible,
+  .dark [tabindex="0"]:focus-visible,
+  .dark [role="link"]:focus-visible,
+  .dark [role="button"]:focus-visible {
+    outline: 1px solid #ffffff !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* 검색창 등 input, textarea 입력 요소 내부 이중 사각형 포커스 잔영 제거 (부모 focus-within이 둥근 포커스 전담) */
+  input,
+  input:focus,
+  input:focus-visible,
+  textarea,
+  textarea:focus,
+  textarea:focus-visible {
+    outline: none !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+  }
+
   /* Highlight.js - GitHub Light (Default) */
   .hljs {
     color: #24292e;

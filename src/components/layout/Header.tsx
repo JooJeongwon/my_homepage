@@ -23,7 +23,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
                     handleScrollToTop(); // 스크롤만 위로
                 }
             }}
-            className="text-neutral-800 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-blue-550 transition-colors"
+            className="text-neutral-800 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-blue-550 transition-colors rounded px-1.5 py-0.5"
         >
             {children}
         </Link>
@@ -63,7 +63,7 @@ export default function Header() {
                             handleScrollToTop();
                         }
                     }}
-                    className="group pl-1 text-xl font-bold tracking-tight hover:text-blue-600 dark:hover:text-blue-550 transition-colors"
+                    className="group px-1.5 py-0.5 rounded-md text-xl font-bold tracking-tight hover:text-blue-600 dark:hover:text-blue-550 transition-colors"
                 >
                     jwjoo<span className="text-blue-600 dark:text-blue-550 transition-colors group-hover:text-neutral-900 dark:group-hover:text-white">.</span>
                 </Link>
@@ -103,7 +103,7 @@ export default function Header() {
 
                 {/* 모바일 메뉴 버튼 */}
                 <button
-                    className="sm:hidden p-2 -mr-2 text-neutral-800 dark:text-neutral-200"
+                    className="sm:hidden p-2 -mr-2 text-neutral-800 dark:text-neutral-200 rounded-lg"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     aria-label={isMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
                     aria-expanded={isMenuOpen}

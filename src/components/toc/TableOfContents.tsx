@@ -138,8 +138,8 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
             */}
             {!isTouch && (
                 <div className="relative">
-                    {/* Layer 1: Dash Trigger (Always Visible, defines hover area shape) */}
-                    <ul className="flex flex-col items-end gap-0.5 relative z-10 p-2 -m-2"> {/* Negative margin to expand hover area slightly? No, stick to tight. */}
+                    {/* Layer 1: Dash Trigger (Always Visible, defines hover/focus area shape) */}
+                    <ul className="flex flex-col items-end gap-0.5 relative z-10 p-2 -m-2">
                         {headings.map((heading) => {
                             const isActive = activeId === heading.id;
                             const relLevel = heading.level - minLevel;
@@ -149,17 +149,24 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
 
                             return (
                                 <li key={`dash-${heading.id}`} className="h-3 w-6 flex justify-end items-center">
-                                    <span
-                                        className={cn(
-                                            "block rounded-full transition-opacity duration-300",
-                                            "h-0.5",
-                                            dashWidth,
-                                            "group-hover:opacity-0", // Hide dashes on hover (replaced by card)
-                                            isActive
-                                                ? "bg-neutral-800 dark:bg-neutral-200"
-                                                : "bg-neutral-300 dark:bg-neutral-600"
-                                        )}
-                                    />
+                                    <a
+                                        href={`#${heading.id}`}
+                                        onClick={(e) => handleClick(e, heading.id)}
+                                        aria-label={heading.text}
+                                        className="flex items-center justify-end p-0.5 rounded transition-shadow"
+                                    >
+                                        <span
+                                            className={cn(
+                                                "block rounded-full transition-opacity duration-300",
+                                                "h-0.5",
+                                                dashWidth,
+                                                "group-hover:opacity-0", // Hide dashes on hover
+                                                isActive
+                                                    ? "bg-neutral-800 dark:bg-neutral-200"
+                                                    : "bg-neutral-300 dark:bg-neutral-600"
+                                            )}
+                                        />
+                                    </a>
                                 </li>
                             );
                         })}
@@ -189,6 +196,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                                     <li key={`text-${heading.id}`} className="flex items-center">
                                         <a
                                             href={`#${heading.id}`}
+                                            tabIndex={-1}
                                             onClick={(e) => handleClick(e, heading.id)}
                                             className={cn(
                                                 "block text-sm font-medium text-left transition-colors duration-200",
@@ -213,11 +221,6 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
 
             {/* 
               =============================================================================
-              [MOBILE / TOUCH RENDERING] - Unified Single Layer (Existing Logic)
-              =============================================================================
-            */}
-            {/* 
-              =============================================================================
               [MOBILE / TOUCH RENDERING] - Dual Layer (Same as Desktop, but Triggered by Click/Expanded)
               =============================================================================
             */}
@@ -238,7 +241,8 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                                     <a
                                         href={`#${heading.id}`}
                                         onClick={(e) => handleClick(e, heading.id)}
-                                        className="flex items-center justify-end w-full h-full"
+                                        aria-label={heading.text}
+                                        className="flex items-center justify-end p-0.5 rounded"
                                     >
                                         <span
                                             className={cn(
@@ -281,6 +285,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                                     <li key={`text-${heading.id}`} className="flex items-center">
                                         <a
                                             href={`#${heading.id}`}
+                                            tabIndex={-1}
                                             onClick={(e) => handleClick(e, heading.id)}
                                             className={cn(
                                                 "block text-sm font-medium text-left transition-colors duration-200",

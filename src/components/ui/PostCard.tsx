@@ -11,7 +11,7 @@ export default function PostCard({ post }: Props) {
         // Link도 subgrid를 상속받아야 함 - row-span-4 + grid-rows-subgrid 적용
         <Link
             href={`/blog/${post.slug}`}
-            className="block group grid row-span-4 mb-6"
+            className="block group grid row-span-4 mb-6 rounded-2xl"
             style={{ gridTemplateRows: 'subgrid' }}
         >
             <article

@@ -49,7 +49,7 @@ export default function RootLayout({
         >
           <a
             href="#main-content"
-            className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:p-4 focus:bg-white focus:text-black dark:focus:bg-neutral-900 dark:focus:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 rounded-md shadow-lg"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-neutral-900 focus:border focus:border-neutral-200 dark:focus:bg-neutral-900 dark:focus:text-neutral-100 dark:focus:border-neutral-800 focus:text-sm focus:font-medium focus:rounded-md focus:shadow-lg"
           >
             본문 내용으로 바로가기
           </a>
