@@ -92,4 +92,19 @@ describe('ContributionCalendar (FIRST Principle & Deterministic Timezone Test)',
         expect(screen.getByText('5 contributions')).toBeInTheDocument();
     });
 
+    it('잔디 타일마다 role="img" 및 "YYYY년 M월 D일: N개의 기여" 형태의 접근성 메타데이터(aria-label)가 제공되어야 한다', async () => {
+        const { container } = render(<ContributionCalendar />);
+
+        await waitFor(() => {
+            expect(screen.queryByText('GitHub Contributions')).toBeInTheDocument();
+        });
+
+        const imgCells = container.querySelectorAll('[data-cell="true"][role="img"]');
+        expect(imgCells.length).toBe(4);
+
+        // 2026-06-09: 5개의 기여 셀 검증
+        const targetCell = imgCells[3];
+        expect(targetCell).toHaveAttribute('aria-label', '2026년 6월 9일: 5개의 기여');
+    });
+
 });

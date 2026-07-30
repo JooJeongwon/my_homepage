@@ -70,17 +70,19 @@ export default function Header() {
                             href="https://github.com/JooJeongwon"
                             target="_blank"
                             rel="noreferrer"
+                            aria-label="GitHub 프로필 바로가기 (새 창 열림)"
                             className="p-2 rounded-full text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-blue-600 dark:hover:text-blue-550 transition-colors"
                         >
-                            <Github className="w-5 h-5" />
+                            <Github className="w-5 h-5" aria-hidden="true" />
                         </a>
 
                         {/* 메일 아이콘 */}
                         <a
                             href="mailto:jwjoo0512@gmail.com"
+                            aria-label="이메일 보내기"
                             className="p-2 rounded-full text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-blue-600 dark:hover:text-blue-550 transition-colors"
                         >
-                            <Mail className="w-5 h-5" />
+                            <Mail className="w-5 h-5" aria-hidden="true" />
                         </a>
 
                         {/* 다크모드 토글 버튼 */}
@@ -92,12 +94,12 @@ export default function Header() {
                 <button
                     className="sm:hidden p-2 -mr-2 text-neutral-800 dark:text-neutral-200"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    aria-label="Toggle menu"
+                    aria-label={isMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
                 >
                     {isMenuOpen ? (
-                        <X className="w-6 h-6" />
+                        <X className="w-6 h-6" aria-hidden="true" />
                     ) : (
-                        <Menu className="w-6 h-6" />
+                        <Menu className="w-6 h-6" aria-hidden="true" />
                     )}
                 </button>
             </div>
@@ -116,16 +118,18 @@ export default function Header() {
                                     href="https://github.com/JooJeongwon"
                                     target="_blank"
                                     rel="noreferrer"
+                                    aria-label="GitHub 프로필 바로가기 (새 창 열림)"
                                     className="flex items-center gap-2 text-sm font-medium text-neutral-800 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-blue-550"
                                 >
-                                    <Github className="w-5 h-5" />
+                                    <Github className="w-5 h-5" aria-hidden="true" />
                                     <span>GitHub</span>
                                 </a>
                                 <a
                                     href="mailto:jwjoo0512@gmail.com"
+                                    aria-label="이메일 보내기"
                                     className="flex items-center gap-2 text-sm font-medium text-neutral-800 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-blue-550"
                                 >
-                                    <Mail className="w-5 h-5" />
+                                    <Mail className="w-5 h-5" aria-hidden="true" />
                                     <span>Mail</span>
                                 </a>
                             </div>

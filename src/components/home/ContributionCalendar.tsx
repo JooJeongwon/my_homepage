@@ -20,6 +20,16 @@ const formatDate = (dateStr: string) => {
     }
 };
 
+const formatKoreanDate = (dateStr: string) => {
+    try {
+        const [year, month, day] = dateStr.split('-').map(Number);
+        if (!year || !month || !day) return dateStr;
+        return `${year}년 ${month}월 ${day}일`;
+    } catch {
+        return dateStr;
+    }
+};
+
 const getMonthLabels = (weeks: ContributionCalendarType['weeks']) => {
     const labels: { index: number; label: string }[] = [];
     let prevMonth = -1;
@@ -268,6 +278,8 @@ export default function ContributionCalendar() {
                                                         height: `${cellWidth}px`,
                                                     }}
                                                     data-cell="true"
+                                                    role="img"
+                                                    aria-label={`${formatKoreanDate(day.date)}: ${day.count}개의 기여`}
                                                     className="relative group calendar-cell-group select-none"
                                                     onMouseEnter={(e) => handleCellMouseEnter(e, day.date, day.count)}
                                                     onMouseLeave={handleCellMouseLeave}
@@ -276,6 +288,7 @@ export default function ContributionCalendar() {
                                                     {/* 개별 잔디 셀 - hover 시 매끄러운 줌 및 바람에 흔들리는 효과 지원 */}
                                                     <div
                                                         className={`w-full h-full rounded-[2px] transition-all duration-150 group-hover:scale-130 group-hover:z-20 origin-bottom cursor-default ${cellProps.className}`}
+                                                        aria-hidden="true"
                                                     />
                                                 </div>
                                             );
@@ -317,7 +330,7 @@ export default function ContributionCalendar() {
                     onClick={fetchData}
                     className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 transition-colors cursor-pointer"
                 >
-                    <RefreshCw className="w-3.5 h-3.5" />
+                    <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
                     다시 시도
                 </button>
             </div>
@@ -329,13 +342,14 @@ export default function ContributionCalendar() {
             <div className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 bg-white dark:bg-neutral-900/50 space-y-4 w-full max-w-full overflow-hidden">
             <div className="flex justify-between items-center">
                 <h3 className="text-md font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                    <Github className="w-5 h-5 text-neutral-800 dark:text-neutral-200" />
+                    <Github className="w-5 h-5 text-neutral-800 dark:text-neutral-200" aria-hidden="true" />
                     GitHub Contributions
                 </h3>
                 <a
                     href="https://github.com/JooJeongwon"
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="GitHub 프로필 바로가기 (새 창 열림)"
                     className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
                 >
                     @JooJeongwon
