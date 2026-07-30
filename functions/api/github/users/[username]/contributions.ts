@@ -1,6 +1,6 @@
 /// <reference types="@cloudflare/workers-types" />
 
-import { getGithubContributionsUseCase } from '../../../src/di/contribution.module';
+import { getGithubContributionsUseCase } from '../../../../../src/di/contribution.module';
 
 interface Env {
     GITHUB_PAT: string;
@@ -45,7 +45,6 @@ async function revalidateCache(
         }
         const formattedData = result.value;
 
-
         const responseHeaders: Record<string, string> = {
             ...securityHeaders,
             'Cache-Control': 'public, max-age=3600, stale-while-revalidate=600',
@@ -67,7 +66,9 @@ async function revalidateCache(
 
 export const onRequest: PagesFunction<Env> = async (context) => {
     const url = new URL(context.request.url);
-    const username = url.searchParams.get('username') || 'JooJeongwon';
+    // Cloudflare Pages Dynamic Route Context Parameter 추출
+    const pathUsername = context.params?.username as string | undefined;
+    const username = pathUsername || url.searchParams.get('username') || 'JooJeongwon';
     const token = context.env.GITHUB_PAT;
 
     // Origin 및 Referer 교차 검증
@@ -192,13 +193,11 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         const getContributionsUseCase = getGithubContributionsUseCase(token);
         const result = await getContributionsUseCase.executeResult(username);
 
-
         if (result.isFailure) {
             throw result.error;
         }
 
         const formattedData = result.value;
-
 
         // 4. 응답 구성 및 Edge/Browser 캐시 헤더 주입
         const responseHeaders: Record<string, string> = {
@@ -262,4 +261,3 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         );
     }
 };
-

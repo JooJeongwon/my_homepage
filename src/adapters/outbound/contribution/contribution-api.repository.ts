@@ -4,7 +4,7 @@ import { ContributionRepository } from '@/domain/ports/contribution.repository';
 export class ContributionApiRepository implements ContributionRepository {
     async getContributions(username: string): Promise<ContributionCalendar> {
         try {
-            const response = await fetch(`/api/github/contributions?username=${encodeURIComponent(username)}`);
+            const response = await fetch(`/api/github/users/${encodeURIComponent(username)}/contributions`);
             
             if (!response.ok) {
                 console.error(`[ContributionApiRepository] API Response Error: ${response.status} ${response.statusText}`);

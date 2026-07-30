@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { onRequest } from '../../../../../functions/api/github/contributions';
+import { onRequest } from '../../../../../../../functions/api/github/users/[username]/contributions';
 
-describe('contributions API 보안 취약점 보완 테스트', () => {
+describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', () => {
     let mockContext: any;
 
     beforeEach(() => {
@@ -43,11 +43,14 @@ describe('contributions API 보안 취약점 보완 테스트', () => {
         };
 
         mockContext = {
-            request: new Request('http://localhost:3000/api/github/contributions?username=JooJeongwon', {
+            request: new Request('http://localhost:3000/api/github/users/JooJeongwon/contributions', {
                 headers: {
                     'Origin': 'http://localhost:3000'
                 }
             }),
+            params: {
+                username: 'JooJeongwon'
+            },
             env: {
                 GITHUB_PAT: 'mock_token'
             },
@@ -55,7 +58,7 @@ describe('contributions API 보안 취약점 보완 테스트', () => {
         };
     });
 
-    it('정상적인 Origin과 올바른 username인 경우 기여 정보를 정상 파싱하여 반환한다', async () => {
+    it('RESTful 자원 URI 경로와 정상적인 Origin으로 유효한 username 요청 시 기여 정보를 정상 반환한다', async () => {
         const response = await onRequest(mockContext);
         expect(response.status).toBe(200);
 
@@ -71,7 +74,7 @@ describe('contributions API 보안 취약점 보완 테스트', () => {
     });
 
     it('허용되지 않은 Origin인 경우 403 Forbidden을 반환하고 요청을 차단한다', async () => {
-        mockContext.request = new Request('http://localhost:3000/api/github/contributions?username=JooJeongwon', {
+        mockContext.request = new Request('http://localhost:3000/api/github/users/JooJeongwon/contributions', {
             headers: {
                 'Origin': 'http://malicious.com'
             }
@@ -88,11 +91,12 @@ describe('contributions API 보안 취약점 보완 테스트', () => {
     });
 
     it('허용되지 않은 username 패턴(인젝션 시도 또는 화이트리스트 외)인 경우 403 Forbidden을 반환한다', async () => {
-        mockContext.request = new Request('http://localhost:3000/api/github/contributions?username=bad_user$', {
+        mockContext.request = new Request('http://localhost:3000/api/github/users/bad_user$/contributions', {
             headers: {
                 'Origin': 'http://localhost:3000'
             }
         });
+        mockContext.params = { username: 'bad_user$' };
 
         const response = await onRequest(mockContext);
         expect(response.status).toBe(403);
