@@ -107,7 +107,7 @@ export default function Header() {
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     aria-label={isMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
                     aria-expanded={isMenuOpen}
-                    aria-controls="mobile-navigation"
+                    aria-controls="mobile-nav"
                 >
                     {isMenuOpen ? (
                         <X className="w-6 h-6" aria-hidden="true" />
@@ -119,7 +119,7 @@ export default function Header() {
 
             {/* 모바일 메뉴 드롭다운 */}
             {isMenuOpen && (
-                <div id="mobile-navigation" className="sm:hidden border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-6 py-4 animate-in slide-in-from-top-2 fade-in-20">
+                <div id="mobile-nav" className="sm:hidden border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-6 py-4 animate-in slide-in-from-top-2 fade-in-20">
                     <nav aria-label="모바일 메인 네비게이션" className="flex flex-col space-y-4">
                         <NavLink href="/">Home</NavLink>
                         <NavLink href="/blog">Blog</NavLink>

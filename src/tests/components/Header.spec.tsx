@@ -37,7 +37,7 @@ describe('Header (POUR Accessibility Principles Test)', () => {
         const toggleButton = screen.getByRole('button', { name: '메뉴 열기' });
         expect(toggleButton).toBeInTheDocument();
         expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
-        expect(toggleButton).toHaveAttribute('aria-controls', 'mobile-navigation');
+        expect(toggleButton).toHaveAttribute('aria-controls', 'mobile-nav');
         const initialIcon = toggleButton.querySelector('svg');
         expect(initialIcon).toHaveAttribute('aria-hidden', 'true');
 
