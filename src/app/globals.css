@@ -51,6 +51,72 @@
     box-shadow: none !important;
   }
 
+  /* 전역 Stretched-Link (after:inset-0 / inset-0) 카드 패턴 통일 규칙 */
+  /* 카드 내 텍스트 <a> 자체의 포커스 외곽선/위아래 줄은 100% 무력화하고, 겉 카드 컨테이너(article, .group 등)에만 1px 포커스 테두리 전역 적용 */
+  a[class*="inset-0"]:focus,
+  a[class*="inset-0"]:focus-visible,
+  a[class*="inset-0"]:focus-within,
+  a[class*="after:inset-0"]:focus,
+  a[class*="after:inset-0"]:focus-visible,
+  a[class*="after:inset-0"]:focus-within,
+  a.after\:inset-0:focus,
+  a.after\:inset-0:focus-visible,
+  .after\:inset-0:focus,
+  .after\:inset-0:focus-visible,
+  article h2 a,
+  article h2 a:focus,
+  article h2 a:focus-visible,
+  article h2 a:focus-within,
+  article h3 a,
+  article h3 a:focus,
+  article h3 a:focus-visible,
+  article h3 a:focus-within,
+  article [tabindex="0"]:focus,
+  article [tabindex="0"]:focus-visible,
+  article [tabindex="0"]:focus-within,
+  .dark a[class*="inset-0"]:focus,
+  .dark a[class*="inset-0"]:focus-visible,
+  .dark a[class*="inset-0"]:focus-within,
+  .dark a[class*="after:inset-0"]:focus,
+  .dark a[class*="after:inset-0"]:focus-visible,
+  .dark a[class*="after:inset-0"]:focus-within,
+  .dark a.after\:inset-0:focus,
+  .dark a.after\:inset-0:focus-visible,
+  .dark .after\:inset-0:focus,
+  .dark .after\:inset-0:focus-visible,
+  .dark article h2 a,
+  .dark article h2 a:focus,
+  .dark article h2 a:focus-visible,
+  .dark article h2 a:focus-within,
+  .dark article h3 a,
+  .dark article h3 a:focus,
+  .dark article h3 a:focus-visible,
+  .dark article h3 a:focus-within,
+  .dark article [tabindex="0"]:focus,
+  .dark article [tabindex="0"]:focus-visible,
+  .dark article [tabindex="0"]:focus-within {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  article:has([class*="inset-0"]:focus-visible),
+  article:has(a:focus-visible),
+  .group:has([class*="inset-0"]:focus-visible),
+  .group:has(a:focus-visible) {
+    outline: 1px solid #171717 !important;
+    outline-offset: 0 !important;
+  }
+
+  .dark article:has([class*="inset-0"]:focus-visible),
+  .dark article:has(a:focus-visible),
+  .dark .group:has([class*="inset-0"]:focus-visible),
+  .dark .group:has(a:focus-visible) {
+    outline: 1px solid #ffffff !important;
+    outline-offset: 0 !important;
+  }
+
   /* 검색창 등 input, textarea 입력 요소 내부 이중 사각형 포커스 잔영 제거 (부모 focus-within이 둥근 포커스 전담) */
   input,
   input:focus,
