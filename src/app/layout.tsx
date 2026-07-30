@@ -54,7 +54,7 @@ export default function RootLayout({
             본문 내용으로 바로가기
           </a>
           <Header />
-          <main id="main-content" tabIndex={-1} className="flex-1 w-full outline-none">
+          <main id="main-content" tabIndex={-1} aria-label="본문 콘텐츠" className="flex-1 w-full outline-none">
             {children}
           </main>
           <Footer />

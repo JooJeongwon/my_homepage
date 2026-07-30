@@ -52,6 +52,8 @@ export default function SearchableProjectList({ projects }: SearchableProjectLis
                 {/* 검색창 */}
                 <div className="flex justify-start md:justify-end">
                     <SearchInput
+                        id="search-projects"
+                        label="프로젝트 검색"
                         value={query}
                         onChange={handleQueryChange}
                         placeholder="Search ( ⌘ + k )"

@@ -52,6 +52,8 @@ export default function SearchablePostList({ posts }: SearchablePostListProps) {
                 {/* 검색창 */}
                 <div className="flex justify-start md:justify-end">
                     <SearchInput
+                        id="search-posts"
+                        label="포스트 검색"
                         value={query}
                         onChange={handleQueryChange}
                         placeholder="Search ( ⌘ + k )"

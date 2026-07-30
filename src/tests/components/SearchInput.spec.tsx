@@ -69,4 +69,25 @@ describe('SearchInput UI Component Interaction Tests (FIRST Principle)', () => {
 
         expect(document.activeElement).toBe(input);
     });
+
+    it('기본적으로 sr-only 클래스를 가진 <label>이 입력창과 htmlFor-id로 명시적 연동되어야 한다 (POUR Understandable)', () => {
+        render(<SearchInput value="" onChange={vi.fn()} label="통합 검색" id="custom-search-id" />);
+
+        const labelElement = screen.getByText('통합 검색');
+        expect(labelElement).toBeInTheDocument();
+        expect(labelElement.tagName.toLowerCase()).toBe('label');
+        expect(labelElement).toHaveAttribute('for', 'custom-search-id');
+        expect(labelElement.className).toContain('sr-only');
+
+        const inputElement = screen.getByLabelText('통합 검색');
+        expect(inputElement).toBeInTheDocument();
+        expect(inputElement).toHaveAttribute('id', 'custom-search-id');
+    });
+
+    it('showLabel이 true일 때 시각적으로 label이 노출되어야 한다.', () => {
+        render(<SearchInput value="" onChange={vi.fn()} label="시각적 검색어 입력" showLabel={true} />);
+
+        const labelElement = screen.getByText('시각적 검색어 입력');
+        expect(labelElement.className).not.toContain('sr-only');
+    });
 });
