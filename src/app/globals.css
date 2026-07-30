@@ -102,19 +102,28 @@
   }
 
   article:has([class*="inset-0"]:focus-visible),
-  article:has(a:focus-visible),
+  article:has(a[class*="after:inset-0"]:focus-visible),
   .group:has([class*="inset-0"]:focus-visible),
-  .group:has(a:focus-visible) {
+  .group:has(a[class*="after:inset-0"]:focus-visible) {
     outline: 1px solid #171717 !important;
     outline-offset: 0 !important;
   }
 
   .dark article:has([class*="inset-0"]:focus-visible),
-  .dark article:has(a:focus-visible),
+  .dark article:has(a[class*="after:inset-0"]:focus-visible),
   .dark .group:has([class*="inset-0"]:focus-visible),
-  .dark .group:has(a:focus-visible) {
+  .dark .group:has(a[class*="after:inset-0"]:focus-visible) {
     outline: 1px solid #ffffff !important;
     outline-offset: 0 !important;
+  }
+
+  /* 네비게이터(TableOfContents) 및 일반 본문 컨테이너 이중 박스 완전 방지 */
+  nav:has(a:focus-visible),
+  nav.group:has(a:focus-visible),
+  .dark nav:has(a:focus-visible),
+  .dark nav.group:has(a:focus-visible) {
+    outline: none !important;
+    box-shadow: none !important;
   }
 
   /* 검색창 등 input, textarea 입력 요소 내부 이중 사각형 포커스 잔영 제거 (부모 focus-within이 둥근 포커스 전담) */
