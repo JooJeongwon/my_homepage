@@ -1,11 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { onRequest, onRequestGet, onRequestOptions } from '../../../../../../../functions/api/github/users/[username]/contributions';
 
 describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', () => {
     let mockContext: any;
+    const originalFetch = global.fetch;
+    const originalCaches = (global as any).caches;
 
     beforeEach(() => {
         vi.restoreAllMocks();
+        vi.clearAllMocks();
+        vi.resetAllMocks();
         
         // global fetch 모킹
         global.fetch = vi.fn().mockImplementation(() => {
@@ -56,6 +60,19 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
             },
             waitUntil: vi.fn()
         };
+    });
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+        vi.clearAllMocks();
+        vi.resetAllMocks();
+
+        global.fetch = originalFetch;
+        if (originalCaches !== undefined) {
+            (global as any).caches = originalCaches;
+        } else {
+            delete (global as any).caches;
+        }
     });
 
     it('RESTful 자원 URI 경로와 정상적인 Origin으로 유효한 username 요청 시 기여 정보와 HATEOAS 링크를 정상 반환한다', async () => {
