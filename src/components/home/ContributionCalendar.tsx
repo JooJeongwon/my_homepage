@@ -147,6 +147,9 @@ export default function ContributionCalendar() {
             const useCase = getGetContributionsUseCase();
             // 기본 사용자: JooJeongwon
             const res = await useCase.execute('JooJeongwon');
+            if (!res || !Array.isArray(res.weeks)) {
+                throw new Error('유효하지 않은 기여도 데이터 형식입니다.');
+            }
             setData(res);
         } catch (err: any) {
             console.error('기여도 데이터 로딩 에러:', err);
