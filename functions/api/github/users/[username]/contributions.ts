@@ -45,6 +45,14 @@ async function revalidateCache(
         }
         const formattedData = result.value;
 
+        const hateoasResponse = {
+            data: formattedData,
+            _links: {
+                self: { href: `/api/github/users/${username}/contributions` },
+                github_profile: { href: `https://github.com/${username}` }
+            }
+        };
+
         const responseHeaders: Record<string, string> = {
             ...securityHeaders,
             'Cache-Control': 'public, max-age=3600, stale-while-revalidate=600',
@@ -52,7 +60,7 @@ async function revalidateCache(
             'Date': new Date().toUTCString()
         };
 
-        const freshResponse = new Response(JSON.stringify(formattedData), {
+        const freshResponse = new Response(JSON.stringify(hateoasResponse), {
             status: 200,
             headers: responseHeaders
         });
@@ -237,6 +245,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
         const formattedData = result.value;
 
+        const hateoasResponse = {
+            data: formattedData,
+            _links: {
+                self: { href: `/api/github/users/${username}/contributions` },
+                github_profile: { href: `https://github.com/${username}` }
+            }
+        };
+
         // 4. 응답 구성 및 Edge/Browser 캐시 헤더 주입
         const responseHeaders: Record<string, string> = {
             ...securityHeaders,
@@ -245,7 +261,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
             'Date': new Date().toUTCString()
         };
 
-        const formattedResponse = new Response(JSON.stringify(formattedData), {
+        const formattedResponse = new Response(JSON.stringify(hateoasResponse), {
             status: 200,
             headers: responseHeaders
         });

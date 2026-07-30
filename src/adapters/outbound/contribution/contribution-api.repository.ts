@@ -11,10 +11,13 @@ export class ContributionApiRepository implements ContributionRepository {
                 return createFallbackContributionCalendar();
             }
 
-            const data = await response.json();
+            const json = await response.json();
+            
+            // HATEOAS 레벨 3 응답 구조(data wrapper) 대응 및 하위 호환성 유지
+            const payload = json && typeof json === 'object' && 'data' in json ? json.data : json;
             
             // Zod 검증을 통한 도메인 데이터 무결성 보장
-            const parsed = ContributionCalendarSchema.safeParse(data);
+            const parsed = ContributionCalendarSchema.safeParse(payload);
             if (!parsed.success) {
                 console.error('[ContributionApiRepository] Contribution API 스키마 검증 실패:', parsed.error);
                 return createFallbackContributionCalendar();
