@@ -64,7 +64,45 @@ async function revalidateCache(
     }
 }
 
-export const onRequest: PagesFunction<Env> = async (context) => {
+export const onRequestOptions: PagesFunction<Env> = async (context) => {
+    const origin = context.request.headers.get('Origin');
+    const referer = context.request.headers.get('Referer');
+    
+    let requestOrigin = origin;
+    if (!requestOrigin && referer) {
+        try {
+            requestOrigin = new URL(referer).origin;
+        } catch {
+            requestOrigin = null;
+        }
+    }
+
+    const isOriginValid = isAllowedOrigin(requestOrigin);
+
+    if (!isOriginValid || !requestOrigin) {
+        return new Response(
+            JSON.stringify({ error: '허용되지 않은 접근 경로입니다. (Invalid Origin)' }),
+            {
+                status: 403,
+                headers: {
+                    'Content-Type': 'application/json;charset=UTF-8'
+                }
+            }
+        );
+    }
+
+    return new Response(null, {
+        status: 204,
+        headers: {
+            'Access-Control-Allow-Origin': requestOrigin,
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Max-Age': '86400'
+        }
+    });
+};
+
+export const onRequestGet: PagesFunction<Env> = async (context) => {
     const url = new URL(context.request.url);
     // Cloudflare Pages Dynamic Route Context Parameter 추출
     const pathUsername = context.params?.username as string | undefined;
@@ -260,4 +298,11 @@ export const onRequest: PagesFunction<Env> = async (context) => {
             }
         );
     }
+};
+
+export const onRequest: PagesFunction<Env> = async (context) => {
+    if (context.request.method === 'OPTIONS') {
+        return onRequestOptions(context);
+    }
+    return onRequestGet(context);
 };

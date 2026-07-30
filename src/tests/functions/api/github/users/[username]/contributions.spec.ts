@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { onRequest } from '../../../../../../../functions/api/github/users/[username]/contributions';
+import { onRequest, onRequestGet, onRequestOptions } from '../../../../../../../functions/api/github/users/[username]/contributions';
 
 describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', () => {
     let mockContext: any;
@@ -71,6 +71,36 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
         expect(response.headers.get('Content-Security-Policy')).toBe("default-src 'none'; sandbox;");
         expect(response.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin');
         expect(response.headers.get('Access-Control-Allow-Origin')).toBe('http://localhost:3000');
+    });
+
+    it('CORS Preflight (OPTIONS) 요청 시 허용된 Origin에 대해 204 No Content와 적절한 CORS 헤더를 반환한다', async () => {
+        mockContext.request = new Request('http://localhost:3000/api/github/users/JooJeongwon/contributions', {
+            method: 'OPTIONS',
+            headers: {
+                'Origin': 'http://localhost:3000',
+                'Access-Control-Request-Method': 'GET'
+            }
+        });
+
+        const response = await onRequest(mockContext);
+        expect(response.status).toBe(204);
+        expect(response.headers.get('Access-Control-Allow-Origin')).toBe('http://localhost:3000');
+        expect(response.headers.get('Access-Control-Allow-Methods')).toBe('GET, OPTIONS');
+        expect(response.headers.get('Access-Control-Allow-Headers')).toBe('Content-Type');
+        expect(response.headers.get('Access-Control-Max-Age')).toBe('86400');
+    });
+
+    it('CORS Preflight (OPTIONS) 요청 시 허용되지 않은 Origin인 경우 403 Forbidden을 반환한다', async () => {
+        mockContext.request = new Request('http://localhost:3000/api/github/users/JooJeongwon/contributions', {
+            method: 'OPTIONS',
+            headers: {
+                'Origin': 'http://malicious-site.com'
+            }
+        });
+
+        const response = await onRequestOptions(mockContext);
+        expect(response.status).toBe(403);
+        expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull();
     });
 
     it('허용되지 않은 Origin인 경우 403 Forbidden을 반환하고 요청을 차단한다', async () => {
