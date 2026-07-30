@@ -76,9 +76,9 @@ export default async function BlogPostPage({
                         </Link>
                     </div>
                     <h1 className="text-4xl font-bold mb-4 text-neutral-800 dark:text-neutral-200">{post.title}</h1>
-                    <div className="text-neutral-600 dark:text-neutral-400 mb-4">
+                    <time dateTime={post.date} className="block text-neutral-600 dark:text-neutral-400 mb-4">
                         {new Date(post.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    </div>
+                    </time>
                     <div className="flex justify-start gap-2 flex-wrap">
                         {post.tags.map((tag) => (
                             <span key={tag} className="px-2.5 py-0.5 rounded-md text-xs font-medium

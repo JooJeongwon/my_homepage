@@ -27,7 +27,10 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
         <div className="relative group">
             <pre
                 ref={preRef}
+                /* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */
                 tabIndex={0}
+                role="region"
+                aria-label="코드 블록"
                 className={cn(
                     "relative overflow-x-auto py-4 px-4 rounded-2xl border",
                     // Light mode

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Github, Globe } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Project } from '@/domain/models/project.model';
@@ -11,48 +12,43 @@ interface ProjectCardProps {
 export function ProjectCard({ project }: ProjectCardProps) {
     const router = useRouter();
 
-    const handleCardClick = () => {
-        router.push(`/projects/${project.slug}`);
-    };
-
-    const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        e.stopPropagation();
-    };
-
     return (
         <article
-            tabIndex={0}
-            role="link"
-            aria-label={`${project.title} 프로젝트 상세보기`}
-            onClick={handleCardClick}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleCardClick();
-                }
-            }}
             className="border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 
-            bg-white dark:bg-neutral-900/50 cursor-pointer
+            bg-white dark:bg-neutral-900/50 relative
             hover:shadow-xl dark:hover:bg-neutral-900
             hover:-translate-y-1 transition duration-300 ease-out group
             grid row-span-4 mb-6"
             style={{ gridTemplateRows: 'subgrid' }}
         >
-            {/* Row 1: 제목 - 원래 mb-4였으므로 pb-4 추가 */}
+            {/* Row 1: 제목 */}
             <div className="flex justify-between items-start pb-4">
                 <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-blue-600 dark:group-hover:text-blue-550 transition-colors line-clamp-2">
-                    {project.title}
+                    <Link
+                        href={`/projects/${project.slug}`}
+                        tabIndex={0}
+                        aria-label={`${project.title} 프로젝트 상세보기`}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                router.push(`/projects/${project.slug}`);
+                            }
+                        }}
+                        className="focus:outline-none after:absolute after:inset-0"
+                    >
+                        {project.title}
+                    </Link>
                 </h2>
             </div>
 
-            {/* Row 2: 설명 - div로 감싸서 p가 subgrid 직접 자식이 아니게 함 (display: -webkit-box 작동 가능) */}
+            {/* Row 2: 설명 */}
             <div className="pb-6">
                 <p className="text-neutral-700 dark:text-neutral-300 text-sm leading-relaxed line-clamp-3 break-words">
                     {project.description}
                 </p>
             </div>
 
-            {/* Row 3: 태그 - 원래 mb-6였으므로 pb-6 추가 */}
+            {/* Row 3: 태그 */}
             <div className="flex flex-wrap gap-2 content-start pb-6">
                 {project.tags.map(tag => (
                     <span key={tag} className="px-2.5 py-0.5 rounded-md text-xs font-medium h-fit
@@ -64,19 +60,18 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 ))}
             </div>
 
-            {/* Row 4: 링크 & 날짜 (self-end로 바닥 정렬) */}
-            <div className="flex items-center justify-between self-end">
+            {/* Row 4: 링크 & 날짜 */}
+            <div className="flex items-center justify-between self-end z-10">
                 <div className="flex gap-4 text-sm font-medium">
                     {project.links?.github && (
                         <a
                             href={project.links.github}
                             target="_blank"
                             rel="noreferrer"
-                            onClick={handleLinkClick}
-                            className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors z-10"
-                            title="View Source Code"
+                            className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors relative z-10"
+                            aria-label="GitHub 소스코드 (새 창 열림)"
                         >
-                            <Github className="w-4 h-4" />
+                            <Github className="w-4 h-4" aria-hidden="true" />
                             Code
                         </a>
                     )}
@@ -85,18 +80,17 @@ export function ProjectCard({ project }: ProjectCardProps) {
                             href={project.links.demo}
                             target="_blank"
                             rel="noreferrer"
-                            onClick={handleLinkClick}
-                            className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors z-10"
-                            title="View Live Demo"
+                            className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors relative z-10"
+                            aria-label="데모 시연 (새 창 열림)"
                         >
-                            <Globe className="w-4 h-4" />
+                            <Globe className="w-4 h-4" aria-hidden="true" />
                             Demo
                         </a>
                     )}
                 </div>
-                <span className="text-neutral-600 dark:text-neutral-400 text-xs font-medium whitespace-nowrap">
+                <time dateTime={project.date} className="text-neutral-600 dark:text-neutral-400 text-xs font-medium whitespace-nowrap">
                     {project.date}
-                </span>
+                </time>
             </div>
         </article>
     );

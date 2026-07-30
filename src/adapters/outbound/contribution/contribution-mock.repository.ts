@@ -2,6 +2,7 @@ import { ContributionCalendar, ContributionDay, ContributionWeek } from '@/domai
 import { ContributionRepository } from '@/domain/ports/contribution.repository';
 
 export class ContributionMockRepository implements ContributionRepository {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getContributions(username: string): Promise<ContributionCalendar> {
         // 로컬 개발 환경에서 Skeleton UI 테스트를 위해 800ms의 인위적인 딜레이를 부여합니다.
         await new Promise((resolve) => setTimeout(resolve, 800));

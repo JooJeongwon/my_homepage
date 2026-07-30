@@ -64,7 +64,7 @@ describe('MdxPostRepository (FIRST Principle Infrastructure Adapter Test)', () =
 
     it('MDX 파싱 중 에러 발생 시 해당 포스트를 제외(null)하고 빈 배열을 반환해야 한다.', async () => {
         vi.spyOn(fs, 'existsSync').mockReturnValue(true);
-        vi.spyOn(fs, 'readdirSync').mockReturnValue(['invalid.mdx' as any]);
+        vi.spyOn(fs, 'readdirSync').mockReturnValue(['invalid.mdx' as unknown as import('fs').Dirent]);
         vi.spyOn(fs, 'readFileSync').mockImplementation(() => {
             throw new Error('File read error');
         });

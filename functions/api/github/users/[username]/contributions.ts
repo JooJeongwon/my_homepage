@@ -259,7 +259,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
         return formattedResponse;
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error('서버리스 내부 처리 에러:', err);
         
         // 5. Stale-If-Error 및 캐시 폴백 처리
@@ -284,7 +284,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         }
 
         // GitHub API 연동 중 발생한 에러인지 체크하여 알맞은 상태 코드 및 메시지 제공
-        const isGithubError = err.message && err.message.includes('GitHub GraphQL API 호출 실패');
+        const errMessage = err instanceof Error ? err.message : String(err);
+        const isGithubError = errMessage.includes('GitHub GraphQL API 호출 실패');
         const status = isGithubError ? 502 : 500;
         const errorMessage = isGithubError 
             ? 'GitHub API 연동 중 문제가 발생했습니다.' 

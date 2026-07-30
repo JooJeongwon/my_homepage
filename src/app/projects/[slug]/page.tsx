@@ -78,8 +78,8 @@ export default async function ProjectDetailPage({
 
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 text-neutral-600 dark:text-neutral-400 text-sm mb-6">
                         <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            <span>{project.date}</span>
+                            <Calendar className="w-4 h-4" aria-hidden="true" />
+                            <time dateTime={project.date}>{project.date}</time>
                         </div>
 
                         <div className="flex gap-4">

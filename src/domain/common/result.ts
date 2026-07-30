@@ -6,13 +6,15 @@
 
 export type Result<T, E = Error> = Success<T, E> | Failure<T, E>;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Success<T, E> {
     readonly isSuccess = true as const;
     readonly isFailure = false as const;
 
     constructor(public readonly value: T) {}
 
-    getOrElse(_fallback: T): T {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getOrElse(fallback: T): T {
         return this.value;
     }
 }

@@ -35,9 +35,9 @@ export class ContributionApiRepository implements ContributionRepository {
                     return createFallbackContributionCalendar();
                 }
 
-            } catch (error: any) {
+            } catch (error: unknown) {
                 clearTimeout(timer);
-                const isAbort = error.name === 'AbortError';
+                const isAbort = error instanceof Error && error.name === 'AbortError';
                 console.warn(`[ContributionApiRepository] Attempt ${attempt}/${this.maxRetries} ${isAbort ? 'Timeout' : 'Network Failure'}:`, error);
             }
 

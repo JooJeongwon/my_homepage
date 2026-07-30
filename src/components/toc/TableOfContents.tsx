@@ -129,7 +129,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                 "hidden sm:flex fixed right-8 top-40 z-50 flex-col items-end",
                 !isTouch && "group" // Desktop: Enable global hover group
             )}
-            aria-label="Table of contents"
+            aria-label="목차"
         >
             {/* 
               =============================================================================

@@ -51,7 +51,7 @@ describe('ProjectMdxRepository (FIRST Principle Infrastructure Adapter Test)', (
 
     it('파일 읽기 또는 파싱 실패 시 에러 발생 없이 해당 프로젝트를 제외(null)하고 빈 배열을 반환해야 한다.', async () => {
         vi.spyOn(fs, 'existsSync').mockReturnValue(true);
-        vi.spyOn(fs, 'readdirSync').mockReturnValue(['broken.mdx' as any]);
+        vi.spyOn(fs, 'readdirSync').mockReturnValue(['broken.mdx' as unknown as import('fs').Dirent]);
         vi.spyOn(fs, 'readFileSync').mockImplementation(() => {
             throw new Error('Disk Read Failure');
         });

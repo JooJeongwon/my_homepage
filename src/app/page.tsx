@@ -14,14 +14,14 @@ export default function Home() {
       <Hero />
 
       {/* 기여도 잔디 섹션 */}
-      <section className="px-6">
+      <section className="px-6" aria-label="GitHub 기여도 잔디">
         <ContributionCalendar />
       </section>
 
       {/* Featured Projects 섹션 */}
-      <section className="px-6 pb-20">
+      <section className="px-6 pb-20" aria-labelledby="featured-projects-heading">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+          <h2 id="featured-projects-heading" className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             Featured Projects
           </h2>
           <Link href="/projects" className="group flex items-center gap-1 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors rounded px-1.5 py-0.5">
@@ -36,9 +36,9 @@ export default function Home() {
       </section>
 
       {/* 포스트 리스트 섹션 */}
-      <section className="px-6 pb-20">
+      <section className="px-6 pb-20" aria-labelledby="recent-posts-heading">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+          <h2 id="recent-posts-heading" className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             Recent Posts
           </h2>
           <Link href="/blog" className="group flex items-center gap-1 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors rounded px-1.5 py-0.5">

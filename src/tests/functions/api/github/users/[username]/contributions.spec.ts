@@ -1,10 +1,16 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { onRequest, onRequestGet, onRequestOptions } from '../../../../../../../functions/api/github/users/[username]/contributions';
+import { onRequest, onRequestOptions } from '../../../../../../../functions/api/github/users/[username]/contributions';
+
+interface MockContext {
+    request: Request;
+    params: { username?: string };
+    env: { GITHUB_PAT?: string };
+    waitUntil: (promise: Promise<unknown>) => void;
+}
 
 describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', () => {
-    let mockContext: any;
+    let mockContext: MockContext;
     const originalFetch = global.fetch;
-    const originalCaches = (global as any).caches;
+    const originalCaches = (globalThis as Record<string, unknown>).caches;
 
     beforeEach(() => {
         vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -45,7 +51,7 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
             match: vi.fn().mockResolvedValue(null),
             put: vi.fn().mockResolvedValue(undefined)
         };
-        (global as any).caches = {
+        (globalThis as Record<string, unknown>).caches = {
             default: mockCache
         };
 
@@ -73,9 +79,9 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
 
         global.fetch = originalFetch;
         if (originalCaches !== undefined) {
-            (global as any).caches = originalCaches;
+            (globalThis as Record<string, unknown>).caches = originalCaches;
         } else {
-            delete (global as any).caches;
+            delete (globalThis as Record<string, unknown>).caches;
         }
     });
 
@@ -170,7 +176,7 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
         // 에러 시 502 Bad Gateway 리턴 확인
         expect(response.status).toBe(502);
 
-        const data = await response.json() as { error?: string; details?: any };
+        const data = await response.json() as { error?: string; details?: unknown };
         // 실제 에러 메시지(Internal Server GraphQL Error Detail)는 드러나지 않고 일반적인 에러 리턴 확인
         expect(data.error).toBe('GitHub API 연동 중 문제가 발생했습니다.');
         expect(data.details).toBeUndefined(); // details 노출 없음
@@ -197,7 +203,7 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
             match: vi.fn().mockResolvedValue(mockCacheResponse),
             put: vi.fn().mockResolvedValue(undefined)
         };
-        (global as any).caches = {
+        (globalThis as Record<string, unknown>).caches = {
             default: mockCache
         };
 
@@ -238,7 +244,7 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
             match: vi.fn().mockResolvedValue(mockCacheResponse),
             put: vi.fn().mockResolvedValue(undefined)
         };
-        (global as any).caches = {
+        (globalThis as Record<string, unknown>).caches = {
             default: mockCache
         };
 

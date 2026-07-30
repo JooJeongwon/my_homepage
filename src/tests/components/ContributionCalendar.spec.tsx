@@ -50,7 +50,7 @@ describe('ContributionCalendar (FIRST Principle & Deterministic Timezone Test)',
         vi.mocked(getGetContributionsUseCase).mockReturnValue({
             execute: vi.fn().mockResolvedValue(mockCalendarData),
             executeResult: vi.fn(),
-        } as any);
+        } as unknown as ReturnType<typeof getGetContributionsUseCase>);
     });
 
     afterEach(() => {

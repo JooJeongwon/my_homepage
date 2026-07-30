@@ -151,9 +151,9 @@ export default function ContributionCalendar() {
                 throw new Error('유효하지 않은 기여도 데이터 형식입니다.');
             }
             setData(res);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('기여도 데이터 로딩 에러:', err);
-            setError(err.message || '데이터를 불러오는 중 오류가 발생했습니다.');
+            setError(err instanceof Error ? err.message : '데이터를 불러오는 중 오류가 발생했습니다.');
         } finally {
             setIsLoading(false);
         }
@@ -439,6 +439,7 @@ export default function ContributionCalendar() {
             )}
 
             {/* 이미지 프리로드 컨테이너 (첫 호버 시 끊김 방지) */}
+            {/* eslint-disable @next/next/no-img-element */}
             <div className="sr-only" aria-hidden="true" style={{ width: 0, height: 0, overflow: 'hidden', position: 'absolute' }}>
                 <img src="/pokeball2.png" alt="" />
                 <img src="/pokeball3.png" alt="" />
@@ -449,6 +450,7 @@ export default function ContributionCalendar() {
                 <img src="/masterball2.png" alt="" />
                 <img src="/masterball3.png" alt="" />
             </div>
+            {/* eslint-enable @next/next/no-img-element */}
         </div>
     );
 }
