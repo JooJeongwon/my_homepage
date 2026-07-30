@@ -7,6 +7,7 @@ import Footer from "@/components/layout/Footer";
 import clsx from "clsx";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
+import { SmoothFocusScroll } from "@/components/ui/SmoothFocusScroll";
 
 // 폰트 설정 (구글 폰트 Inter 사용)
 const inter = Inter({ subsets: ["latin"] });
@@ -35,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className="antialiased" suppressHydrationWarning style={{ scrollbarGutter: 'stable' }}>
+    <html lang="ko" className="antialiased scroll-smooth" suppressHydrationWarning style={{ scrollbarGutter: 'stable' }}>
       {/* suppressHydrationWarning: 테마 적용 시 깜빡임 방지용 필수 속성 */}
 
       <body suppressHydrationWarning={true} className={clsx(inter.className, "min-h-screen flex flex-col bg-neutral-50 dark:bg-[#121212] text-neutral-900 dark:text-neutral-100 overflow-x-hidden")}>
@@ -47,6 +48,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <SmoothFocusScroll />
           <a
             href="#main-content"
             className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-neutral-900 focus:border focus:border-neutral-200 dark:focus:bg-neutral-900 dark:focus:text-neutral-100 dark:focus:border-neutral-800 focus:text-sm focus:font-medium focus:rounded-md focus:shadow-lg"
