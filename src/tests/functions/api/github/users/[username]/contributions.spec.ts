@@ -7,6 +7,9 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
     const originalCaches = (global as any).caches;
 
     beforeEach(() => {
+        vi.useFakeTimers({ shouldAdvanceTime: true });
+        vi.setSystemTime(new Date('2026-07-30T00:00:00.000Z'));
+
         vi.restoreAllMocks();
         vi.clearAllMocks();
         vi.resetAllMocks();
@@ -63,6 +66,7 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
     });
 
     afterEach(() => {
+        vi.useRealTimers();
         vi.restoreAllMocks();
         vi.clearAllMocks();
         vi.resetAllMocks();
@@ -74,6 +78,7 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
             delete (global as any).caches;
         }
     });
+
 
     it('RESTful 자원 URI 경로와 정상적인 Origin으로 유효한 username 요청 시 기여 정보와 HATEOAS 링크를 정상 반환한다', async () => {
         const response = await onRequest(mockContext);
