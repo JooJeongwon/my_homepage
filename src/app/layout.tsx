@@ -47,8 +47,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:p-4 focus:bg-white focus:text-black dark:focus:bg-neutral-900 dark:focus:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 rounded-md shadow-lg"
+          >
+            본문 내용으로 바로가기
+          </a>
           <Header />
-          <main className="flex-1 w-full">
+          <main id="main-content" tabIndex={-1} className="flex-1 w-full outline-none">
             {children}
           </main>
           <Footer />

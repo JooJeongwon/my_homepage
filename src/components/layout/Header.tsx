@@ -39,6 +39,17 @@ export default function Header() {
         setIsMenuOpen(false);
     }, [pathname]);
 
+    // 키보드 Escape 키로 모바일 메뉴 닫기
+    React.useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isMenuOpen) {
+                setIsMenuOpen(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isMenuOpen]);
+
     return (
         <header className="sticky top-0 z-50 w-full border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm">
             <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -58,7 +69,7 @@ export default function Header() {
                 </Link>
 
                 {/* 데스크탑 네비게이션 메뉴 */}
-                <nav className="hidden sm:flex items-center gap-6 text-sm font-medium">
+                <nav aria-label="메인 네비게이션" className="hidden sm:flex items-center gap-6 text-sm font-medium">
                     <NavLink href="/">Home</NavLink>
                     <NavLink href="/blog">Blog</NavLink>
                     <NavLink href="/projects">Projects</NavLink>
@@ -95,6 +106,8 @@ export default function Header() {
                     className="sm:hidden p-2 -mr-2 text-neutral-800 dark:text-neutral-200"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     aria-label={isMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
+                    aria-expanded={isMenuOpen}
+                    aria-controls="mobile-navigation"
                 >
                     {isMenuOpen ? (
                         <X className="w-6 h-6" aria-hidden="true" />
@@ -106,8 +119,8 @@ export default function Header() {
 
             {/* 모바일 메뉴 드롭다운 */}
             {isMenuOpen && (
-                <div className="sm:hidden border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-6 py-4 animate-in slide-in-from-top-2 fade-in-20">
-                    <nav className="flex flex-col space-y-4">
+                <div id="mobile-navigation" className="sm:hidden border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-6 py-4 animate-in slide-in-from-top-2 fade-in-20">
+                    <nav aria-label="모바일 메인 네비게이션" className="flex flex-col space-y-4">
                         <NavLink href="/">Home</NavLink>
                         <NavLink href="/blog">Blog</NavLink>
                         <NavLink href="/projects">Projects</NavLink>
@@ -141,7 +154,3 @@ export default function Header() {
         </header>
     );
 }
-
-// ... NavLink 내부 스타일도 함께 변경해야 하므로 전체를 덮어쓰거나, NavLink만 따로 교체합니다.
-// 여기서는 NavLink 스타일 정의 부분을 포함하기 위해 파일 상단 NavLink 정의도 수정이 필요합니다.
-// 아래 old_string을 확인하고 NavLink 정의 부분도 포함해서 교체하겠습니다.

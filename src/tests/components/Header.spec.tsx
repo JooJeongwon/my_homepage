@@ -30,17 +30,35 @@ describe('Header (POUR Accessibility Principles Test)', () => {
         });
     });
 
-    it('모바일 메뉴 버튼 및 토글 상태에 따른 aria-label 및 aria-hidden이 올바르게 적용되어야 한다', () => {
+    it('모바일 메뉴 버튼 및 토글 상태에 따른 aria-label, aria-expanded, aria-controls가 올바르게 적용되어야 한다', () => {
         render(<Header />);
 
         // 초기 모바일 버튼 (메뉴 열기)
         const toggleButton = screen.getByRole('button', { name: '메뉴 열기' });
         expect(toggleButton).toBeInTheDocument();
+        expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+        expect(toggleButton).toHaveAttribute('aria-controls', 'mobile-navigation');
         const initialIcon = toggleButton.querySelector('svg');
         expect(initialIcon).toHaveAttribute('aria-hidden', 'true');
 
         // 모바일 메뉴 클릭 후 (메뉴 닫기)
         fireEvent.click(toggleButton);
         expect(screen.getByRole('button', { name: '메뉴 닫기' })).toBeInTheDocument();
+        expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('모바일 메뉴가 열려있을 때 Escape 키를 누르면 메뉴가 닫혀야 한다 (Operable Principle)', () => {
+        render(<Header />);
+
+        const toggleButton = screen.getByRole('button', { name: '메뉴 열기' });
+        fireEvent.click(toggleButton);
+        expect(screen.getByRole('button', { name: '메뉴 닫기' })).toBeInTheDocument();
+
+        // Escape 키 누르기
+        fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
+
+        // 메뉴 닫힘 확인
+        expect(screen.getByRole('button', { name: '메뉴 열기' })).toBeInTheDocument();
+        expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
     });
 });
