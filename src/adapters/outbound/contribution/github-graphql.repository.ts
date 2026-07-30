@@ -25,7 +25,7 @@ const GithubGraphQLResponseSchema = z.object({
                 contributionCalendar: GithubCalendarSchema,
             }),
         }).nullable(),
-    }).optional(),
+    }).nullable().optional(),
     errors: z.array(z.object({
         message: z.string(),
     })).optional(),
