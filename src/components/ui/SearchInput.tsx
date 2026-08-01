@@ -62,8 +62,7 @@ export default function SearchInput({
                 {label}
             </label>
 
-            <label 
-                htmlFor={inputId}
+            <div 
                 className="cursor-text group relative flex items-center w-full rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/50 shadow-sm transition-all duration-300 ease-out focus-within:ring-2 focus-within:ring-neutral-900/10 focus-within:border-neutral-900 dark:focus-within:ring-neutral-100/10 dark:focus-within:border-neutral-100 focus-within:bg-white dark:focus-within:bg-neutral-900 focus-within:shadow-md"
             >
                 {/* 돋보기 아이콘 (Decorative) */}
@@ -79,7 +78,6 @@ export default function SearchInput({
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                     placeholder={placeholder}
-                    aria-label={label}
                     className="w-full py-3 pr-12 text-sm bg-transparent outline-none border-none ring-0 shadow-none focus:outline-none focus:ring-0 focus:border-none focus:shadow-none focus-visible:outline-none focus-visible:ring-0 focus-visible:shadow-none text-neutral-800 dark:text-neutral-200 placeholder-neutral-500 dark:placeholder-neutral-400"
                     style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}
                 />
@@ -98,7 +96,7 @@ export default function SearchInput({
                         </button>
                     </div>
                 )}
-            </label>
+            </div>
         </div>
     );
 }
