@@ -70,6 +70,21 @@ export function SmoothFocusScroll() {
                     top: targetY,
                     behavior: 'smooth',
                 });
+                return;
+            }
+
+            // 3) 포커스가 아래쪽(뷰포트 하단 바깥)으로 내려간 경우 (코드블록, 복사 버튼, 하단 본문 링크 등)
+            const viewportHeight = window.innerHeight;
+            const isBelowViewport = rect.top > viewportHeight - 120 || rect.bottom > viewportHeight;
+            if (isBelowViewport || absoluteTargetTop > previousScrollY + 50) {
+                const targetY = Math.max(0, absoluteTargetTop - 150);
+                if (window.scrollY !== previousScrollY) {
+                    window.scrollTo({ top: previousScrollY, behavior: 'instant' });
+                }
+                window.scrollTo({
+                    top: targetY,
+                    behavior: 'smooth',
+                });
             }
         };
 

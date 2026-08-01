@@ -32,11 +32,13 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
                 role="region"
                 aria-label="코드 블록"
                 className={cn(
-                    "relative overflow-x-auto py-4 px-4 rounded-2xl border",
+                    "relative overflow-x-auto py-4 px-4 rounded-2xl border transition-colors",
                     // Light mode
                     "bg-white border-neutral-200 text-neutral-800",
                     // Dark mode
                     "dark:bg-neutral-900/50 dark:border-neutral-800 dark:text-neutral-200",
+                    // Focus styles (Keyboard navigation indicator without layout shift)
+                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/20 dark:focus-visible:ring-neutral-100/20",
                     className
                 )}
                 {...props}

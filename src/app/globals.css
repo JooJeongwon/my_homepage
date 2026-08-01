@@ -71,9 +71,6 @@
   article h3 a:focus,
   article h3 a:focus-visible,
   article h3 a:focus-within,
-  article [tabindex="0"]:focus,
-  article [tabindex="0"]:focus-visible,
-  article [tabindex="0"]:focus-within,
   .dark a[class*="inset-0"]:focus,
   .dark a[class*="inset-0"]:focus-visible,
   .dark a[class*="inset-0"]:focus-within,
@@ -91,10 +88,7 @@
   .dark article h3 a,
   .dark article h3 a:focus,
   .dark article h3 a:focus-visible,
-  .dark article h3 a:focus-within,
-  .dark article [tabindex="0"]:focus,
-  .dark article [tabindex="0"]:focus-visible,
-  .dark article [tabindex="0"]:focus-within {
+  .dark article h3 a:focus-within {
     outline: none !important;
     outline-offset: 0 !important;
     box-shadow: none !important;

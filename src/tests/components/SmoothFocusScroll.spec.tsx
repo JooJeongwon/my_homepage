@@ -88,4 +88,25 @@ describe('SmoothFocusScroll (Keyboard Focus Smooth Scroll UX Component)', () => 
 
         expect(window.scrollTo).not.toHaveBeenCalled();
     });
+
+    it('하단 코드블록 요소로 탭 포커스가 내려갈 때 smooth scroll을 트리거한다', () => {
+        window.scrollY = 100;
+        render(
+            <div>
+                <SmoothFocusScroll />
+                <div id="code-block" tabIndex={0} style={{ marginTop: '800px' }}>Code Block</div>
+            </div>
+        );
+
+        (window.scrollTo as ReturnType<typeof vi.fn>).mockClear();
+
+        const codeBlock = document.getElementById('code-block')!;
+
+        fireEvent.keyDown(window, { key: 'Tab' });
+        fireEvent.focusIn(codeBlock);
+
+        expect(window.scrollTo).toHaveBeenCalledWith(
+            expect.objectContaining({ behavior: 'smooth' })
+        );
+    });
 });
