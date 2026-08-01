@@ -1,14 +1,28 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export function SmoothFocusScroll() {
+    const pathname = usePathname();
+
+    // 페이지(라우트) 이동 시 항상 즉시(instant) 최상단 스크롤 위치 복원
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'instant',
+        });
+    }, [pathname]);
+
     useEffect(() => {
         let isKeyboardNavigation = false;
+        let previousScrollY = 0;
 
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Tab') {
                 isKeyboardNavigation = true;
+                previousScrollY = window.scrollY; // Tab 키를 누른 시점의 스크롤 위치 저장
             }
         };
 
@@ -22,18 +36,23 @@ export function SmoothFocusScroll() {
             const target = e.target as HTMLElement | null;
             if (!target) return;
 
-            // 현재 스크롤 위치가 50px 이상 내려와 있는 경우에만 처리
-            if (window.scrollY <= 50) return;
+            // 탭 누르기 전 스크롤 위치가 상단 부근(scrollY <= 50)이면 무시
+            if (previousScrollY <= 50) return;
 
             const rect = target.getBoundingClientRect();
+            // 현재 target의 화면 전체 절대 Y 좌표
             const absoluteTargetTop = window.scrollY + rect.top;
 
-            // 1) 헤더 내부 요소이거나 본문 바로가기 스킵 링크 또는 상단 영역(Y < 150)인 경우 -> 최상단(top: 0)으로 부드럽게 스크롤
+            // 1) 헤더 내부 요소이거나 본문 바로가기 스킵 링크 또는 상단 영역(Y < 150)인 경우
             const isHeaderElement = target.closest('header') !== null;
             const isSkipLink = target.getAttribute('href') === '#main-content';
             const isTopArea = absoluteTargetTop < 150;
 
             if (isHeaderElement || isSkipLink || isTopArea) {
+                // 브라우저의 기본 instant 포커스 점프가 발생했을 경우 원래 위치로 복원 후 부드럽게 스크롤
+                if (window.scrollY !== previousScrollY) {
+                    window.scrollTo({ top: previousScrollY, behavior: 'instant' });
+                }
                 window.scrollTo({
                     top: 0,
                     behavior: 'smooth',
@@ -41,9 +60,12 @@ export function SmoothFocusScroll() {
                 return;
             }
 
-            // 2) 현재 스크롤 위치보다 위쪽에 위치한 요소로 포커스가 올라간 경우
-            if (absoluteTargetTop < window.scrollY - 50) {
+            // 2) 포커스가 이전 스크롤 위치(previousScrollY)보다 위쪽에 위치한 요소로 올라간 경우
+            if (absoluteTargetTop < previousScrollY - 50) {
                 const targetY = Math.max(0, absoluteTargetTop - 80);
+                if (window.scrollY !== previousScrollY) {
+                    window.scrollTo({ top: previousScrollY, behavior: 'instant' });
+                }
                 window.scrollTo({
                     top: targetY,
                     behavior: 'smooth',

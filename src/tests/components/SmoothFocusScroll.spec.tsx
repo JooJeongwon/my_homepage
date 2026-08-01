@@ -2,11 +2,24 @@ import { render, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { SmoothFocusScroll } from '@/components/ui/SmoothFocusScroll';
 
+vi.mock('next/navigation', () => ({
+    usePathname: () => '/',
+}));
+
 describe('SmoothFocusScroll (Keyboard Focus Smooth Scroll UX Component)', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
         window.scrollTo = vi.fn();
         Object.defineProperty(window, 'scrollY', { value: 0, writable: true });
+    });
+
+    it('페이지(라우트) 이동 시 window.scrollTo({ top: 0, left: 0, behavior: "instant" })를 즉각 호출한다', () => {
+        render(<SmoothFocusScroll />);
+        expect(window.scrollTo).toHaveBeenCalledWith({
+            top: 0,
+            left: 0,
+            behavior: 'instant',
+        });
     });
 
     it('스크롤 위치가 상단 부근(scrollY <= 50)이면 키보드 포커스가 잡혀도 추가 scrollTo를 호출하지 않는다', () => {
@@ -19,6 +32,8 @@ describe('SmoothFocusScroll (Keyboard Focus Smooth Scroll UX Component)', () => 
                 </header>
             </div>
         );
+
+        (window.scrollTo as ReturnType<typeof vi.fn>).mockClear();
 
         const btn = document.getElementById('nav-btn')!;
         fireEvent.keyDown(window, { key: 'Tab' });
@@ -37,6 +52,8 @@ describe('SmoothFocusScroll (Keyboard Focus Smooth Scroll UX Component)', () => 
                 </header>
             </div>
         );
+
+        (window.scrollTo as ReturnType<typeof vi.fn>).mockClear();
 
         const btn = document.getElementById('nav-btn')!;
 
@@ -60,6 +77,8 @@ describe('SmoothFocusScroll (Keyboard Focus Smooth Scroll UX Component)', () => 
                 </header>
             </div>
         );
+
+        (window.scrollTo as ReturnType<typeof vi.fn>).mockClear();
 
         const btn = document.getElementById('nav-btn')!;
 

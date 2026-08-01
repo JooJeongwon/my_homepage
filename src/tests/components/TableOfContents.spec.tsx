@@ -22,7 +22,10 @@ describe('TableOfContents Component (Continuous Scroll & Decoupled Focus Archite
         
         document.body.innerHTML = `
             <div id="section-1">Section 1 Content</div>
-            <div id="section-2">Section 2 Content</div>
+            <div id="section-2">
+                <h2>Section 2</h2>
+                <a id="target-link" href="#demo">Demo Link</a>
+            </div>
             <div id="section-3">Section 3 Content</div>
         `;
     });
