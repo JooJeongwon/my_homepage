@@ -109,4 +109,26 @@ describe('SmoothFocusScroll (Keyboard Focus Smooth Scroll UX Component)', () => 
             expect.objectContaining({ behavior: 'smooth' })
         );
     });
+
+    it('스크롤이 1000px 내려간 상태에서 fixed 목차(TOC) 링크 탭 포커스 시 본문 스크롤을 움직이지 않는다', () => {
+        window.scrollY = 1000;
+        render(
+            <div>
+                <SmoothFocusScroll />
+                <nav aria-label="목차" style={{ position: 'fixed', top: '100px', right: '20px' }}>
+                    <a id="toc-item-1" href="#heading-1">Heading 1</a>
+                    <a id="toc-item-2" href="#heading-2">Heading 2</a>
+                </nav>
+            </div>
+        );
+
+        (window.scrollTo as ReturnType<typeof vi.fn>).mockClear();
+
+        const tocLink = document.getElementById('toc-item-2')!;
+
+        fireEvent.keyDown(window, { key: 'Tab' });
+        fireEvent.focusIn(tocLink);
+
+        expect(window.scrollTo).not.toHaveBeenCalled();
+    });
 });

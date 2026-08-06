@@ -36,6 +36,31 @@ export function SmoothFocusScroll() {
             const target = e.target as HTMLElement | null;
             if (!target) return;
 
+            // fixed 또는 sticky 고정 위치 요소(예: 화면 우측 고정 목차 TOC)이거나 헤더 외부의 목차 요소인 경우 스크롤 조정을 하지 않음
+            const isFixedOrSticky = (el: HTMLElement) => {
+                let current: HTMLElement | null = el;
+                while (current && current !== document.body && current !== document.documentElement) {
+                    if (current.style?.position === 'fixed' || current.style?.position === 'sticky') {
+                        return true;
+                    }
+                    if (typeof window !== 'undefined' && window.getComputedStyle) {
+                        const style = window.getComputedStyle(current);
+                        if (style.position === 'fixed' || style.position === 'sticky') {
+                            return true;
+                        }
+                    }
+                    current = current.parentElement;
+                }
+                return false;
+            };
+
+            const isHeaderElement = target.closest('header') !== null;
+            const isTocNav = target.closest('[aria-label="목차"]') !== null;
+
+            if ((isFixedOrSticky(target) || isTocNav) && !isHeaderElement) {
+                return;
+            }
+
             // 탭 누르기 전 스크롤 위치가 상단 부근(scrollY <= 50)이면 무시
             if (previousScrollY <= 50) return;
 
@@ -44,7 +69,6 @@ export function SmoothFocusScroll() {
             const absoluteTargetTop = window.scrollY + rect.top;
 
             // 1) 헤더 내부 요소이거나 본문 바로가기 스킵 링크 또는 상단 영역(Y < 150)인 경우
-            const isHeaderElement = target.closest('header') !== null;
             const isSkipLink = target.getAttribute('href') === '#main-content';
             const isTopArea = absoluteTargetTop < 150;
 
