@@ -17,7 +17,6 @@ const sampleProject: Project = {
     description: 'This is a test project description.',
     tags: ['React', 'Next.js'],
     date: '2026-07-30',
-    featured: true,
     links: {
         github: 'https://github.com/example/test',
         demo: 'https://example.com',
