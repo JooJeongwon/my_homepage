@@ -24,6 +24,14 @@
     @apply bg-white text-neutral-800 dark:bg-neutral-950 dark:text-neutral-200;
   }
 
+  /* MDX 본문 내 구분선(hr) 색상을 헤더 하단 경계선과 일치 */
+  .prose hr {
+    border-color: #e5e5e5;
+  }
+  .dark .prose hr {
+    border-color: #262626;
+  }
+
   /* ★ 전역 키보드(Tab) 포커스 스타일 - 브라우저 파란 외곽선 및 검색창 내부 사각형 이중 박스 완전 제거 */
   *:focus,
   *:focus-visible,

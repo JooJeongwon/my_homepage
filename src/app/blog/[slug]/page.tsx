@@ -95,6 +95,7 @@ export default async function BlogPostPage({
                     prose-p:text-neutral-800 dark:prose-p:text-neutral-200
                     prose-li:text-neutral-800 dark:prose-li:text-neutral-200
                     prose-a:text-neutral-600 dark:prose-a:text-neutral-400 prose-a:no-underline hover:prose-a:text-neutral-900 dark:hover:prose-a:text-neutral-100 prose-a:transition-colors
+                    prose-hr:border-neutral-200 dark:prose-hr:border-neutral-800
                     
                     /* 코드 블록(pre) 스타일링 - Project Card와 통일 */
                     prose-pre:bg-white dark:prose-pre:bg-neutral-900/50
