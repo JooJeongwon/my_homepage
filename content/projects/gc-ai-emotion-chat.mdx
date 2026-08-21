@@ -1,0 +1,171 @@
+---
+title: "감정 분석 기반 AI 챗봇 & 일기 서비스"
+date: "2025.05"
+description: "React와 Express 기반으로 사용자의 일상 감정 일기를 분석하고, 다차원 감정 추이 시각화 및 공감형 AI 챗봇 대화를 제공하는 멘탈 헬스케어 웹 플랫폼"
+tags: ["React", "Express", "NLP"]
+links:
+  github: "https://github.com/JooJeongwon/GC_AI_Emotion_Chat"
+---
+
+## 프로젝트 배경 및 목표
+
+현대인의 일상 속 스트레스 완화와 자기 감정 인식을 돕기 위해, **사용자가 작성한 일기 텍스트의 감정을 정량적으로 분석하고 공감형 AI 챗봇과 소통할 수 있는 멘탈 케어 웹 서비스**를 구축했습니다.
+
+- **감정 일기 및 다차원 분석:** 단순 긍/부정 이분법을 넘어 기쁨, 슬픔, 분노, 불안, 평온 등 다차원 감정 지표를 산출하여 사용자의 정서 상태를 정밀하게 파악합니다.
+- **문맥 인식 공감형 챗봇:** 사용자가 기록한 일기의 감정 상태와 키워드를 대화 맥락에 주입하여 상황에 맞는 위로와 공감 피드백을 제공합니다.
+- **감정 트렌드 시각화:** 시계열 기반 감정 분석 대시보드를 통해 주간/월간 감정 변화 흐름을 한눈에 모니터링할 수 있습니다.
+- **모듈형 풀스택 아키텍처:** React 기반의 SPA 프론트엔드와 Express 기반의 계층형 백엔드(Routing-Controller-Service)를 분리하여 확장성과 유지보수성을 확보했습니다.
+
+---
+
+## 시스템 아키텍처 및 기술 스택
+
+```text
+┌────────────────────────────────────────────────────────┐
+│               Frontend (React 18 SPA)                  │
+│   - Client-side Routing: /, /write, /analysis, /chatbot│
+│   - Components: Header, Footer, DiaryEditor, ChatView  │
+│   - Visualizations: Emotion Score, Timeline Chart      │
+└───────────────────────────┬────────────────────────────┘
+                            │ HTTP / REST API (JSON)
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│              Backend (Node.js & Express 5)             │
+│  - Routes: /routes/diary.js, /routes/chatbot.js        │
+│  - Controllers: diaryController.js, chatbotController  │
+│  - Template Engine: EJS (SSR Hybrid Support)           │
+└──────────────┬───────────────────────────┬─────────────┘
+               │                           │
+               ▼                           ▼
+┌──────────────────────────┐  ┌──────────────────────────┐
+│   AI & Sentiment Engine  │  │   Persistence & Storage  │
+│  - Multi-Emotion Analyzer│  │  - Diary Records Store   │
+│  - Empathetic Prompting  │  │  - Chat Session History  │
+└──────────────────────────┘  └──────────────────────────┘
+```
+
+### Frontend
+- **Framework & Core:** React 18, React Router v6
+- **Styling:** CSS3, Tailwind CSS (반응형 레이아웃 및 다크 톤 UI)
+- **State & Data Fetching:** React Hooks (`useState`, `useEffect`), Axios / Fetch API
+
+### Backend & API
+- **Runtime & Framework:** Node.js, Express 5.x
+- **Architecture:** Controller-Route 분리 패턴 (MVC 기반 계층화)
+- **View Engine:** EJS (하이브리드 렌더링 지원)
+
+### AI & Data Engine
+- **Sentiment & Emotion Analysis:** 텍스트 토큰화 및 다차원 감정 분류 (기쁨, 슬픔, 불안, 분노, 평온)
+- **Conversational AI:** 프롬프트 엔지니어링 기반 공감형 대화 생성 및 문맥 유지
+
+---
+
+## 핵심 기술적 도전 및 구현 내용
+
+### 1. 다차원 감정 분석 파이프라인 및 정량화 지표 설계
+
+- **Challenge:** 텍스트를 단순 긍정/부정(Positive/Negative)으로만 분류하면 사용자의 복합적인 정서(예: '불안하지만 기대되는 상태', '슬프지만 차분한 상태')를 정확히 표현하지 못하는 한계가 있었습니다.
+- **Solution:** 텍스트 전처리 후 다차원 감정 스코어(Joy, Sadness, Anger, Anxiety, Calm)를 산출하는 분석 파이프라인을 설계했습니다.
+    1. **텍스트 정제 및 형태소/토큰 분리:** 일기 본문에서 불용어 및 노이즈 제거.
+    2. **감정 벡터 매핑:** 핵심 감정 어휘 및 맥락 가중치를 기반으로 감정 점수 계산.
+    3. **정량화 지표 생성:** 각 감정의 백분율 비율과 대표 지배 감정(Dominant Emotion)을 추출하여 클라이언트에 JSON 응답 제공.
+
+```javascript
+// backend/controllers/diaryController.js (감정 분석 및 일기 데이터 처리 로직)
+exports.analyzeAndSaveDiary = async (req, res) => {
+  try {
+    const { title, content, date } = req.body;
+
+    if (!content || content.trim() === '') {
+      return res.status(400).json({ error: '일기 내용을 입력해주세요.' });
+    }
+
+    // 감정 분석 엔진 호출 (다차원 감정 스코어링)
+    const emotionScore = await calculateEmotionScores(content);
+    const dominantEmotion = getDominantEmotion(emotionScore);
+
+    const diaryEntry = {
+      id: Date.now(),
+      title,
+      content,
+      date: date || new Date().toISOString().split('T')[0],
+      emotionScore,
+      dominantEmotion,
+      createdAt: new Date()
+    };
+
+    // 데이터 저장 및 결과 반환
+    await saveDiaryRecord(diaryEntry);
+
+    return res.status(201).json({
+      success: true,
+      data: diaryEntry
+    });
+  } catch (error) {
+    console.error('Diary Analysis Error:', error);
+    return res.status(500).json({ error: '감정 분석 처리 중 오류가 발생했습니다.' });
+  }
+};
+```
+
+### 2. 컨텍스트 기반 공감형 AI 챗봇 및 프롬프트 엔지니어링
+
+- **Challenge:** 일반적인 챗봇은 이전 일기 내용이나 사용자의 최근 정서 상태를 알지 못해 기계적이고 형식적인 답변만 생성하는 문제가 있었습니다.
+- **Solution:** 사용자의 최근 일기 분석 데이터와 감정 키워드를 시스템 프롬프트(System Prompt)에 컨텍스트로 주입하여, 사용자의 상황을 깊이 이해하고 공감하는 대화 흐름을 구축했습니다.
+
+```javascript
+// backend/controllers/chatbotController.js (문맥 주입형 대화 생성)
+exports.handleChatMessage = async (req, res) => {
+  try {
+    const { message, recentEmotion, recentDiarySummary } = req.body;
+
+    // 감정 맥락을 포함한 시스템 프롬프트 구성
+    const contextPrompt = `
+당신은 사용자의 마음을 위로하고 경청하는 공감형 AI 상담사입니다.
+[사용자 최근 상태]
+- 주요 감정 상태: ${recentEmotion || '보통'}
+- 최근 일기 요약: ${recentDiarySummary || '최근 작성된 일기 없음'}
+
+[대화 규칙]
+1. 정답이나 판단을 내리려 하지 말고, 사용자의 감정에 먼저 공감해주세요.
+2. 따뜻하고 부드러운 어조를 사용하며, 필요 시 가벼운 기분 전환 팁을 제안하세요.
+`;
+
+    const aiResponse = await generateAIResponse(contextPrompt, message);
+
+    return res.status(200).json({
+      reply: aiResponse,
+      timestamp: new Date()
+    });
+  } catch (error) {
+    console.error('Chatbot Processing Error:', error);
+    return res.status(500).json({ error: '챗봇 응답 생성에 실패했습니다.' });
+  }
+};
+```
+
+### 3. React SPA 구조화 및 시계열 감정 분석 대시보드
+
+- **Challenge:** 일기 작성, 대화, 통계 대시보드가 단일 애플리케이션 내에서 끊김 없이 연동되어야 하며, 감정 데이터 변경 시 실시간으로 차트가 갱신되어야 했습니다.
+- **Solution:** React Router v6를 기반으로 페이지 컴포넌트(`Home`, `Write`, `Analysis`, `Chatbot`)를 분리하고, 일기 등록 시 감정 분석 결과를 상태로 전달하여 즉각적인 피드백을 제공했습니다.
+- **Analysis View:** 주간/월간 감정 변화 그래프를 시각화하여 사용자가 자신의 정서적 트리거와 안정 패턴을 발견할 수 있도록 지원했습니다.
+
+---
+
+## Troubleshooting
+
+- **문제: 복합 감정이 포함된 긴 텍스트에서 단일 감정 분류 오분류 발생**
+  - **원인:** 일기 문장 내에 긍정 표현과 불안 표현이 혼재된 경우 단순 키워드 매칭은 한쪽 감정으로 편향되는 현상 발생.
+  - **해결:** 문장 단위로 분할하여 감정 벡터를 계산한 뒤, 가중 평균(Weighted Average)을 적용하여 복합 감정 분포(다이어그램/백분율) 형태로 다각화하여 사용자에게 제공하도록 개선.
+
+- **문제: 챗봇 대화 턴(Turn) 누적 시 지연 시간 증가 및 컨텍스트 초과**
+  - **원인:** 이전 대화 기록 전체를 매 요청마다 전달하여 페이로드 크기 및 토큰 소비 급증.
+  - **해결:** 최근 3~5턴의 핵심 대화만 유지하는 **슬라이딩 윈도우(Sliding Window)** 버퍼링 방식을 적용하여 지연 시간을 단축하고 API 호출 효율을 극대화.
+
+---
+
+## 프로젝트 성과 및 배운 점
+
+- **자연어 처리(NLP)와 감성 컴퓨팅(Affective Computing)의 실전 적용:** 비정형 텍스트인 일기 데이터를 정량적인 감정 지표로 가공하고, 이를 AI 챗봇의 대화 맥락과 차트 시각화로 연결하는 데이터 파이프라인 전 과정을 경험했습니다.
+- **컴포넌트 및 라우팅 기반 SPA 아키텍처 설계:** React 환경에서 사용자 인터랙션(일기 작성 → 감정 분석 → 챗봇 연계 → 대시보드 리포트)의 상태 흐름을 매끄럽게 구성하는 역량을 길렀습니다.
+- **백엔드 계층 분리(SoC):** Express 라우트와 컨트롤러를 역할별로 명확히 분리함으로써 API 유지보수성과 확장성을 강화했습니다.
