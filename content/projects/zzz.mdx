@@ -1,0 +1,276 @@
+---
+title: "ZZZ - AI 페르소나 & 실시간 상태 공유"
+date: "2026.02"
+description: "Flutter 하이브리드 네이티브 브릿지와 Spring Boot 이벤트 기반 MSA, RabbitMQ 및 RAG 기반 AI 페르소나 대리 응답을 결합한 커플 상태 공유 플랫폼"
+tags: ["Spring Boot", "Flutter", "FastAPI"]
+links:
+  github: "https://github.com/JooJeongwon/ZZZ"
+---
+
+## 프로젝트 배경 및 목표
+
+연인이나 소중한 사람 사이에서 수면, 공부, 배터리 방전 등으로 연락이 끊길 때 발생하는 불안감과 오해를 해소하기 위해 기획되었습니다.
+
+본 프로젝트는 **사용자의 수면/활동 상태를 백그라운드에서 실시간으로 감지하여 공유하고, 부재중일 때는 RAG 기반 AI 페르소나가 사용자의 말투로 소통을 이어주는 이벤트 기반 모바일 & 백엔드 플랫폼**을 구축하는 것을 목표로 했습니다.
+
+- **하이브리드 백그라운드 상태 감지:** Android Foreground Service와 iOS Live Activities(Dynamic Island)를 결합하여 OS별 백그라운드 제약을 극복하고 실시간 상태를 동기화합니다.
+- **Event-Driven MSA 아키텍처:** Spring Boot Core 서버와 Python FastAPI AI 서버 간의 결합도를 낮추고 RabbitMQ를 통해 비동기 이벤트 스트림을 처리합니다.
+- **RAG 기반 AI 페르소나 대리 응답:** 사용자의 과거 채팅 로그를 벡터 검색하여 말투와 어조, 이모티콘 패턴을 복제한 후 부재중 상태(수면, 공부, 바쁨)에서 실시간 대리 답변을 제공합니다.
+- **타임존 인식 FSM 자동 전이:** 30분 이상 비활동 시 사용자의 Timezone과 배터리 잔량을 분석하여 수면(`SLEEP`) 또는 방전(`DISCHARGED`) 상태로 자동 전환합니다.
+
+---
+
+## 시스템 아키텍처 및 기술 스택
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                        Client Layer (Flutter App)                      │
+│  - Presentation: Riverpod (MVVM StateNotifier), Dynamic Island UI      │
+│  - Native Bridge: Android Foreground Service, iOS Live Activity Widget │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ HTTP / REST API & FCM Push
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                   Core Backend (Spring Boot 3.4)                       │
+│  - Auth & User Domain (JWT, Native Token Refresh, Status FSM)          │
+│  - Couple & Chat Domain (Message Persistence, Event Publishing)        │
+│  - Status Scheduler (Timezone / Battery Inactive Detection)            │
+└──────────────┬───────────────────┬───────────────────┬─────────────────┘
+               │ (JPA / SQL)       │ (Lettuce)         │ (AMQP Producer)
+               ▼                   ▼                   ▼
+┌────────────────────────┐  ┌─────────────┐  ┌───────────────────────────┐
+│       MySQL 8.0        │  │  Redis 7.0  │  │   RabbitMQ Event Broker   │
+│  (Users, Couples, Chat)│  │ (Status,TTL)│  │  (zzz.exchange / DLX /    │
+└────────────────────────┘  └─────────────┘  │   ai.request / response)  │
+                                             └─────────────┬─────────────┘
+                                                           │ (AMQP Consumer)
+                                                           ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                   AI Service (Python FastAPI)                          │
+│  - RAG Pipeline: Vector Search (Chroma / Pinecone Embeddings)          │
+│  - LLM Engine: Gemini / GPT Multi-Provider, Persona Cloning & Recap    │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### Mobile Client
+- **Framework & Language:** Flutter, Dart 3.x
+- **State Management & Architecture:** Flutter Riverpod, MVVM (`HomeViewModel`), `Result<T>` & `AppError`
+- **Native Extensions:** Kotlin (Android Foreground Service, Room DB), Swift (iOS ActivityKit, SwiftUI Live Activities, WidgetKit)
+
+### Core Backend & Event Broker
+- **Framework & Language:** Java 21, Spring Boot 3.4
+- **Security & Auth:** Spring Security, JWT (AccessToken / RefreshToken 자동 갱신)
+- **Persistence & Cache:** Spring Data JPA, MySQL 8.0, Redis 7.0
+- **Message Broker:** RabbitMQ (Topic Exchange, Dead Letter Exchange & Queue)
+
+### AI & Data Engine
+- **Framework & Language:** Python 3.11, FastAPI, Pydantic
+- **LLM & Vector Engine:** LangChain, Google Gemini API, OpenAI GPT, Chroma / Vector Store
+- **AI Capabilities:** Persona Cloning RAG, Auto Recap Report, Dream Log Story Generator
+
+---
+
+## 핵심 기술적 도전 및 구현 내용
+
+### 1. OS 백그라운드 제약 극복을 위한 하이브리드 네이티브 브릿지 및 오프라인 큐잉
+
+- **Challenge:** Android의 Doze 모드 및 iOS의 엄격한 백그라운드 네트워크 실행 제한으로 인해 Flutter 단일 레이어에서는 안정적인 하트비트 전송과 잠금 화면 실시간 렌더링이 불가능했습니다.
+- **Solution:** 
+    - **Android Native Bridge:** `Foreground Service`를 네이티브 Kotlin으로 구현하여 화면 On/Off 감지 및 배터리 잔량을 주기적으로 수집. 네트워크 단절 시 지수 백오프(Exponential Backoff)를 적용하고, 전송 실패 로그를 로컬 Room DB에 캐싱한 뒤 복구 시 `BatchHeartbeat`로 일괄 전송.
+    - **iOS Dynamic Island & Live Activities:** Swift의 `ActivityKit`과 `WidgetKit`을 연동하여 상대방의 실시간 상태 변화와 AI 대리 응답을 다이내믹 아일랜드 및 잠금 화면에 끊김 없이 렌더링.
+
+```kotlin
+// app/android/app/src/main/kotlin/.../service/HeartbeatService.kt (오프라인 큐잉 및 토큰 리프레시)
+private suspend fun performHeartbeat(userId: Long): Boolean {
+    val batteryLevel = getBatteryLevel()
+    val isScreenOn = isScreenOn()
+    val timestamp = System.currentTimeMillis()
+    var authToken = tokenManager.getAuthToken() ?: return false
+
+    val pendingLogs = heartbeatDao.getAll()
+    val hasPending = pendingLogs.isNotEmpty()
+
+    try {
+        var responseCode = executeNetworkCall(authToken, pendingLogs, batteryLevel, isScreenOn, timestamp)
+        
+        // 토큰 만료 시 네이티브 레벨에서 자동 리프레시 후 재시도
+        if (responseCode == 401) {
+            val refreshToken = tokenManager.getRefreshToken()
+            if (refreshToken != null) {
+                val newTokens = heartbeatClient.refreshAccessToken(refreshToken)
+                if (newTokens != null) {
+                    tokenManager.saveTokens(newTokens.first, newTokens.second)
+                    responseCode = executeNetworkCall(newTokens.first, pendingLogs, batteryLevel, isScreenOn, timestamp)
+                }
+            }
+        }
+
+        if (responseCode == 200) {
+            if (hasPending) heartbeatDao.deleteAll()
+            return true
+        }
+
+        // 네트워크 전송 실패 시 로컬 DB에 보존
+        heartbeatDao.insert(HeartbeatEntity(timestamp = timestamp, batteryLevel = batteryLevel, isScreenOn = isScreenOn))
+        return true
+    } catch (e: Exception) {
+        heartbeatDao.insert(HeartbeatEntity(timestamp = timestamp, batteryLevel = batteryLevel, isScreenOn = isScreenOn))
+        return true
+    }
+}
+```
+
+### 2. RabbitMQ 기반 Event-Driven 비동기 AI 페르소나 파이프라인
+
+- **Challenge:** 수신자가 부재중일 때 채팅 메시지에 대해 LLM 추론을 동기식으로 호출할 경우, HTTP 타임아웃 발생 및 Core 서비스 스레드 풀 고갈 위험이 존재했습니다.
+- **Solution:** Spring Boot의 `ApplicationEventPublisher`와 `RabbitMQ`를 연계한 비동기 이벤트 기반 분산 처리 구조를 구축했습니다.
+    1. `ChatService.sendMessage` 호출 시 메시지 영속화 후 `MessageSentEvent` 발행.
+    2. `ChatEventListener`가 수신자의 부재 상태(`SLEEP`, `STUDY`, `BUSY`)를 감지하여 RabbitMQ Topic Exchange(`ai.request.chat`)로 비동기 라우팅.
+    3. Python AI 서비스가 큐를 컨슈밍하여 RAG 기반 페르소나 응답 생성 후 `queue.ai.response`로 이벤트 발행.
+    4. `AIResponseListener`가 이를 수신하여 대화 히스토리에 AI 생성 메시지로 기록하고 상대방에게 실시간 알림 발송.
+
+```java
+// backend/.../chat/event/ChatEventListener.java (부재 상태 감지 및 비동기 AMQP 이벤트 발행)
+@Async
+@EventListener
+public void handleMessageSent(MessageSentEvent event) {
+    publishChatNotification(event);
+
+    if (isUserUnavailable(event.getReceiverStatus())) {
+        AIRequestEvent aiEvent = AIRequestEvent.builder()
+                .requestId(UUID.randomUUID().toString())
+                .userId(String.valueOf(event.getSenderId()))
+                .partnerId(String.valueOf(event.getReceiverId()))
+                .partnerName(event.getReceiverNickname())
+                .content(event.getContent())
+                .type("CHAT")
+                .build();
+        
+        aiEventPublisher.publishChatRequest(aiEvent);
+    }
+}
+
+private boolean isUserUnavailable(UserStatus status) {
+    return status == UserStatus.SLEEP || status == UserStatus.STUDY || status == UserStatus.BUSY;
+}
+```
+
+### 3. RAG 기반 파트너 말투 복제 및 대리 응답 생성 엔진
+
+- **Challenge:** 범용 프롬프트만으로는 특정 사용자의 고유한 말투, 자주 쓰는 종결 어미, 이모티콘 습관을 재현하기 어려웠습니다.
+- **Solution:** Vector Search(RAG)와 프롬프트 엔지니어링을 결합한 말투 복제 파이프라인을 구축했습니다.
+    - 사용자별 채팅 내역을 벡터 데이터베이스에 Namespace별로 인덱싱.
+    - 입력된 질문에 대해 유사도가 높은 과거 발화 3~5개를 동적으로 검색하여 프롬프트의 컨텍스트로 주입.
+    - 3문장 이내의 다정한 연인 어조와 사용자 특유의 표현 패턴을 모방하도록 제약 조건 설정.
+
+```python
+# backend/ai-service/app/services/rag_service.py (Namespace 기반 RAG 검색 및 페르소나 프롬프트 생성)
+def get_persona_response(self, target_persona_id: str, message: str, partner_name: str) -> str:
+    # 1. 사용자 질문 임베딩
+    query_vector = llm_service.get_embedding(message)
+    if not query_vector:
+        return "AI 서비스를 사용할 수 없습니다. (Embedding 실패)"
+
+    # 2. Namespace 기준 과거 대화 유사도 검색
+    search_results = vector_store.query_similar(
+        vector=query_vector,
+        top_k=3,
+        namespace=target_persona_id
+    )
+    context_texts = [match['metadata']['text'] for match in search_results if 'metadata' in match]
+    context_str = "\n".join(context_texts)
+
+    # 3. 페르소나 모방 시스템 프롬프트 구성
+    system_prompt = f"""
+    당신은 '{partner_name}'의 AI 페르소나입니다. 
+    아래 제공되는 '과거 대화 스타일'을 참고하여, 사용자의 말에 연인처럼 다정하게 답변하세요.
+    
+    [과거 대화 스타일]
+    {context_str}
+    
+    [지시사항]
+    - 말투, 어조, 이모티콘 사용 패턴을 위 데이터를 통해 모방하세요.
+    - 사용자의 현재 상황을 고려하여 공감해주세요.
+    - 너무 길게 말하지 마세요 (3문장 이내).
+    """
+    return llm_service.generate_response(system_prompt, message)
+```
+
+### 4. 타임존 인식 기반 FSM 상태 전이 스케줄러
+
+- **Challenge:** 수동 조작 없이 사용자가 잠들었거나 기기가 방전되었을 때 정확한 상태를 판정해야 했습니다.
+- **Solution:** 1분 단위 스케줄러(`UserStatusScheduler`)를 가동하여 30분 이상 하트비트가 없는 사용자를 대상으로 유저의 등록된 Timezone(예: `Asia/Seoul`)의 현재 시각을 계산하고, 배터리 잔량(5% 미만) 및 야간 시간대(23:00~06:00) 여부에 따라 `DISCHARGED` 또는 `SLEEP`으로 상태를 자동 전이시켰습니다.
+
+```java
+// backend/.../user/UserStatusScheduler.java (Timezone 인식 수면/방전 FSM)
+@Scheduled(cron = "0 * * * * *")
+@Transactional
+public void autoDetectSleepMode() {
+    LocalDateTime threshold = LocalDateTime.now().minusMinutes(INACTIVE_THRESHOLD_MINUTES);
+    List<User> inactiveUsers = userRepository.findByStatusAndLastActiveAtBefore(UserStatus.ONLINE, threshold);
+    
+    for (User user : inactiveUsers) {
+        Map<Object, Object> metadata = userStatusService.getUserMetadata(user.getId());
+        int battery = parseBattery(metadata.get("battery"));
+
+        if (battery >= 0 && battery < 5) {
+            updateUserStatus(user, UserStatus.DISCHARGED, "Battery low (" + battery + "%)");
+            continue;
+        }
+
+        ZoneId zoneId = ZoneId.of(user.getTimezone() != null ? user.getTimezone() : "Asia/Seoul");
+        int hour = ZonedDateTime.now(zoneId).getHour();
+
+        if (hour >= 23 || hour < 6) {
+            updateUserStatus(user, UserStatus.SLEEP, "Night time (" + hour + "h)");
+            continue;
+        }
+
+        updateUserStatus(user, UserStatus.UNKNOWN, "Inactive");
+    }
+}
+```
+
+---
+
+## Troubleshooting
+
+### 문제 1: RabbitMQ Poison Message 무한 Requeue 루프 및 DLQ 격리 구축
+
+- **현상:** AI 서비스에서 발행한 JSON 페이로드의 `couple_id` 필드가 문자열(`"partner-1"`)로 전송되어 Core 서버의 `AIResponseListener`에서 `NumberFormatException` 발생. Spring AMQP 기본 설정에 의해 실패한 메시지가 큐로 무한 Requeue되면서 CPU 사용률이 폭증하고 후속 메시지 처리가 차단되는 Poison Message 현상 발생.
+- **해결:**
+    1. 복구 불가능한 포맷 에러 및 역직렬화 실패 시 `AmqpRejectAndDontRequeueException`을 명시적으로 던져 즉시 Requeue를 중단.
+    2. `RabbitMqConfig`에 Dead Letter Exchange(`zzz.dlx`)와 Dead Letter Queue(`zzz.dlq`)를 선언하고 모든 주요 큐에 `x-dead-letter-exchange` 인자를 바인딩하여 비정상 메시지를 DLQ로 안전하게 격리 보존.
+
+```java
+// backend/.../global/config/RabbitMqConfig.java (Dead Letter Queue & DLX 바인딩)
+@Bean
+public Queue aiResponseQueue() {
+    return QueueBuilder.durable(AI_RESPONSE_QUEUE)
+            .withArgument("x-dead-letter-exchange", DLX_NAME)
+            .withArgument("x-dead-letter-routing-key", "dead.letter.ai.response")
+            .build();
+}
+
+// backend/.../ai/event/AIResponseListener.java (독성 메시지 Requeue 방지)
+catch (NumberFormatException e) {
+    log.error("Invalid format in AI Response: partnerId={} userId={}. Sending to DLQ.", 
+              event.getPartnerId(), event.getUserId(), e);
+    throw new AmqpRejectAndDontRequeueException("Invalid number format in AI response", e);
+}
+```
+
+### 문제 2: Flutter 클라이언트 안티패턴 제거 및 MVVM / Typed Error 도입
+
+- **현상:** 초기 Flutter 코드에서 API 서비스가 정적 메서드(`static`)로 작성되어 토큰 I/O가 매번 발생하고, View와 로직이 결합되어 에러 발생 시 단순 문자열 비교로 인해 런타임 예외 처리가 불안정했음.
+- **해결:**
+    - Riverpod `StateNotifier` 기반의 `HomeViewModel`로 비즈니스 로직을 분리하고 단방향 데이터 흐름 확립.
+    - `Result<T>` 및 `AppError` sealed class를 도입하여 `SessionExpiredError`, `NetworkError`, `UpdateFailedError`를 명확히 타입화하고 UI 피드백을 체계화.
+
+---
+
+## 프로젝트 성과 및 배운 점
+
+- **하이브리드 네이티브 브릿지 설계 역량 강화:** Flutter와 플랫폼 네이티브(Android Foreground Service, iOS Live Activities) 간의 통신 구조를 직접 설계하여 OS별 엄격한 백그라운드 정책을 우회하고 실시간성을 확보했습니다.
+- **Event-Driven MSA 분산 환경 구축:** Spring Boot와 Python FastAPI 간의 RabbitMQ 비동기 이벤트 파이프라인 및 Dead Letter Queue(DLQ)를 통한 장애 격리 체계를 구현하여 결합도 낮고 복원력 있는 시스템을 완성했습니다.
+- **RAG & Vector Search 실전 응용:** 비정형 대화 데이터를 사용자별 네임스페이스로 벡터화하고, 프롬프트 엔지니어링과 연계하여 개인화된 AI 페르소나 대리 응답 및 요약 리포트를 서빙하는 전 과정을 경험했습니다.

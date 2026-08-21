@@ -18,30 +18,60 @@ links:
 
 ## 시스템 아키텍처 및 기술 스택
 
-### Infrastructure & DevOps
+```text
+┌────────────────────────────────────────────────────────────────────────────┐
+│                       Client Layer (React SPA & Nginx)                     │
+│               Port 80 (Movie Browser, Review Editor, Verification UI)      │
+└─────────────────────────────────────┬──────────────────────────────────────┘
+                                      │ HTTP / REST API (Port 9000)
+                                      ▼
+┌────────────────────────────────────────────────────────────────────────────┐
+│               API Gateway (Java 17 & Spring Cloud Gateway)                 │
+│         - Global CORS, Path Rewriting (/api/**), Centralized Routing       │
+└──────┬──────────────┬──────────────┬───────────────┬───────────────────────┘
+       │              │              │               │
+       │ (Proxy)      │ (Proxy)      │ (Proxy)       │ (Proxy)
+       ▼              ▼              ▼               ▼
+┌──────────────┐┌──────────────┐┌──────────────┐┌────────────────────────────┐
+│   User API   ││  Review API  ││  Badge API   ││      Verification API      │
+│  (PHP 8.0 /  ││ (Spring Boot ││ (Spring Boot ││   (Python 3.9 & FastAPI)   │
+│   Apache)    ││   Java 17)   ││ Batch Java17)││ - Async Upload / Validation│
+└──────┬───────┘└──────┬───────┘└──────┬───────┘└──────┬──────────────┬──────┘
+       │               │               │               │              │
+       │               │               │               │              │ Internal Call
+       │               │               │               │              │ (X-API-KEY)
+       │               │               │               │              ▼
+       │               │               │               │  ┌──────────────────┐
+       │               │               │               │  │    Movie API     │
+       │               │               │               │  │ (Spring Boot/TMDB│
+       │               │               │               │  └───────────┬──────┘
+       ▼               ▼               ▼               ▼              │
+┌──────────────┐┌──────────────┐┌──────────────┐┌──────────────┐      ▼
+│  user-mysql  ││ review-mysql ││ badge-mysql  ││verification- │  ┌──────────┐
+│   (Port 3307)││  (Port 3306) ││  (Port 3309) ││ mysql (3308) │  │ TMDB API │
+└──────┬───────┘└──────────────┘└──────────────┘└──────┬───────┘  └──────────┘
+       │ (Session Sync)                                │ (Volume Mount)
+       ▼                                               ▼
+┌──────────────┐                                ┌──────────────┐
+│  Redis 7.0   │                                │ verification │
+│ (Port 6379)  │                                │   -uploads   │
+└──────────────┘                                └──────────────┘
+```
 
-- **Containerization:** Docker, Docker Compose (네트워크 격리 및 볼륨 관리)
-- **Networking:** Bridge Network를 통한 컨테이너 간 내부 통신, 포트 포워딩을 통한 외부 노출 제어
+### Edge & Frontend
+- **Frontend SPA:** React 18, React Router, Nginx (Port 80)
+- **API Gateway:** Java 17, Spring Cloud Gateway, Netty (Port 9000, Centralized Routing, CORS, Path Rewriting)
 
-### Backend (Microservices)
+### Polyglot Microservices
+- **Movie & Review Service:** Java 17, Spring Boot 3.x, Spring Data JPA, TMDB API 연동
+- **Badge Service:** Java 17, Spring Boot, Spring Scheduler (`@Async` 비동기 배치 집계)
+- **Verification Service:** Python 3.9, FastAPI, SQLAlchemy, Asynchronous File Stream (`shutil`), Docker Volume
+- **User Service:** PHP 8.0, Apache (레거시 인증 환경 시뮬레이션)
 
-- **Gateway Service (Edge Server):**
-    - Stack: Java 17, Spring Cloud Gateway, Netty
-    - Role: 라우팅, 로드밸런싱, 인증(Auth) 오프로딩, CORS 처리
-- **Core Domain Services (Movie, Review, Badge API):**
-    - Stack: Java 17, Spring Boot, Spring Data JPA
-    - Role: 비즈니스 로직 처리, 배치 작업(Batch Processing) 수행
-- **Verification Service:**
-    - Stack: Python 3.9, FastAPI, SQLAlchemy
-    - Role: 비동기 파일 업로드 처리, 이미지 관리, 관리자 승인 로직
-- **User Service (Legacy Simulation):**
-    - Stack: PHP 8.0 (Apache)
-    - Role: 사용자 인증 및 세션 관리
-
-### Data & Persistence
-
-- **RDBMS:** MySQL 8.0 (서비스별 독립 스키마: `user-mysql`, `review-mysql` 등)
-- **NoSQL:** Redis (분산 세션 저장소 및 캐싱)
+### Persistence & Infrastructure
+- **Database (Database per Service):** MySQL 8.0 (`user-mysql`, `review-mysql`, `verification-mysql`, `badge-mysql`)
+- **In-Memory Cache & Session:** Redis 7.0
+- **Container & Network:** Docker, Docker Compose (`bridge` 격리 네트워크, Named Volumes)
 
 ---
 
