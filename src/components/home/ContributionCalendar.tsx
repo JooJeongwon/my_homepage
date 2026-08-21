@@ -5,30 +5,7 @@ import { clientContributionService } from '@/infrastructure/github/contribution.
 import { ContributionCalendar as ContributionCalendarType } from '@/core/models/contribution.model';
 import { ContributionCalendarSkeleton } from './Skeletons';
 import { Github, RefreshCw } from 'lucide-react';
-
-const formatDate = (dateStr: string) => {
-    try {
-        const [year, month, day] = dateStr.split('-').map(Number);
-        const date = new Date(year, month - 1, day);
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric'
-        });
-    } catch {
-        return dateStr;
-    }
-};
-
-const formatKoreanDate = (dateStr: string) => {
-    try {
-        const [year, month, day] = dateStr.split('-').map(Number);
-        if (!year || !month || !day) return dateStr;
-        return `${year}년 ${month}월 ${day}일`;
-    } catch {
-        return dateStr;
-    }
-};
+import { formatDate, formatKoreanDate, parseDate } from '@/lib/date';
 
 const getMonthLabels = (weeks: ContributionCalendarType['weeks']) => {
     const labels: { index: number; label: string }[] = [];
@@ -36,13 +13,14 @@ const getMonthLabels = (weeks: ContributionCalendarType['weeks']) => {
 
     weeks.forEach((week, i) => {
         if (week.contributionDays.length > 0) {
-            const [year, month, day] = week.contributionDays[0].date.split('-').map(Number);
-            const firstDay = new Date(year, month - 1, day);
-            const currentMonth = firstDay.getMonth();
-            if (currentMonth !== prevMonth) {
-                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                labels.push({ index: i, label: monthNames[currentMonth] });
-                prevMonth = currentMonth;
+            const parsed = parseDate(week.contributionDays[0].date);
+            if (parsed) {
+                const currentMonth = parsed.month - 1; // 0-indexed month for lookup
+                if (currentMonth !== prevMonth) {
+                    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    labels.push({ index: i, label: monthNames[currentMonth] });
+                    prevMonth = currentMonth;
+                }
             }
         }
     });
@@ -425,7 +403,7 @@ export default function ContributionCalendar() {
                 >
                     <div className="bg-neutral-900 dark:bg-neutral-800 text-neutral-50 dark:text-neutral-100 text-[10px] px-2.5 py-1.5 rounded-lg whitespace-nowrap shadow-lg border border-neutral-800 dark:border-neutral-700/80 flex flex-col items-center">
                         <span className="font-semibold">{hoveredCell.count === 0 ? 'No' : hoveredCell.count} contributions</span>
-                        <span className="text-[9px] text-neutral-400 dark:text-neutral-400">{formatDate(hoveredCell.date)}</span>
+                        <span className="text-[9px] text-neutral-400 dark:text-neutral-400">{formatDate(hoveredCell.date, 'MMM D, YYYY')}</span>
                     </div>
                     {/* 화살표 */}
                     <div 

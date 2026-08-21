@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import { extractHeadings } from '@/lib/toc';
 import { TableOfContents } from '@/components/mdx/TableOfContents';
 import { MdxRenderer } from '@/components/mdx/MdxRenderer';
+import { formatKoreanDate } from '@/lib/date';
 
 export async function generateMetadata({
     params
@@ -71,7 +72,7 @@ export default async function BlogPostPage({
                     </div>
                     <h1 className="text-4xl font-bold mb-4 text-neutral-800 dark:text-neutral-200">{post.title}</h1>
                     <time dateTime={post.date} className="block text-neutral-600 dark:text-neutral-400 mb-4">
-                        {new Date(post.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
+                        {formatKoreanDate(post.date)}
                     </time>
                     <div className="flex justify-start gap-2 flex-wrap">
                         {post.tags.map((tag) => (

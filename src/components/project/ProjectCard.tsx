@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Github, Globe } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Project } from '@/core/models/project.model';
+import { formatDate } from '@/lib/date';
 
 interface ProjectCardProps {
     project: Project;
@@ -85,7 +86,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                     )}
                 </div>
                 <time dateTime={project.date} className="text-neutral-600 dark:text-neutral-400 text-xs font-medium whitespace-nowrap">
-                    {project.date}
+                    {formatDate(project.date, 'YYYY.MM.DD')}
                 </time>
             </div>
         </article>

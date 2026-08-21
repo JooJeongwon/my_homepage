@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Post } from '@/core/models/post.model';
 import { Clock } from 'lucide-react';
+import { formatDate } from '@/lib/date';
 
 interface Props {
     post: Post;
@@ -50,7 +51,7 @@ export default function PostCard({ post }: Props) {
                         {post.readingTime} min read
                     </span>
                     <time dateTime={post.date} className="text-neutral-600 dark:text-neutral-400 text-xs font-medium whitespace-nowrap">
-                        {new Date(post.date).toLocaleDateString('ko-KR')}
+                        {formatDate(post.date, 'YYYY.MM.DD')}
                     </time>
                 </div>
             </article>
