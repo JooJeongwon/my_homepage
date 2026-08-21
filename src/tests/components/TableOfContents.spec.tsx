@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { TableOfContents } from '@/components/toc/TableOfContents';
+import { TableOfContents } from '@/components/mdx/TableOfContents';
 import { Heading } from '@/lib/toc';
 
 class MockIntersectionObserver {

@@ -1,11 +1,13 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import ContributionCalendar from '@/components/home/ContributionCalendar';
-import { getGetContributionsUseCase } from '@/di/contribution.module';
-import { ContributionCalendar as ContributionCalendarType } from '@/domain/models/contribution.model';
+import { clientContributionService } from '@/infrastructure/github/contribution.client';
+import { ContributionCalendar as ContributionCalendarType } from '@/core/models/contribution.model';
 
-vi.mock('@/di/contribution.module', () => ({
-    getGetContributionsUseCase: vi.fn(),
+vi.mock('@/infrastructure/github/contribution.client', () => ({
+    clientContributionService: {
+        getContributions: vi.fn(),
+    },
 }));
 
 describe('ContributionCalendar (FIRST Principle & Deterministic Timezone Test)', () => {
@@ -47,10 +49,7 @@ describe('ContributionCalendar (FIRST Principle & Deterministic Timezone Test)',
         vi.useFakeTimers({ shouldAdvanceTime: true });
         vi.setSystemTime(fixedSystemTime);
 
-        vi.mocked(getGetContributionsUseCase).mockReturnValue({
-            execute: vi.fn().mockResolvedValue(mockCalendarData),
-            executeResult: vi.fn(),
-        } as unknown as ReturnType<typeof getGetContributionsUseCase>);
+        vi.mocked(clientContributionService.getContributions).mockResolvedValue(mockCalendarData);
     });
 
     afterEach(() => {

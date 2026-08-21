@@ -1,10 +1,9 @@
-import { getGetRecentPostsUseCase } from '@/di/post.module';
-import PostCard from '@/components/ui/PostCard';
-import { AlignedGrid } from '@/components/ui/AlignedGrid';
+import { postService } from '@/infrastructure/mdx/mdx-post.repository';
+import PostCard from '@/components/post/PostCard';
+import { AlignedGrid } from '@/components/common/AlignedGrid';
 
 export default async function RecentPosts() {
-  const getRecentPosts = getGetRecentPostsUseCase();
-  const posts = await getRecentPosts.execute(4);
+  const posts = await postService.getRecentPosts(4);
 
   return (
     <AlignedGrid>

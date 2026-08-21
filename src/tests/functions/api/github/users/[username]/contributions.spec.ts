@@ -1,3 +1,4 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { onRequest, onRequestOptions } from '../../../../../../../functions/api/github/users/[username]/contributions';
 
 interface MockContext {
@@ -87,7 +88,8 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
 
 
     it('RESTful 자원 URI 경로와 정상적인 Origin으로 유효한 username 요청 시 기여 정보를 정상 반환한다', async () => {
-        const response = await onRequest(mockContext);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response = await onRequest(mockContext as any);
         expect(response.status).toBe(200);
 
         const data = await response.json() as { totalContributions?: number };
@@ -110,7 +112,8 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
             }
         });
 
-        const response = await onRequest(mockContext);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response = await onRequest(mockContext as any);
         expect(response.status).toBe(204);
         expect(response.headers.get('Access-Control-Allow-Origin')).toBe('http://localhost:3000');
         expect(response.headers.get('Access-Control-Allow-Methods')).toBe('GET, OPTIONS');
@@ -126,7 +129,8 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
             }
         });
 
-        const response = await onRequestOptions(mockContext);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response = await onRequestOptions(mockContext as any);
         expect(response.status).toBe(403);
         expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull();
     });
@@ -138,7 +142,8 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
             }
         });
 
-        const response = await onRequest(mockContext);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response = await onRequest(mockContext as any);
         expect(response.status).toBe(403);
 
         const data = await response.json() as { error?: string };
@@ -156,7 +161,8 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
         });
         mockContext.params = { username: 'bad_user$' };
 
-        const response = await onRequest(mockContext);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response = await onRequest(mockContext as any);
         expect(response.status).toBe(403);
 
         const data = await response.json() as { error?: string };
@@ -172,7 +178,8 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
         // console.error 모킹하여 콘솔 출력이 조용하게 만듬
         const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-        const response = await onRequest(mockContext);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response = await onRequest(mockContext as any);
         // 에러 시 502 Bad Gateway 리턴 확인
         expect(response.status).toBe(502);
 
@@ -207,7 +214,8 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
             default: mockCache
         };
 
-        const response = await onRequest(mockContext);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response = await onRequest(mockContext as any);
         expect(response.status).toBe(200);
         expect(response.headers.get('X-Cache-Status')).toBe('STALE');
 
@@ -248,7 +256,8 @@ describe('contributions API 자원 URI 식별화 및 보안/기능 테스트', (
             default: mockCache
         };
 
-        const response = await onRequest(mockContext);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response = await onRequest(mockContext as any);
         expect(response.status).toBe(200);
         expect(response.headers.get('X-Cache-Status')).toBe('FALLBACK');
         expect(response.headers.get('X-Cache-Fallback')).toBe('true');

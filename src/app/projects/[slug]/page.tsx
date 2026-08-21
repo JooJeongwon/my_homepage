@@ -1,14 +1,11 @@
-import { getGetProjectDetailUseCase, getGetAllProjectsUseCase } from '@/di/project.module';
+import { projectService } from '@/infrastructure/mdx/mdx-project.repository';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { MDXRemote } from 'next-mdx-remote/rsc';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeSlug from 'rehype-slug';
 import { Github, Globe, Calendar, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { extractHeadings } from '@/lib/toc';
-import { TableOfContents } from '@/components/toc/TableOfContents';
-import { CodeBlock } from '@/components/ui/CodeBlock';
+import { TableOfContents } from '@/components/mdx/TableOfContents';
+import { MdxRenderer } from '@/components/mdx/MdxRenderer';
 
 export async function generateMetadata({
     params
@@ -16,8 +13,7 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
     const { slug } = await params;
-    const useCase = getGetProjectDetailUseCase();
-    const project = await useCase.execute(slug);
+    const project = await projectService.getProjectBySlug(slug);
 
     if (!project) {
         return {};
@@ -38,8 +34,7 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams() {
-    const useCase = getGetAllProjectsUseCase();
-    const projects = await useCase.execute();
+    const projects = await projectService.getAllProjects();
 
     return projects.map((project) => ({
         slug: project.slug,
@@ -52,8 +47,7 @@ export default async function ProjectDetailPage({
     params: Promise<{ slug: string }>
 }) {
     const { slug } = await params;
-    const useCase = getGetProjectDetailUseCase();
-    const project = await useCase.execute(slug);
+    const project = await projectService.getProjectBySlug(slug);
 
     if (!project) {
         return notFound();
@@ -111,35 +105,7 @@ export default async function ProjectDetailPage({
                     </div>
                 </header>
 
-                <div className="prose dark:prose-invert max-w-none break-words 
-                    prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-6 prose-headings:text-neutral-800 dark:prose-headings:text-neutral-200
-                    prose-p:text-neutral-800 dark:prose-p:text-neutral-200 prose-p:leading-relaxed
-                    prose-a:text-blue-600 dark:prose-a:text-blue-550 prose-a:no-underline hover:prose-a:underline
-                    prose-li:text-neutral-800 dark:prose-li:text-neutral-200
-                    prose-hr:border-neutral-200 dark:prose-hr:border-neutral-800
-                    
-                    prose-pre:bg-white dark:prose-pre:bg-neutral-900/50
-                    prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-800
-                    prose-pre:rounded-2xl
-                    
-                    prose-code:text-neutral-800 dark:prose-code:text-neutral-200
-                    prose-code:bg-neutral-100 dark:prose-code:bg-neutral-800
-                    prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md
-                    prose-code:before:content-none prose-code:after:content-none
-                    
-                    [&_pre_code]:!bg-transparent [&_pre_code]:!p-0 [&_pre_code]:!border-0 [&_pre_code]:!text-inherit">
-                    <MDXRemote
-                        source={project.content ?? ""}
-                        options={{
-                            mdxOptions: {
-                                rehypePlugins: [rehypeHighlight, rehypeSlug],
-                            },
-                        }}
-                        components={{
-                            pre: CodeBlock,
-                        }}
-                    />
-                </div>
+                <MdxRenderer source={project.content ?? ""} />
             </article>
         </div>
     );

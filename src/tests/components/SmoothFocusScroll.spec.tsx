@@ -1,6 +1,6 @@
 import { render, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { SmoothFocusScroll } from '@/components/ui/SmoothFocusScroll';
+import { SmoothFocusScroll } from '@/components/common/SmoothFocusScroll';
 
 vi.mock('next/navigation', () => ({
     usePathname: () => '/',

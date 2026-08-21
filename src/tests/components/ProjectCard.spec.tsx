@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { ProjectCard } from '@/components/ui/ProjectCard';
-import { Project } from '@/domain/models/project.model';
+import { ProjectCard } from '@/components/project/ProjectCard';
+import { Project } from '@/core/models/project.model';
 
 const mockPush = vi.fn();
 vi.mock('next/navigation', () => ({

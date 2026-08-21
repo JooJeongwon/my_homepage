@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import Header from '@/components/layout/Header';
+import Header from '@/components/common/Header';
 
 // next/navigation mock
 vi.mock('next/navigation', () => ({

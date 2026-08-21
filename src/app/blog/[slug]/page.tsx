@@ -1,14 +1,11 @@
-import { getGetPostDetailUseCase, getGetAllPostsUseCase } from '@/di/post.module';
+import { postService } from '@/infrastructure/mdx/mdx-post.repository';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { MDXRemote } from 'next-mdx-remote/rsc';
-import rehypeHighlight from 'rehype-highlight'; // ★ 플러그인 추가
-import rehypeSlug from 'rehype-slug';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { extractHeadings } from '@/lib/toc';
-import { TableOfContents } from '@/components/toc/TableOfContents';
-import { CodeBlock } from '@/components/ui/CodeBlock';
+import { TableOfContents } from '@/components/mdx/TableOfContents';
+import { MdxRenderer } from '@/components/mdx/MdxRenderer';
 
 export async function generateMetadata({
     params
@@ -16,8 +13,7 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
     const { slug } = await params;
-    const useCase = getGetPostDetailUseCase();
-    const post = await useCase.execute(slug);
+    const post = await postService.getPostBySlug(slug);
 
     if (!post) {
         return {};
@@ -39,8 +35,7 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams() {
-    const useCase = getGetAllPostsUseCase();
-    const posts = await useCase.execute();
+    const posts = await postService.getAllPosts();
 
     return posts.map((post) => ({
         slug: post.slug,
@@ -53,8 +48,7 @@ export default async function BlogPostPage({
     params: Promise<{ slug: string }>
 }) {
     const { slug } = await params;
-    const useCase = getGetPostDetailUseCase();
-    const post = await useCase.execute(slug);
+    const post = await postService.getPostBySlug(slug);
 
     if (!post) {
         return notFound();
@@ -90,42 +84,7 @@ export default async function BlogPostPage({
                     </div>
                 </header>
 
-                <div className="prose dark:prose-invert max-w-none break-words 
-                    prose-headings:text-neutral-800 dark:prose-headings:text-neutral-200
-                    prose-p:text-neutral-800 dark:prose-p:text-neutral-200
-                    prose-li:text-neutral-800 dark:prose-li:text-neutral-200
-                    prose-a:text-neutral-600 dark:prose-a:text-neutral-400 prose-a:no-underline hover:prose-a:text-neutral-900 dark:hover:prose-a:text-neutral-100 prose-a:transition-colors
-                    prose-hr:border-neutral-200 dark:prose-hr:border-neutral-800
-                    
-                    /* 코드 블록(pre) 스타일링 - Project Card와 통일 */
-                    prose-pre:bg-white dark:prose-pre:bg-neutral-900/50
-                    prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-800
-                    prose-pre:rounded-2xl
-                    prose-pre:text-neutral-800 dark:prose-pre:text-neutral-200
-                    
-                    /* 인라인 코드(code) 스타일링 */
-                    prose-code:text-neutral-800 dark:prose-code:text-neutral-200
-                    prose-code:bg-neutral-100 dark:prose-code:bg-neutral-800
-                    prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md
-                    prose-code:before:content-none prose-code:after:content-none
-                    prose-code:font-normal
-                    prose-code:border prose-code:border-neutral-200 dark:prose-code:border-neutral-700
-                    
-                    /* ★ 중요: 코드 블록(pre) 내부의 code 태그 스타일 리셋 (중복 배경 제거) */
-                    [&_pre_code]:!bg-transparent [&_pre_code]:!p-0 [&_pre_code]:!border-0 [&_pre_code]:!text-inherit">
-                    <MDXRemote
-                        source={post.content ?? ""}
-                        options={{
-                            mdxOptions: {
-                                // ★ 여기에 하이라이팅 플러그인을 연결합니다.
-                                rehypePlugins: [rehypeHighlight, rehypeSlug],
-                            },
-                        }}
-                        components={{
-                            pre: CodeBlock,
-                        }}
-                    />
-                </div>
+                <MdxRenderer source={post.content ?? ""} />
             </article>
         </div>
     );

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
-import { getGetContributionsUseCase } from '@/di/contribution.module';
-import { ContributionCalendar as ContributionCalendarType } from '@/domain/models/contribution.model';
+import { clientContributionService } from '@/infrastructure/github/contribution.client';
+import { ContributionCalendar as ContributionCalendarType } from '@/core/models/contribution.model';
 import { ContributionCalendarSkeleton } from './Skeletons';
 import { Github, RefreshCw } from 'lucide-react';
 
@@ -144,9 +144,8 @@ export default function ContributionCalendar() {
         setIsLoading(true);
         setError(null);
         try {
-            const useCase = getGetContributionsUseCase();
             // 기본 사용자: JooJeongwon
-            const res = await useCase.execute('JooJeongwon');
+            const res = await clientContributionService.getContributions('JooJeongwon');
             if (!res || !Array.isArray(res.weeks)) {
                 throw new Error('유효하지 않은 기여도 데이터 형식입니다.');
             }

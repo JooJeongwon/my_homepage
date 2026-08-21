@@ -1,4 +1,4 @@
-import { AlignedGrid } from '@/components/ui/AlignedGrid';
+import { AlignedGrid } from '@/components/common/AlignedGrid';
 
 export function ProjectCardSkeleton() {
   return (

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
-import SearchInput from '@/components/ui/SearchInput';
+import SearchInput from '@/components/common/SearchInput';
 
 describe('SearchInput UI Component Interaction Tests (FIRST Principle)', () => {
     it('placeholder와 입력 값이 올바르게 렌더링되어야 한다.', () => {

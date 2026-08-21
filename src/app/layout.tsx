@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google"; // 폰트
 import "./globals.css";
 // Force Rebuild
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import Header from "@/components/common/Header";
+import Footer from "@/components/common/Footer";
 import clsx from "clsx";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { ScrollToTop } from "@/components/ui/ScrollToTop";
-import { SmoothFocusScroll } from "@/components/ui/SmoothFocusScroll";
+import { ScrollToTop } from "@/components/common/ScrollToTop";
+import { SmoothFocusScroll } from "@/components/common/SmoothFocusScroll";
 
 // 폰트 설정 (구글 폰트 Inter 사용)
 const inter = Inter({ subsets: ["latin"] });
