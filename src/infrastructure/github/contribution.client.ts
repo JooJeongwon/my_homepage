@@ -81,6 +81,23 @@ export class ContributionApiClient implements IContributionRepository {
     private readonly maxRetries = 3;
     private readonly timeoutMs = 5000;
 
+    private getApiUrls(username: string): string[] {
+        const path = `/api/github/users/${encodeURIComponent(username)}/contributions`;
+
+        // 브라우저 환경에서 localhost 또는 127.0.0.1인 경우 프로덕션 fallback URL 지원
+        if (typeof window !== 'undefined' && window.location) {
+            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            if (isLocal) {
+                return [
+                    path,
+                    `https://jwjoo.com${path}`
+                ];
+            }
+        }
+
+        return [path];
+    }
+
     async getContributions(username: string): Promise<ContributionCalendar> {
         // Mock 환경 변수가 활성화된 경우 인위적인 딜레이 후 모의 데이터 반환
         if (process.env.NEXT_PUBLIC_MOCK_CONTRIBUTIONS === 'true') {
@@ -88,45 +105,53 @@ export class ContributionApiClient implements IContributionRepository {
             return generateMockContributions();
         }
 
-        const url = `/api/github/users/${encodeURIComponent(username)}/contributions`;
+        const urls = this.getApiUrls(username);
 
-        for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
-            const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+        for (const url of urls) {
+            for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 
-            try {
-                const response = await fetch(url, { signal: controller.signal });
-                clearTimeout(timer);
+                try {
+                    const response = await fetch(url, { signal: controller.signal });
+                    clearTimeout(timer);
 
-                if (response.ok) {
-                    const data = await response.json();
-                    const parsed = ContributionCalendarSchema.safeParse(data);
+                    if (response.ok) {
+                        const data = await response.json();
+                        const parsed = ContributionCalendarSchema.safeParse(data);
 
-                    if (parsed.success) {
-                        return parsed.data;
+                        if (parsed.success) {
+                            return parsed.data;
+                        }
+                        console.error('[ContributionApiClient] 스키마 검증 실패:', parsed.error);
+                        return createFallbackContributionCalendar();
                     }
-                    console.error('[ContributionApiClient] 스키마 검증 실패:', parsed.error);
-                    return createFallbackContributionCalendar();
+
+                    // 404이고 다음 Fallback URL이 남아있는 경우 즉시 다음 URL 시도
+                    if (response.status === 404 && urls.length > 1 && url === urls[0]) {
+                        console.info('[ContributionApiClient] 로컬 엔드포인트 404 감지. 프로덕션 API로 Fallback 전환합니다.');
+                        break;
+                    }
+
+                    console.warn(`[ContributionApiClient] (${url}) 시도 ${attempt}/${this.maxRetries} API 에러: ${response.status}`);
+
+                    if (response.status >= 400 && response.status < 500) {
+                        break;
+                    }
+                } catch (error: unknown) {
+                    clearTimeout(timer);
+                    const isAbort = error instanceof Error && error.name === 'AbortError';
+                    console.warn(`[ContributionApiClient] (${url}) 시도 ${attempt}/${this.maxRetries} ${isAbort ? 'Timeout' : 'Network Failure'}:`, error);
                 }
 
-                console.warn(`[ContributionApiClient] 시도 ${attempt}/${this.maxRetries} API 에러: ${response.status}`);
-
-                if (response.status >= 400 && response.status < 500) {
-                    return createFallbackContributionCalendar();
+                if (attempt < this.maxRetries) {
+                    const backoffMs = Math.pow(2, attempt - 1) * 400;
+                    await new Promise((resolve) => setTimeout(resolve, backoffMs));
                 }
-            } catch (error: unknown) {
-                clearTimeout(timer);
-                const isAbort = error instanceof Error && error.name === 'AbortError';
-                console.warn(`[ContributionApiClient] 시도 ${attempt}/${this.maxRetries} ${isAbort ? 'Timeout' : 'Network Failure'}:`, error);
-            }
-
-            if (attempt < this.maxRetries) {
-                const backoffMs = Math.pow(2, attempt - 1) * 400;
-                await new Promise((resolve) => setTimeout(resolve, backoffMs));
             }
         }
 
-        console.error(`[ContributionApiClient] 모든 재시도(${this.maxRetries}회) 실패. Fallback 데이터를 반환합니다.`);
+        console.error(`[ContributionApiClient] 모든 재시도 실패. Fallback 데이터를 반환합니다.`);
         return createFallbackContributionCalendar();
     }
 }
