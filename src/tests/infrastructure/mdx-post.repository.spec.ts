@@ -1,13 +1,17 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MdxPostRepository } from '@/infrastructure/mdx/mdx-post.repository';
 import fs from 'fs';
 
-describe('MdxPostRepository (FIRST Principle Infrastructure Data Access Test)', () => {
+describe('MdxPostRepository', () => {
+    beforeEach(() => {
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
     afterEach(() => {
         vi.restoreAllMocks();
     });
 
-    it('getAllPosts 호출 시 예외를 던지지 않고 Post 배열을 반환해야 한다.', async () => {
+    it('getAllPosts 호출 시 Post 배열을 반환한다', async () => {
         const repo = new MdxPostRepository();
         const posts = await repo.getAllPosts();
 
@@ -21,7 +25,7 @@ describe('MdxPostRepository (FIRST Principle Infrastructure Data Access Test)', 
         }
     });
 
-    it('getAllPosts는 최신 날짜 순(내림차순)으로 글을 정렬해야 한다.', async () => {
+    it('getAllPosts는 최신 날짜 순(내림차순)으로 정렬한다', async () => {
         const repo = new MdxPostRepository();
         const posts = await repo.getAllPosts();
 
@@ -32,14 +36,14 @@ describe('MdxPostRepository (FIRST Principle Infrastructure Data Access Test)', 
         }
     });
 
-    it('존재하지 않는 slug로 getPostBySlug 조회 시 null을 반환하고 throw하지 않아야 한다.', async () => {
+    it('존재하지 않는 slug로 getPostBySlug 조회 시 null을 반환한다', async () => {
         const repo = new MdxPostRepository();
         const post = await repo.getPostBySlug('non-existent-slug-123456');
 
         expect(post).toBeNull();
     });
 
-    it('존재하는 slug 조회 시 본문 content가 포함된 Post 객체를 반환해야 한다.', async () => {
+    it('존재하는 slug 조회 시 본문 content가 포함된 Post 객체를 반환한다', async () => {
         const repo = new MdxPostRepository();
         const posts = await repo.getAllPosts();
 
@@ -53,7 +57,7 @@ describe('MdxPostRepository (FIRST Principle Infrastructure Data Access Test)', 
         }
     });
 
-    it('content 디렉터리가 존재하지 않는 경우 빈 배열을 반환하고 안심하게 fallback되어야 한다.', async () => {
+    it('content 디렉터리가 없으면 빈 배열을 안전하게 반환한다', async () => {
         vi.spyOn(fs, 'existsSync').mockReturnValue(false);
 
         const repo = new MdxPostRepository();
@@ -62,7 +66,7 @@ describe('MdxPostRepository (FIRST Principle Infrastructure Data Access Test)', 
         expect(posts).toEqual([]);
     });
 
-    it('MDX 파싱 중 에러 발생 시 해당 포스트를 제외(null)하고 빈 배열을 반환해야 한다.', async () => {
+    it('MDX 파싱 에러 발생 시 해당 포스트를 제외하고 빈 배열을 반환한다', async () => {
         vi.spyOn(fs, 'existsSync').mockReturnValue(true);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         vi.spyOn(fs, 'readdirSync').mockReturnValue(['invalid.mdx'] as any);

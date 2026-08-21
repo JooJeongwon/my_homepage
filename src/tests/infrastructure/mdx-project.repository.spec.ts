@@ -1,13 +1,17 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MdxProjectRepository } from '@/infrastructure/mdx/mdx-project.repository';
 import fs from 'fs';
 
-describe('MdxProjectRepository (FIRST Principle Infrastructure Data Access Test)', () => {
+describe('MdxProjectRepository', () => {
+    beforeEach(() => {
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
     afterEach(() => {
         vi.restoreAllMocks();
     });
 
-    it('getAllProjects 호출 시 예외 없이 Project 배열을 반환해야 한다.', async () => {
+    it('getAllProjects 호출 시 Project 배열을 반환한다', async () => {
         const repo = new MdxProjectRepository();
         const projects = await repo.getAllProjects();
 
@@ -19,14 +23,14 @@ describe('MdxProjectRepository (FIRST Principle Infrastructure Data Access Test)
         }
     });
 
-    it('존재하지 않는 slug로 getProjectBySlug 조회 시 null을 반환해야 한다.', async () => {
+    it('존재하지 않는 slug로 getProjectBySlug 조회 시 null을 반환한다', async () => {
         const repo = new MdxProjectRepository();
         const project = await repo.getProjectBySlug('non-existent-project-999');
 
         expect(project).toBeNull();
     });
 
-    it('존재하는 slug로 getProjectBySlug 조회 시 프로젝트 상세 데이터를 반환해야 한다.', async () => {
+    it('존재하는 slug 조회 시 상세 데이터를 반환한다', async () => {
         const repo = new MdxProjectRepository();
         const projects = await repo.getAllProjects();
 
@@ -40,7 +44,7 @@ describe('MdxProjectRepository (FIRST Principle Infrastructure Data Access Test)
         }
     });
 
-    it('content 디렉터리가 없을 때 빈 배열을 반환해야 한다.', async () => {
+    it('content 디렉터리가 없으면 빈 배열을 반환한다', async () => {
         vi.spyOn(fs, 'existsSync').mockReturnValue(false);
 
         const repo = new MdxProjectRepository();
@@ -49,7 +53,7 @@ describe('MdxProjectRepository (FIRST Principle Infrastructure Data Access Test)
         expect(projects).toEqual([]);
     });
 
-    it('파일 읽기 또는 파싱 실패 시 에러 발생 없이 해당 프로젝트를 제외(null)하고 빈 배열을 반환해야 한다.', async () => {
+    it('파일 읽기 실패 시 빈 배열을 안전하게 반환한다', async () => {
         vi.spyOn(fs, 'existsSync').mockReturnValue(true);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         vi.spyOn(fs, 'readdirSync').mockReturnValue(['broken.mdx'] as any);

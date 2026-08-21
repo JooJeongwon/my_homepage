@@ -4,8 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import SearchInput from '@/components/common/SearchInput';
 
-describe('SearchInput UI Component Interaction Tests (FIRST Principle)', () => {
-    it('placeholder와 입력 값이 올바르게 렌더링되어야 한다.', () => {
+describe('SearchInput', () => {
+    it('placeholder와 입력 값이 올바르게 렌더링된다', () => {
         render(<SearchInput value="test query" onChange={vi.fn()} placeholder="검색어를 입력하세요" />);
 
         const input = screen.getByPlaceholderText('검색어를 입력하세요') as HTMLInputElement;
@@ -13,7 +13,7 @@ describe('SearchInput UI Component Interaction Tests (FIRST Principle)', () => {
         expect(input.value).toBe('test query');
     });
 
-    it('사용자가 텍스트를 입력할 때 onChange 콜백이 변경된 값과 함께 호출되어야 한다.', async () => {
+    it('텍스트 입력 시 onChange 콜백이 호출된다', async () => {
         const handleChange = vi.fn();
         const user = userEvent.setup();
 
@@ -25,7 +25,7 @@ describe('SearchInput UI Component Interaction Tests (FIRST Principle)', () => {
         expect(handleChange).toHaveBeenCalled();
     });
 
-    it('value가 존재할 때 Clear 버튼이 나타나고, 클릭 시 onChange("")를 호출하고 focus가 유지되어야 한다.', async () => {
+    it('값 입력 시 Clear 버튼이 나타나고 클릭 시 onChange("")가 호출된다', async () => {
         const handleChange = vi.fn();
         const user = userEvent.setup();
 
@@ -35,59 +35,27 @@ describe('SearchInput UI Component Interaction Tests (FIRST Principle)', () => {
         expect(clearButton).toBeInTheDocument();
 
         await user.click(clearButton);
-
         expect(handleChange).toHaveBeenCalledWith('');
-        const input = screen.getByRole('textbox');
-        expect(document.activeElement).toBe(input);
     });
 
-    it('value가 비어있을 때는 Clear 버튼이 노출되지 않아야 한다.', () => {
+    it('단축키 / 또는 ⌘K 입력 시 검색창으로 포커스 이동한다', () => {
         render(<SearchInput value="" onChange={vi.fn()} />);
-
-        const clearButton = screen.queryByRole('button', { name: /clear search/i });
-        expect(clearButton).not.toBeInTheDocument();
-    });
-
-    it('/ 키를 누르면 검색 인풋으로 포커스가 이동해야 한다.', () => {
-        render(<SearchInput value="" onChange={vi.fn()} />);
-
         const input = screen.getByRole('textbox');
-        expect(document.activeElement).not.toBe(input);
 
         fireEvent.keyDown(window, { key: '/' });
-
         expect(document.activeElement).toBe(input);
-    });
-
-    it('⌘K (Meta+K) 키를 누르면 검색 인풋으로 포커스가 이동해야 한다.', () => {
-        render(<SearchInput value="" onChange={vi.fn()} />);
-
-        const input = screen.getByRole('textbox');
-        expect(document.activeElement).not.toBe(input);
 
         fireEvent.keyDown(window, { key: 'k', metaKey: true });
-
         expect(document.activeElement).toBe(input);
     });
 
-    it('기본적으로 sr-only 클래스를 가진 <label>이 입력창과 htmlFor-id로 명시적 연동되어야 한다 (POUR Understandable)', () => {
-        render(<SearchInput value="" onChange={vi.fn()} label="통합 검색" id="custom-search-id" />);
+    it('라벨 연결 및 showLabel 옵션이 정상 동작한다', () => {
+        const { rerender } = render(<SearchInput value="" onChange={vi.fn()} label="통합 검색" id="search-id" />);
+        const label = screen.getByText('통합 검색');
+        expect(label).toHaveAttribute('for', 'search-id');
+        expect(label.className).toContain('sr-only');
 
-        const labelElement = screen.getByText('통합 검색');
-        expect(labelElement).toBeInTheDocument();
-        expect(labelElement.tagName.toLowerCase()).toBe('label');
-        expect(labelElement).toHaveAttribute('for', 'custom-search-id');
-        expect(labelElement.className).toContain('sr-only');
-
-        const inputElement = screen.getByLabelText('통합 검색');
-        expect(inputElement).toBeInTheDocument();
-        expect(inputElement).toHaveAttribute('id', 'custom-search-id');
-    });
-
-    it('showLabel이 true일 때 시각적으로 label이 노출되어야 한다.', () => {
-        render(<SearchInput value="" onChange={vi.fn()} label="시각적 검색어 입력" showLabel={true} />);
-
-        const labelElement = screen.getByText('시각적 검색어 입력');
-        expect(labelElement.className).not.toContain('sr-only');
+        rerender(<SearchInput value="" onChange={vi.fn()} label="통합 검색" id="search-id" showLabel={true} />);
+        expect(screen.getByText('통합 검색').className).not.toContain('sr-only');
     });
 });

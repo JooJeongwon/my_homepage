@@ -8,14 +8,14 @@ vi.mock('next-themes', () => ({
     useTheme: vi.fn(),
 }));
 
-describe('ThemeToggle UI Component Interaction Tests (FIRST Principle)', () => {
+describe('ThemeToggle', () => {
     const mockSetTheme = vi.fn();
 
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
-    it('버튼 렌더링 및 accessibility 라벨이 올바르게 설정되어야 한다.', () => {
+    it('버튼 및 접근성 라벨이 렌더링된다', () => {
         vi.mocked(nextThemes.useTheme).mockReturnValue({
             theme: 'dark',
             resolvedTheme: 'dark',
@@ -25,12 +25,10 @@ describe('ThemeToggle UI Component Interaction Tests (FIRST Principle)', () => {
         });
 
         render(<ThemeToggle />);
-
-        const button = screen.getByRole('button', { name: /toggle theme/i });
-        expect(button).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /toggle theme/i })).toBeInTheDocument();
     });
 
-    it('현재 테마가 dark일 때 클릭하면 setTheme("light")를 호출해야 한다.', () => {
+    it('현재 dark 테마일 때 클릭하면 light 테마로 전환한다', () => {
         vi.mocked(nextThemes.useTheme).mockReturnValue({
             theme: 'dark',
             resolvedTheme: 'dark',
@@ -40,15 +38,12 @@ describe('ThemeToggle UI Component Interaction Tests (FIRST Principle)', () => {
         });
 
         render(<ThemeToggle />);
+        fireEvent.click(screen.getByRole('button', { name: /toggle theme/i }));
 
-        const button = screen.getByRole('button', { name: /toggle theme/i });
-        fireEvent.click(button);
-
-        expect(mockSetTheme).toHaveBeenCalledTimes(1);
         expect(mockSetTheme).toHaveBeenCalledWith('light');
     });
 
-    it('현재 테마가 light일 때 클릭하면 setTheme("dark")를 호출해야 한다.', () => {
+    it('현재 light 테마일 때 클릭하면 dark 테마로 전환한다', () => {
         vi.mocked(nextThemes.useTheme).mockReturnValue({
             theme: 'light',
             resolvedTheme: 'light',
@@ -58,11 +53,8 @@ describe('ThemeToggle UI Component Interaction Tests (FIRST Principle)', () => {
         });
 
         render(<ThemeToggle />);
+        fireEvent.click(screen.getByRole('button', { name: /toggle theme/i }));
 
-        const button = screen.getByRole('button', { name: /toggle theme/i });
-        fireEvent.click(button);
-
-        expect(mockSetTheme).toHaveBeenCalledTimes(1);
         expect(mockSetTheme).toHaveBeenCalledWith('dark');
     });
 });

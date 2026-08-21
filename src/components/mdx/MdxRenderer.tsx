@@ -6,6 +6,7 @@ import { CodeBlock } from './CodeBlock';
 
 interface MdxRendererProps {
     source: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     components?: Record<string, React.ComponentType<any>>;
 }
 

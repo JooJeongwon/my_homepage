@@ -9,7 +9,7 @@ class MockIntersectionObserver {
     disconnect = vi.fn();
 }
 
-describe('TableOfContents Component (Continuous Scroll & Decoupled Focus Architecture)', () => {
+describe('TableOfContents', () => {
     const sampleHeadings: Heading[] = [
         { id: 'section-1', text: 'Section 1', level: 1 },
         { id: 'section-2', text: 'Section 2', level: 2 },
@@ -19,7 +19,7 @@ describe('TableOfContents Component (Continuous Scroll & Decoupled Focus Archite
     beforeEach(() => {
         window.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
         window.scrollTo = vi.fn();
-        
+
         document.body.innerHTML = `
             <div id="section-1">Section 1 Content</div>
             <div id="section-2">
@@ -30,27 +30,26 @@ describe('TableOfContents Component (Continuous Scroll & Decoupled Focus Archite
         `;
     });
 
-    it('renders heading items correctly', () => {
+    it('목차 항목들을 렌더링한다', () => {
         render(<TableOfContents headings={sampleHeadings} />);
         const links = screen.getAllByRole('link', { name: 'Section 1' });
         expect(links.length).toBeGreaterThan(0);
     });
 
-    it('triggers smooth scroll when clicking heading link without artificial timeout locks', () => {
+    it('목차 링크 클릭 시 부드러운 스크롤을 트리거한다', () => {
         render(<TableOfContents headings={sampleHeadings} />);
         const links = screen.getAllByRole('link', { name: 'Section 1' });
-        
+
         fireEvent.click(links[0]);
         expect(window.scrollTo).toHaveBeenCalledWith(
             expect.objectContaining({ behavior: 'smooth' })
         );
     });
 
-    it('decouples keyboard focus from scroll active state to prevent premature indicator jumps', () => {
+    it('키보드 포커스 이동 시 에러 없이 포커스된다', () => {
         render(<TableOfContents headings={sampleHeadings} />);
         const links = screen.getAllByRole('link', { name: 'Section 2' });
 
-        // Focusing link should NOT throw or trigger artificial manual nav locks
         fireEvent.focus(links[0]);
         expect(links[0]).toBeDefined();
     });

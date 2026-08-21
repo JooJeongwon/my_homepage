@@ -3,7 +3,7 @@ import { filterPosts, filterProjects } from '@/lib/search';
 import { Post } from '@/core/models/post.model';
 import { Project } from '@/core/models/project.model';
 
-describe('Search Utility Unit Tests (Pure Domain Filtering & IME Jamo Correction)', () => {
+describe('Search Utility', () => {
     const mockPosts: Post[] = [
         {
             id: 'post-1',
@@ -47,12 +47,12 @@ describe('Search Utility Unit Tests (Pure Domain Filtering & IME Jamo Correction
     ];
 
     describe('filterPosts', () => {
-        it('빈 검색어 또는 공백 검색어인 경우 원본 목록을 그대로 반환해야 한다', () => {
+        it('빈 검색어 또는 공백 검색어인 경우 원본 목록을 그대로 반환한다', () => {
             expect(filterPosts(mockPosts, '')).toEqual(mockPosts);
             expect(filterPosts(mockPosts, '   ')).toEqual(mockPosts);
         });
 
-        it('영문 대소문자를 구분하지 않고 제목, 설명, 태그, 본문에서 검색되어야 한다', () => {
+        it('대소문자 구분 없이 제목, 설명, 태그, 본문에서 검색된다', () => {
             const byTag = filterPosts(mockPosts, 'typescript');
             expect(byTag).toHaveLength(1);
             expect(byTag[0].slug).toBe('first-post');
@@ -66,31 +66,30 @@ describe('Search Utility Unit Tests (Pure Domain Filtering & IME Jamo Correction
             expect(byTagCase[0].slug).toBe('second-post');
         });
 
-        it('본문(content) 내용에 매칭되는 경우 올바르게 반환해야 한다', () => {
+        it('본문 내용에 매칭되는 경우 올바르게 반환한다', () => {
             const result = filterPosts(mockPosts, '조건부 타입');
             expect(result).toHaveLength(1);
             expect(result[0].slug).toBe('first-post');
         });
 
-        it('한글 IME 입력 중 끝에 단일 자모가 붙었을 때(자모 분리 보정) 정상적으로 매칭해야 한다', () => {
-            // '리액트' 입력 중 조합 잔여로 '리액트ㄱ'이 들어왔을 때
+        it('한글 IME 입력 중 불완전 자모(예: "리액트ㄱ")가 들어와도 매칭한다', () => {
             const result = filterPosts(mockPosts, '리액트ㄱ');
             expect(result).toHaveLength(1);
             expect(result[0].slug).toBe('second-post');
         });
 
-        it('일치하는 결과가 없는 경우 빈 배열을 반환해야 한다', () => {
+        it('일치하는 결과가 없는 경우 빈 배열을 반환한다', () => {
             const result = filterPosts(mockPosts, '존재하지않는포스트검색어');
             expect(result).toEqual([]);
         });
     });
 
     describe('filterProjects', () => {
-        it('빈 검색어인 경우 원본 목록을 그대로 반환해야 한다', () => {
+        it('빈 검색어인 경우 원본 목록을 그대로 반환한다', () => {
             expect(filterProjects(mockProjects, '')).toEqual(mockProjects);
         });
 
-        it('프로젝트 제목 및 태그로 검색이 정상 동작해야 한다', () => {
+        it('프로젝트 제목 및 태그로 정상 검색된다', () => {
             const byTitle = filterProjects(mockProjects, 'JW Platform');
             expect(byTitle).toHaveLength(1);
             expect(byTitle[0].slug).toBe('jwjoo-platform');
@@ -100,7 +99,7 @@ describe('Search Utility Unit Tests (Pure Domain Filtering & IME Jamo Correction
             expect(byTag[0].slug).toBe('clean-arch-starter');
         });
 
-        it('한글 자모 보정으로 검색어 끝에 불완전 자모가 있어도 매칭되어야 한다', () => {
+        it('한글 자모 보정으로 끝에 불완전 자모가 있어도 매칭된다', () => {
             const result = filterProjects(mockProjects, '스타터 킷ㅎ');
             expect(result).toHaveLength(1);
             expect(result[0].slug).toBe('clean-arch-starter');
