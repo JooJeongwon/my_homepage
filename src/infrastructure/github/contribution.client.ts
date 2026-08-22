@@ -157,6 +157,8 @@ export class ContributionApiClient implements IContributionRepository {
 }
 
 /**
- * 클라이언트 컴포넌트용 ContributionService 싱글톤 인스턴스
+ * 클라이언트 컴포넌트용 ContributionService 인스턴스 (postService, projectService와 일관된 네이밍 제공)
  */
 export const clientContributionService = new ContributionService(new ContributionApiClient());
+export const contributionService = clientContributionService;
+

@@ -1,14 +1,18 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import ContributionCalendar from '@/components/home/ContributionCalendar';
-import { clientContributionService } from '@/infrastructure/github/contribution.client';
+import { contributionService, clientContributionService } from '@/infrastructure/github/contribution.client';
 import { ContributionCalendar as ContributionCalendarType } from '@/core/models/contribution.model';
 
-vi.mock('@/infrastructure/github/contribution.client', () => ({
-    clientContributionService: {
+vi.mock('@/infrastructure/github/contribution.client', () => {
+    const mockService = {
         getContributions: vi.fn(),
-    },
-}));
+    };
+    return {
+        contributionService: mockService,
+        clientContributionService: mockService,
+    };
+});
 
 describe('ContributionCalendar', () => {
     const fixedSystemTime = new Date('2026-07-30T00:00:00.000Z');
