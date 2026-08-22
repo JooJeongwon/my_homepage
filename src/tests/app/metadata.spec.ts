@@ -31,7 +31,9 @@ describe('Metadata & Open Graph Specifications', () => {
             });
             expect(rootMetadata.openGraph?.siteName).toBe('jwjoo Dev Log');
             expect(rootMetadata.openGraph?.locale).toBe('ko_KR');
-            expect(rootMetadata.twitter?.card).toBe('summary_large_image');
+            expect(rootMetadata.twitter).toMatchObject({
+                card: 'summary_large_image',
+            });
         });
     });
 
