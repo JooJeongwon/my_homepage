@@ -1,7 +1,20 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { ContributionService } from '@/core/services/contribution.service';
+import { ContributionService, createFallbackContributionCalendar } from '@/core/services/contribution.service';
 import { IContributionRepository } from '@/infrastructure/github/github-graphql.repository';
-import { ContributionCalendar } from '@/core/models/contribution.model';
+import { ContributionCalendar, ContributionCalendarSchema } from '@/core/models/contribution.model';
+
+describe('createFallbackContributionCalendar', () => {
+    it('53주(371일)의 0 기여도 기본 캘린더 데이터를 올바르게 생성하고 스키마를 통과한다', () => {
+        const fallback = createFallbackContributionCalendar();
+
+        expect(fallback.totalContributions).toBe(0);
+        expect(fallback.weeks).toHaveLength(53);
+        expect(fallback.weeks.every((w) => w.contributionDays.length === 7)).toBe(true);
+
+        const parseResult = ContributionCalendarSchema.safeParse(fallback);
+        expect(parseResult.success).toBe(true);
+    });
+});
 
 describe('ContributionService', () => {
     beforeEach(() => {

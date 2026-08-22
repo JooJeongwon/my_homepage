@@ -2,10 +2,13 @@ import {
     ContributionCalendar,
     ContributionCalendarSchema,
     ContributionDay,
-    ContributionWeek,
-    createFallbackContributionCalendar
+    ContributionWeek
 } from '@/core/models/contribution.model';
-import { IContributionRepository, ContributionService } from '@/core/services/contribution.service';
+import {
+    IContributionRepository,
+    ContributionService,
+    createFallbackContributionCalendar
+} from '@/core/services/contribution.service';
 
 /**
  * 로컬 개발 환경용 Mock Contribution Calendar 생성 함수

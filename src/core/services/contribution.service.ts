@@ -1,4 +1,37 @@
-import { ContributionCalendar, createFallbackContributionCalendar } from '@/core/models/contribution.model';
+import { ContributionCalendar, ContributionWeek, ContributionDay } from '@/core/models/contribution.model';
+
+/**
+ * 외부 API 실패 시 SSG 빌드 중단 없이 안정적으로 기본 UI를 렌더링하기 위한 Fallback Calendar 생성기
+ */
+export function createFallbackContributionCalendar(): ContributionCalendar {
+    const weeks: ContributionWeek[] = [];
+    const today = new Date();
+
+    // 53주 전 일요일부터 시작
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - (52 * 7 + today.getDay()));
+
+    const currentDate = new Date(startDate);
+
+    for (let w = 0; w < 53; w++) {
+        const contributionDays: ContributionDay[] = [];
+        for (let d = 0; d < 7; d++) {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            contributionDays.push({
+                date: dateStr,
+                count: 0,
+                level: 0
+            });
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        weeks.push({ contributionDays });
+    }
+
+    return {
+        totalContributions: 0,
+        weeks
+    };
+}
 
 export interface IContributionRepository {
     getContributions(username: string): Promise<ContributionCalendar>;
