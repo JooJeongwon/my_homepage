@@ -4,20 +4,22 @@ import matter from 'gray-matter';
 import { Project, ProjectSchema } from '@/core/models/project.model';
 import { IProjectRepository, ProjectService } from '@/core/services/project.service';
 
-const PROJECTS_PATH = path.join(process.cwd(), 'content/projects');
+const DEFAULT_PROJECTS_PATH = path.join(process.cwd(), 'content/projects');
 
 export class MdxProjectRepository implements IProjectRepository {
+    constructor(private readonly basePath: string = DEFAULT_PROJECTS_PATH) {}
+
     async getAllProjects(): Promise<Project[]> {
         try {
-            if (!fs.existsSync(PROJECTS_PATH)) return [];
+            if (!fs.existsSync(this.basePath)) return [];
 
-            const files = fs.readdirSync(PROJECTS_PATH);
+            const files = fs.readdirSync(this.basePath);
 
             const projects = files
                 .filter((file) => file.endsWith('.mdx') || file.endsWith('.md'))
                 .map((file) => {
                     try {
-                        const filePath = path.join(PROJECTS_PATH, file);
+                        const filePath = path.join(this.basePath, file);
                         const fileContent = fs.readFileSync(filePath, 'utf-8');
                         const { data } = matter(fileContent);
                         const slug = file.replace(/\.mdx?$/, '');
@@ -50,7 +52,7 @@ export class MdxProjectRepository implements IProjectRepository {
 
     async getProjectBySlug(slug: string): Promise<Project | null> {
         try {
-            const filePath = path.join(PROJECTS_PATH, `${slug}.mdx`);
+            const filePath = path.join(this.basePath, `${slug}.mdx`);
 
             if (!fs.existsSync(filePath)) return null;
 

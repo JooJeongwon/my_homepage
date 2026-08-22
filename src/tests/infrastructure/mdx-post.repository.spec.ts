@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MdxPostRepository } from '@/infrastructure/mdx/mdx-post.repository';
 import fs from 'fs';
+import path from 'path';
 
 describe('MdxPostRepository', () => {
     beforeEach(() => {
@@ -78,5 +79,28 @@ describe('MdxPostRepository', () => {
         const posts = await repo.getAllPosts();
 
         expect(posts).toEqual([]);
+    });
+
+    it('생성자 매개변수로 커스텀 basePath를 주입받아 해당 경로를 탐색한다', async () => {
+        const customPath = '/custom/test/posts';
+        const existsSpy = vi.spyOn(fs, 'existsSync').mockReturnValue(true);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const readdirSpy = vi.spyOn(fs, 'readdirSync').mockReturnValue([] as any);
+
+        const repo = new MdxPostRepository(customPath);
+        await repo.getAllPosts();
+
+        expect(existsSpy).toHaveBeenCalledWith(customPath);
+        expect(readdirSpy).toHaveBeenCalledWith(customPath);
+    });
+
+    it('커스텀 basePath가 설정된 경우 해당 경로의 파일로 상세 조회를 수행한다', async () => {
+        const customPath = '/custom/test/posts';
+        const existsSpy = vi.spyOn(fs, 'existsSync').mockReturnValue(false);
+
+        const repo = new MdxPostRepository(customPath);
+        await repo.getPostBySlug('sample-post');
+
+        expect(existsSpy).toHaveBeenCalledWith(path.join(customPath, 'sample-post.mdx'));
     });
 });

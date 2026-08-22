@@ -4,20 +4,22 @@ import matter from 'gray-matter';
 import { Post, PostSchema } from '@/core/models/post.model';
 import { IPostRepository, PostService } from '@/core/services/post.service';
 
-const POSTS_PATH = path.join(process.cwd(), 'content/posts');
+const DEFAULT_POSTS_PATH = path.join(process.cwd(), 'content/posts');
 
 export class MdxPostRepository implements IPostRepository {
+    constructor(private readonly basePath: string = DEFAULT_POSTS_PATH) {}
+
     async getAllPosts(): Promise<Post[]> {
         try {
-            if (!fs.existsSync(POSTS_PATH)) return [];
+            if (!fs.existsSync(this.basePath)) return [];
 
-            const files = fs.readdirSync(POSTS_PATH);
+            const files = fs.readdirSync(this.basePath);
 
             const posts = files
                 .filter((file) => file.endsWith('.mdx') || file.endsWith('.md'))
                 .map((file) => {
                     try {
-                        const filePath = path.join(POSTS_PATH, file);
+                        const filePath = path.join(this.basePath, file);
                         const fileContent = fs.readFileSync(filePath, 'utf-8');
                         const { data, content } = matter(fileContent);
 
@@ -54,7 +56,7 @@ export class MdxPostRepository implements IPostRepository {
 
     async getPostBySlug(slug: string): Promise<Post | null> {
         try {
-            const filePath = path.join(POSTS_PATH, `${slug}.mdx`);
+            const filePath = path.join(this.basePath, `${slug}.mdx`);
 
             if (!fs.existsSync(filePath)) return null;
 
