@@ -13,10 +13,39 @@ import { SmoothFocusScroll } from "@/components/common/SmoothFocusScroll";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "jwjoo Dev Log",
+  metadataBase: new URL("https://jwjoo.com"),
+  title: {
+    default: "jwjoo Dev Log",
+    template: "%s | jwjoo Dev Log",
+  },
   description: "DEV : Creativity & Inspiration",
+  keywords: [
+    "jwjoo",
+    "개발 블로그",
+    "Software Engineer",
+    "Clean Architecture",
+    "TypeScript",
+    "Next.js",
+    "Frontend",
+    "Backend",
+    "Portfolio",
+  ],
+  authors: [{ name: "jwjoo", url: "https://jwjoo.com" }],
+  creator: "jwjoo",
+  publisher: "jwjoo",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "jwjoo Dev Log",
+    title: {
+      default: "jwjoo Dev Log",
+      template: "%s | jwjoo Dev Log",
+    },
     description: "DEV : Creativity & Inspiration",
     url: "https://jwjoo.com",
     siteName: "jwjoo Dev Log",
@@ -25,8 +54,22 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "jwjoo Dev Log",
+    title: {
+      default: "jwjoo Dev Log",
+      template: "%s | jwjoo Dev Log",
+    },
     description: "DEV : Creativity & Inspiration",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 

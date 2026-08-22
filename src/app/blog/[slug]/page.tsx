@@ -17,19 +17,40 @@ export async function generateMetadata({
     const post = await postService.getPostBySlug(slug);
 
     if (!post) {
-        return {};
+        return {
+            title: 'Post Not Found',
+            description: '요청하신 포스트를 찾을 수 없습니다.',
+        };
     }
 
-    const description = post.description || post.content?.slice(0, 160);
+    const title = post.title;
+    const description = post.description || post.content?.slice(0, 160) || '';
+    const url = `/blog/${slug}`;
+    const images = post.thumbnail ? [{ url: post.thumbnail, alt: post.title }] : undefined;
 
     return {
-        title: `${post.title} | jwjoo Dev Log`,
+        title,
         description,
+        keywords: post.tags,
+        alternates: {
+            canonical: url,
+        },
         openGraph: {
-            title: `${post.title} | jwjoo Dev Log`,
+            title,
             description,
+            url,
+            siteName: 'jwjoo Dev Log',
+            locale: 'ko_KR',
             type: 'article',
             publishedTime: post.date,
+            authors: ['jwjoo'],
+            tags: post.tags,
+            images,
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
             images: post.thumbnail ? [post.thumbnail] : undefined,
         },
     };

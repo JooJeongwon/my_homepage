@@ -17,18 +17,37 @@ export async function generateMetadata({
     const project = await projectService.getProjectBySlug(slug);
 
     if (!project) {
-        return {};
+        return {
+            title: 'Project Not Found',
+            description: '요청하신 프로젝트를 찾을 수 없습니다.',
+        };
     }
 
-    const description = project.description || project.content?.slice(0, 160);
+    const title = project.title;
+    const description = project.description || project.content?.slice(0, 160) || '';
+    const url = `/projects/${slug}`;
+    const images = project.thumbnail ? [{ url: project.thumbnail, alt: project.title }] : undefined;
 
     return {
-        title: `${project.title} | jwjoo Projects`,
+        title,
         description,
+        keywords: project.tags,
+        alternates: {
+            canonical: url,
+        },
         openGraph: {
-            title: `${project.title} | jwjoo Projects`,
+            title,
             description,
+            url,
+            siteName: 'jwjoo Dev Log',
+            locale: 'ko_KR',
             type: 'website',
+            images,
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
             images: project.thumbnail ? [project.thumbnail] : undefined,
         },
     };
